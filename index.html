@@ -247,6 +247,37 @@ textarea.code{width:100%;height:56px;font-size:10px;font-family:monospace;border
 #legFx{position:absolute;inset:0;z-index:19;pointer-events:none;opacity:0}#legFx.on{animation:legf 1.2s ease-out}
 @keyframes legf{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
 .num.el-fire{color:#ff7a3a}.num.el-water{color:#5ab8ff}.num.el-wind{color:#4ae07a}.num.el-earth{color:#d8a050}.num.el-light{color:#ffe14a}.num.el-dark{color:#c08aff}
+#title .tsky{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 108%,#ff7a1a55,transparent 55%),linear-gradient(#0e0a1e 0%,#2a1430 38%,#5a2418 72%,#1a0c06 100%)}
+#title .tmoon{position:absolute;top:9%;right:14%;width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 38% 36%,#fff6d8,#f0c878 60%,#c8904a);box-shadow:0 0 40px 10px #ffcf7a55}
+#title .tcastle{position:absolute;left:0;right:0;bottom:0;width:100%;height:34%;opacity:.95}
+.embers{position:absolute;inset:0;pointer-events:none;overflow:hidden}.embers i{position:absolute;bottom:-10px;width:5px;height:5px;border-radius:50%;background:#ffb13a;box-shadow:0 0 8px 2px #ff7a1a;animation:ember 7s linear infinite;opacity:0}
+.embers i:nth-child(1){left:8%;animation-delay:0s}.embers i:nth-child(2){left:16%;animation-delay:2.1s;animation-duration:8s}.embers i:nth-child(3){left:24%;animation-delay:4s}.embers i:nth-child(4){left:33%;animation-delay:1.2s;animation-duration:9s}.embers i:nth-child(5){left:41%;animation-delay:5.3s}.embers i:nth-child(6){left:49%;animation-delay:3.1s;animation-duration:6s}.embers i:nth-child(7){left:57%;animation-delay:.6s}.embers i:nth-child(8){left:64%;animation-delay:4.6s;animation-duration:8.5s}.embers i:nth-child(9){left:72%;animation-delay:2.6s}.embers i:nth-child(10){left:80%;animation-delay:6s;animation-duration:7.5s}.embers i:nth-child(11){left:88%;animation-delay:1.7s}.embers i:nth-child(12){left:94%;animation-delay:3.7s;animation-duration:9s}.embers i:nth-child(13){left:28%;animation-delay:6.6s;width:3px;height:3px}.embers i:nth-child(14){left:68%;animation-delay:.2s;width:3px;height:3px}
+@keyframes ember{0%{transform:translate(0,0);opacity:0}10%{opacity:1}100%{transform:translate(40px,-105vh);opacity:0}}
+#title .tmain{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;width:min(360px,88%);margin-top:-6vh}
+.tlogo{position:relative;text-align:center;margin-bottom:8px}.tflame{font-size:44px;filter:drop-shadow(0 0 14px #ff7a1a);animation:flick 1.6s ease-in-out infinite alternate}.tflame.sm{font-size:30px}
+@keyframes flick{from{transform:scale(1) rotate(-3deg)}to{transform:scale(1.12) rotate(3deg)}}
+#title h1{font-size:clamp(42px,12vw,60px)!important;letter-spacing:2px;background:linear-gradient(#fff4c8,#ffc94a 45%,#e8701a);-webkit-background-clip:text;background-clip:text;color:transparent!important;-webkit-text-stroke:0!important;text-shadow:none!important;filter:drop-shadow(0 4px 0 #6a2a08) drop-shadow(0 0 24px #ff8a1a99)}
+#title .t2{color:#ffe2a8!important;letter-spacing:3px}
+#title .t3{background:#0006;border:1px solid #ffffff1a;border-radius:10px;padding:6px 10px}
+#loadWrap{width:100%;margin:6px 0 10px}#loadTxt{text-align:center;margin-bottom:0!important}
+#title #startBtn{font-size:22px;padding:12px 46px;border-radius:16px;box-shadow:0 5px 0 #0b4a12,0 0 26px #6dff7a66;animation:pulse 1.8s infinite}
+#title #startBtn.off{animation:none;box-shadow:none}
+#acctLine{margin-top:8px;font-family:'Kanit';color:#ffe9b8;text-align:center}#acctLine a{color:#7ab8ff;text-decoration:underline;cursor:pointer;font-size:12px}
+#keysHelp{position:relative;z-index:2}#credit{z-index:2}
+#loginOv{position:absolute;inset:0;z-index:46;display:flex;align-items:center;justify-content:center;background:#0009;backdrop-filter:blur(3px);padding:12px}
+.lbox{width:min(360px,100%);max-height:100%;overflow-y:auto;overflow-x:hidden;box-sizing:border-box;background:linear-gradient(#2a1a10f2,#1a0e08f2);border:2px solid #c88a3a;border-radius:18px;padding:14px;box-shadow:0 0 0 4px #3a2210,0 10px 40px #000a,0 0 40px #ff7a1a33;font-family:'Kanit';color:#f3dcae;display:flex;flex-direction:column;gap:7px;animation:lpop .35s ease-out}
+@keyframes lpop{from{transform:translateY(20px) scale(.96);opacity:0}to{transform:none;opacity:1}}
+.lhead{text-align:center;margin-bottom:2px}.lhead b{display:block;font-size:20px;color:#ffd84a}.lhead small{font-size:12px;opacity:.85}
+.lbtn{font-family:'Kanit';font-weight:700;font-size:15px;border:none;border-radius:11px;padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s,filter .1s}.lbtn:hover{filter:brightness(1.08)}.lbtn:active{transform:translateY(1px)}
+.lbtn.google{background:#fff;color:#3c4043;box-shadow:0 2px 0 #aaa}.gic{font-weight:900;font-size:17px;background:conic-gradient(#ea4335 0 25%,#fbbc05 0 50%,#34a853 0 75%,#4285f4 0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lbtn.fb{background:#1877f2;color:#fff;box-shadow:0 2px 0 #0d4fa8}.fic{background:#fff;color:#1877f2;border-radius:50%;width:20px;height:20px;line-height:21px;font-weight:900;font-family:Arial}
+.lbtn.gold{background:linear-gradient(#ffd86a,#e8a21a);color:#3a2210;flex:1;box-shadow:0 2px 0 #8a5a14}.lbtn.ghost{background:transparent;color:#ffd84a;border:2px solid #ffd84a;flex:1}
+.lbtn.guest{background:linear-gradient(#6a5a4a,#4a3a2a);color:#fff;border:1px solid #ffffff33}.lbtn.ghost2{background:transparent;color:#ccc;font-size:13px}
+.lrow{display:flex;gap:6px}.lin{box-sizing:border-box;width:100%;font-family:'Kanit';font-size:14px;padding:9px 11px;border-radius:10px;border:2px solid #6b4a24;background:#fff8e8;color:#3a2210}.lin:focus{outline:none;border-color:#ffb13a;box-shadow:0 0 0 3px #ffb13a55}
+.lor{display:flex;align-items:center;gap:8px;font-size:11px;opacity:.7}.lor:before,.lor:after{content:'';flex:1;height:1px;background:#f3dcae55}
+.lfor{font-size:12px;color:#9ac8ff;text-align:right;cursor:pointer;text-decoration:underline;margin-top:-3px}.lnote{font-size:10.5px;opacity:.7;text-align:center}
+.lmsg{min-height:16px;font-size:12.5px;text-align:center;color:#bfe8ff}.lmsg.err{color:#ff9a8a}
+.accTag{text-align:center;font-size:12px;background:#ddc89c;border-radius:8px;padding:2px 8px;margin:-2px 0 4px}.accTag a{color:#2b6ad0;text-decoration:underline;cursor:pointer}
 .tag.def{background:#2b6ad0}.tag.str{background:#c4251a}.tag.sup{background:#22a12f}
 .shard{height:10px;background:#3a2210;border-radius:5px;overflow:hidden;margin-top:3px}.shard b{display:block;height:100%;background:linear-gradient(#c9a3f2,#9b46e6)}
 #mapScr{background:linear-gradient(#1b2a44,#2c4466 40%,#3d5b80);overflow:auto;z-index:22}
@@ -271,13 +302,13 @@ textarea.code{width:100%;height:56px;font-size:10px;font-family:monospace;border
 .ch.ready{background:radial-gradient(#ffd86a,#e8a21a);animation:pulse 1s infinite}
 @keyframes pulse{50%{transform:scale(1.06)}}
 .mbtns{display:flex;gap:8px}.mbtns .btn{flex:1;font-size:15px;padding:9px 6px}
-#title{background:radial-gradient(circle at 50% 30%,#3a2a12,#0b0805 75%);flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;z-index:40}
+#title{background:#0b0805;overflow:hidden;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;z-index:40}
 #title.on{display:flex}
 #title h1{font-size:54px;color:#ffc94a;text-shadow:0 5px 0 #7a3a08,0 0 30px #ff8a1a88;line-height:1}
 #title .t2{font-family:'Kanit';font-weight:800;font-size:20px;margin:6px 0 14px;color:#f3dcae}
 #title .t3{font-family:'Kanit';font-size:13px;opacity:.85;max-width:330px;line-height:1.6;margin-bottom:18px}
-#loadBar{width:70%;height:14px;border-radius:8px;background:#0008;border:2px solid #6b3f1d;overflow:hidden;margin-bottom:6px}
-#loadBar b{display:block;height:100%;width:0;background:linear-gradient(#ffd86a,#e8a21a);transition:width .2s}
+#loadBar{width:100%;height:12px;border-radius:8px;background:#0009;border:2px solid #8a5a24;overflow:hidden;margin-bottom:6px;box-shadow:0 0 12px #ff7a1a44 inset}
+#loadBar b{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff6a1a,#ffd86a,#fff2b0);box-shadow:0 0 10px #ffb13a;transition:width .2s}
 #loadTxt{font-family:'Kanit';font-size:12px;opacity:.8;margin-bottom:16px;min-height:16px}
 #title .btn{font-size:20px;padding:10px 40px}
 #credit{position:absolute;bottom:calc(8px + env(safe-area-inset-bottom));font-family:'Kanit';font-size:10px;opacity:.5}
@@ -387,14 +418,19 @@ textarea.code{width:100%;height:56px;font-size:10px;font-family:monospace;border
   <div class="ov" id="mapScr"></div>
   <div id="guide"><canvas id="gFace" width="156" height="156"></canvas><div id="gBox"><div id="gName">ลุงเปลว</div><div id="gTxt"></div></div></div>
   <div class="ov on" id="title">
-    <h1 class="stroke">EMBERFALL</h1>
-    <div class="t2 stroke">ทางแห่งราชันย์</div>
-    <div class="t3">เดินตามถนนสายเก่า ปราบมอนสเตอร์ เก็บอุปกรณ์ รวมทีมฮีโร่ แล้วบุกปราสาทของผู้ท้าชิง!</div>
-    <div id="loadBar"><b></b></div><div id="loadTxt">กำลังโหลดโมเดล...</div>
-    <button class="btn off" id="startBtn">เริ่มผจญภัย</button>
-    <div id="keysHelp">⌨️ คีย์ลัด: ← → เลือก/ปัดการ์ด · 1-4 เลือกฮีโร่/พลัง · Space สกิล · O ออโต้ · S ความเร็ว · M แผนที่ · R บุก · Y หอคอย · E กิจกรรม · T โรงเตี๊ยม · Q ภารกิจ · H คู่มือ · Esc ปิด</div>
+    <div class="tsky"></div><div class="tmoon"></div>
+    <svg class="tcastle" viewBox="0 0 400 140" preserveAspectRatio="xMidYMax slice"><path d="M0 140V96l24-10 22 8 30-22 26 14 18-8V52h10v-8h6v8h10V30l8-14 8 14v22h12V40h8v-10h6v10h8v22h10v26l22 10 20-16 26 12 22-6 26 18 28-10 20 8 34-14 34 16v44z" fill="#120a06"/><path d="M0 140v-18l40-12 50 10 60-16 50 12 50-10 60 14 50-12 40 8v24z" fill="#070403"/><rect x="171" y="62" width="5" height="7" fill="#ffb13a"/><rect x="198" y="44" width="5" height="7" fill="#ffcf5a"/><rect x="222" y="70" width="5" height="7" fill="#ffb13a"/></svg>
+    <div class="embers"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="tmain">
+      <div class="tlogo"><div class="tflame">🔥</div><h1 class="stroke">EMBERFALL</h1><div class="t2 stroke">⚔ ทางแห่งราชันย์ ⚔</div></div>
+      <div class="t3">เดินตามถนนสายเก่า ปราบมอนสเตอร์ เก็บอุปกรณ์ รวมทีมฮีโร่ แล้วบุกปราสาทของผู้ท้าชิง!</div>
+      <div id="loadWrap"><div id="loadBar"><b></b></div><div id="loadTxt">กำลังจุดคบเพลิง...</div></div>
+      <button class="btn off" id="startBtn">เริ่มผจญภัย</button>
+      <div id="acctLine"></div>
+    </div>
+    <div id="keysHelp">⌨️ ← → เลือกการ์ด · Space สกิล · P หยุด · I กระเป๋า · C คราฟ · E กิจกรรม · M แผนที่ · H คู่มือ</div>
     <div id="credit">โมเดล 3D: KayKit โดย Kay Lousberg (CC0) · ไม่มีโฆษณา</div>
-  </div>
+</div>
 </div>
 
 <script type="module">
@@ -560,6 +596,9 @@ const UPG=[{k:'dmg',ic:'⚔️',n:'ลับคมอาวุธ',d:'ดาเ�
 const UNLOCK_LV=5,MAXTIX=3,TIXMIN=10;
 
 /* ================= STATE ================= */
+/* ---- FIREBASE: ใส่ค่าจาก Firebase console (Project settings → Your apps → Config) ---- */
+const FIREBASE_CONFIG={apiKey:"AIzaSyC0KCgLRo3Z0bVPPKBxKb8qd0Wmm7ut6zk",authDomain:"emberfall-bff62.firebaseapp.com",projectId:"emberfall-bff62",storageBucket:"emberfall-bff62.firebasestorage.app",messagingSenderId:"696297027456",appId:"1:696297027456:web:2abf02b5c8413352977365"};
+let cloudDirty=false;
 const AUTO_ON=['gear','chest','retreat'],SPEEDS=[1,2,4],SPD=()=>st.speed;
 const KEY='emberfall3d_v2',NSLOT=4,slotKey=i=>i?KEY+'_s'+i:KEY;
 let curSlot=0;try{curSlot=Math.min(NSLOT-1,Math.max(0,+(localStorage.getItem('emberfall3d_cur')||0)))}catch(e){}
@@ -583,7 +622,7 @@ st.auto=Object.assign({dung:true,wb:true,pass:true,pet:true,on:false,gear:true,e
 if(!SPEEDS.includes(st.speed))st.speed=st.speed>=3?4:1;for(const k in st.auto)if(k!=='on'&&!AUTO_ON.includes(k))st.auto[k]=false;st.bag=st.bag||[];st.ess=st.ess||0;st.stat=st.stat||{};st.ach=st.ach||[];st.titles=st.titles||[];st.skins=st.skins||['none'];if(!st.skin)st.skin='none';if(st.guide===undefined)st.guide=st.kills>50?GUIDE.length:0;st.gemInv=st.gemInv||{};for(const g in GEMS)st.gemInv[g]=st.gemInv[g]||[0,0,0,0,0];if(st.main&&!st.cls)st.cls=st.main;for(const k of ACCT.unl){const H=st.heroes[k];if(H&&!H.lvl){H.lvl=1;H.star=Math.max(1,H.star||1)}}
 return st}
 st=loadSlot(curSlot);
-const save=()=>{st.lastSeen=Date.now();try{localStorage.setItem(slotKey(curSlot),JSON.stringify({v:2,s:st}));localStorage.setItem('emberfall3d_cur',curSlot)}catch(e){}};
+const save=()=>{st.lastSeen=Date.now();cloudDirty=true;try{localStorage.setItem(slotKey(curSlot),JSON.stringify({v:2,s:st}));localStorage.setItem('emberfall3d_cur',curSlot)}catch(e){}};
 const gIdx=()=>st.map*STEPS+st.step;
 const P=l=>Math.pow(1.075,l);
 const ECH=[1.092,1.1,1.085,1.081],ECA=[1.079,1.085,1.076,1.073],EGB=[60,150,690];
@@ -694,7 +733,7 @@ async function loadAll(){
  const M=MAPS[st.map%MAPS.length],need=new Set(['knight','rogue_hooded',...WP,...M.trees,...M.mts,M.castle,'rock_single_A','rock_single_C','rock_single_E','cloud_big','cloud_small']);
  for(const m of M.mob)need.add(MON[m].f);need.add(MON[M.boss.m].f);
  const list=[...need];let done=0;
- await Promise.all(list.map(n=>loadOne(n).then(()=>{done++;$('loadBar').firstChild.style.width=(done/list.length*100)+'%';$('loadTxt').textContent=`กำลังโหลดโมเดล ${done}/${list.length}`})));
+ await Promise.all(list.map(n=>loadOne(n).then(()=>{done++;$('loadBar').firstChild.style.width=(done/list.length*100)+'%';$('loadTxt').textContent=`${['กำลังจุดคบเพลิง','กำลังลับดาบ','กำลังปลุกมอนสเตอร์','กำลังสร้างปราสาท'][Math.floor(done/list.length*4)%4]}... ${Math.round(done/list.length*100)}%`})));
 }
 function loadRest(){return Promise.all([...CH,...ENVALL].map(loadOne)).then(()=>{allLoaded=true;buildHeroPorts();renderAll()})}
 const cloneStatic=n=>A[n]?A[n].scene.clone(true):new THREE.Group();
@@ -1381,7 +1420,7 @@ $('infoBtn').onclick=()=>{const s=S(),tb=teamBonus();openSheet('📜 ค่า�
  <div class="statg">${['dmg','hp','armor','tough','crit','critd','combo','bleed','dodge','ls','spd','gold'].map(k=>`<div><span>${STN[k]}</span><span>${fmt(s[k])}</span></div>`).join('')}<div><span>โจมตี/วินาที</span><span>${s.aps.toFixed(2)}</span></div><div><span>โบนัสทีม</span><span>⚔${tb.dmg}% ❤${tb.hp}%</span></div><div><span>📖 สมุดมอนสเตอร์</span><span>+${codexBonus()}%</span></div><div><span>🔩 เศษเหล็ก</span><span>${st.scrap}</span></div></div>${setsHTML(st.eq)}<button class="btn blue" style="width:100%;margin-top:10px;padding:10px" id="cdxB">📖 เปิดสมุดมอนสเตอร์</button>`,b=>b.querySelector('#cdxB').onclick=openCodex)};
 function openCodex(){const rows=Object.entries(MON).map(([k,m])=>{const c=st.codex[k]||0,t=CODEX_T.filter(x=>c>=x).length,nx=CODEX_T[t];return `<div class="row"><div class="ri">${m.f.startsWith('skeleton')?'💀':'🗡️'}</div><div class="rt"><b>${m.n}</b> · ปราบแล้ว ${fmt(c)}<div class="shard"><b style="width:${nx?Math.min(100,c/nx*100):100}%;background:linear-gradient(#ffd86a,#e8a21a)"></b></div><small>ขั้น ${t}/4 · โบนัส ดาเมจ/HP +${t*.5}%${nx?' · ขั้นถัดไปที่ '+nx:' · ครบแล้ว!'}</small></div></div>`}).join('')+MAPS.map((m,i)=>{const c=st.codex['boss'+i]||0,t=BOSS_T.filter(x=>c>=x).length,nx=BOSS_T[t];return `<div class="row"><div class="ri">👑</div><div class="rt"><b>${m.boss.n}</b> · ปราบแล้ว ${c}<div class="shard"><b style="width:${nx?Math.min(100,c/nx*100):100}%;background:linear-gradient(#ff8a6a,#c4251a)"></b></div><small>ขั้น ${t}/3 · โบนัส +${t}%${nx?' · ถัดไป '+nx:''}</small></div></div>`}).join('');openSheet('📖 สมุดมอนสเตอร์',`<div class="row"><div class="ri">📖</div><div class="rt"><b>โบนัสรวม ดาเมจ/HP +${codexBonus()}%</b><br>ปราบมอนสเตอร์แต่ละชนิดให้ครบตามจำนวน เพื่อรับโบนัสถาวร</div></div>`+rows)}
 $('prof').onclick=()=>openSheet('⚙️ ตั้งค่า',`<div class="row"><div class="ri">⏩</div><div class="rt"><b>ความเร็วเกม</b><br>เร่งการเดินและการต่อสู้</div><div class="bc" style="flex-direction:row">${SPEEDS.map(v=>`<button class="btn ${st.speed===v?'gold':'gray'}" data-sp="${v}">x${v}</button>`).join('')}</div></div>
- <button class="btn gold" style="width:100%;margin-bottom:8px;padding:10px" id="slB">👥 เปลี่ยน / สร้างตัวละคร (สูงสุด 4)</button><div class="acts" style="margin-bottom:8px"><button class="btn blue" id="bkB" style="flex:1">💾 สำรอง/ย้ายเซฟ</button><button class="btn blue" id="fsB" style="flex:1">⛶ เต็มจอ</button><button class="btn blue" id="acB" style="flex:1">🏅 ความสำเร็จ</button></div><button class="btn blue" style="width:100%;margin-bottom:8px;padding:10px" id="manB">📘 คู่มือการเล่น</button>
+ <button class="btn gold" style="width:100%;margin-bottom:8px;padding:10px" id="slB">👥 เปลี่ยน / สร้างตัวละคร (สูงสุด 4)</button><div class="acts" style="margin-bottom:8px"><button class="btn blue" id="amB" style="flex:1">👤 บัญชี</button><button class="btn blue" id="bkB" style="flex:1">💾 สำรอง</button><button class="btn blue" id="fsB" style="flex:1">⛶ เต็มจอ</button><button class="btn blue" id="acB" style="flex:1">🏅 ความสำเร็จ</button></div><button class="btn blue" style="width:100%;margin-bottom:8px;padding:10px" id="manB">📘 คู่มือการเล่น</button>
  <div class="row"><div class="ri">✏️</div><div class="rt"><b>ชื่อตัวละคร</b><br><input id="nmI" class="tin" maxlength="14" value="${pname().replace(/"/g,'')}"></div><button class="btn blue" id="nmB">บันทึก</button></div>
  <div class="row"><div class="ri">🎵</div><div class="rt"><b>เพลงประกอบ</b> <span id="mvL">${Math.round(st.snd.mv*100)}%</span><input type="range" class="vol" id="mvR" min="0" max="100" value="${Math.round(st.snd.mv*100)}"></div><button class="btn ${st.snd.music?'':'gray'}" id="smB">${st.snd.music?'เปิด':'ปิด'}</button></div>
  <div class="row"><div class="ri">🔊</div><div class="rt"><b>เอฟเฟกต์เสียง</b> <span id="svL">${Math.round(st.snd.sv*100)}%</span><input type="range" class="vol" id="svR" min="0" max="100" value="${Math.round(st.snd.sv*100)}"></div><button class="btn ${st.snd.sfx?'':'gray'}" id="ssB">${st.snd.sfx?'เปิด':'ปิด'}</button></div>
@@ -1391,7 +1430,7 @@ $('prof').onclick=()=>openSheet('⚙️ ตั้งค่า',`<div class="row"
  <div class="row"><div class="ri">♻️</div><div class="rt"><b>เริ่มตัวละครนี้ใหม่</b><br>ลบความคืบหน้าของตัวละครนี้ (ตัวอื่นไม่หาย)</div><button class="btn red" id="rsBtn">ลบ</button></div>`,b=>{
  b.querySelectorAll('[data-sp]').forEach(e=>e.onclick=()=>{setSpeed(+e.dataset.sp);$('prof').onclick()});
  b.querySelector('#adBtn').onclick=()=>{st.autoDisc=!st.autoDisc;save();$('prof').onclick()};
- b.querySelector('#manB').onclick=openManual;b.querySelector('#slB').onclick=toSlots;b.querySelector('#bkB').onclick=openBackup;b.querySelector('#fsB').onclick=goFull;b.querySelector('#acB').onclick=()=>openAch();
+ b.querySelector('#manB').onclick=openManual;b.querySelector('#slB').onclick=toSlots;b.querySelector('#bkB').onclick=openBackup;b.querySelector('#amB').onclick=openAccount;b.querySelector('#fsB').onclick=goFull;b.querySelector('#acB').onclick=()=>openAch();
  b.querySelector('#smB').onclick=()=>{st.snd.music=!st.snd.music;applyVol();save();$('prof').onclick()};b.querySelector('#ssB').onclick=()=>{st.snd.sfx=!st.snd.sfx;applyVol();save();$('prof').onclick()};
  b.querySelector('#mvR').oninput=e=>{st.snd.mv=e.target.value/100;b.querySelector('#mvL').textContent=e.target.value+'%';applyVol()};b.querySelector('#mvR').onchange=save;
  b.querySelector('#svR').oninput=e=>{st.snd.sv=e.target.value/100;b.querySelector('#svL').textContent=e.target.value+'%';applyVol()};b.querySelector('#svR').onchange=()=>{save();sfx('coin')};
@@ -1593,6 +1632,63 @@ function wkResult(win){const W=wkObj();phase='busy';let txt='';
   if(t===2&&!st.skins.includes('frost')){st.skins.push('frost');txt+=' · ✨ สกินน้ำแข็งนิรันดร์'}if(t===4&&!st.skins.includes('void')){st.skins.push('void');txt+=' · ✨ สกินห้วงมืด'}addPass(80)}
  else{const d=new Date().toDateString();if(st.wkFree!==d){st.wkFree=d;W.tries++;txt='แพ้ครั้งแรกของวัน ได้สิทธิ์คืน'}}
  save();renderAll();openSheet(win?'🌟 ผ่านด่านท้าทาย!':'💀 ไม่ผ่านด่านท้าทาย',`<div class="row"><div class="ri">🌟</div><div class="rt"><b>${win?'ชนะ! ขึ้นขั้น '+(W.tier+1):'ลองจัดทีมใหม่ / เลือกธาตุที่ชนะทาง'}</b><br>${txt}</div></div><button class="btn" style="width:100%;padding:10px" id="wkOk">กลับไปผจญภัย</button>`,b=>b.querySelector('#wkOk').onclick=()=>{closeSheet()});onSheetClose=exitTower}
+/* ---------- ACCOUNT / CLOUD SAVE ---------- */
+let FB=null,authUser=null,cloudBusy=false,cloudLast=0;
+const inFrame=()=>{try{return window.top!==window}catch(e){return true}};
+const cloudOn=()=>!!FIREBASE_CONFIG&&!inFrame();
+async function fbInit(){if(FB||!cloudOn())return FB;const b='https://www.gstatic.com/firebasejs/10.12.2/';
+ const[app,auth,fs]=await Promise.all([import(b+'firebase-app.js'),import(b+'firebase-auth.js'),import(b+'firebase-firestore.js')]);
+ const a=app.initializeApp(FIREBASE_CONFIG);FB={auth,fs,A:auth.getAuth(a),D:fs.getFirestore(a)};try{await auth.setPersistence(FB.A,auth.browserLocalPersistence)}catch(e){}return FB}
+const provName=u=>!u?'':u.isAnonymous?'Guest':(u.providerData[0]||{}).providerId==='google.com'?'Google':(u.providerData[0]||{}).providerId==='facebook.com'?'Facebook':'อีเมล';
+const acctLabel=()=>authUser?`${provName(authUser)==='Guest'?'👤 Guest':provName(authUser)==='Google'?'🟢 Google':provName(authUser)==='Facebook'?'🔵 Facebook':'✉️ '+(authUser.email||'อีเมล')}${authUser.displayName?' · '+authUser.displayName:''}`:'';
+function setAcctLine(){const e=$('acctLine');if(!e)return;e.innerHTML=!cloudOn()?(FIREBASE_CONFIG?'<small>💾 เซฟในเครื่องนี้ (ล็อกอินได้ที่เวอร์ชันเว็บไซต์)</small>':'<small>💾 เซฟในเครื่องนี้</small>'):authUser?`<small>${acctLabel()} · ☁️ เซฟบนคลาวด์</small> <a id="swAcc">เปลี่ยนบัญชี</a>`:''; const sw=$('swAcc');if(sw)sw.onclick=async()=>{await fbInit();await FB.auth.signOut(FB.A);authUser=null;setAcctLine();openLogin()}}
+async function cloudPull(){const{fs,D}=FB,uid=authUser.uid;const last=localStorage.getItem('emberfall3d_uid');
+ if(last&&last!==uid){for(let i=0;i<NSLOT;i++)localStorage.removeItem(slotKey(i));localStorage.removeItem('emberfall3d_acct');localStorage.removeItem('emberfall3d_v1')}
+ localStorage.setItem('emberfall3d_uid',uid);const meta=await fs.getDoc(fs.doc(D,'users',uid));
+ if(!meta.exists()){await cloudPush(true);return false}const m=meta.data();
+ for(let i=0;i<NSLOT;i++){const sd=await fs.getDoc(fs.doc(D,'users',uid,'slots',''+i));const loc=readSlot(i),lt=loc&&loc.lastSeen||0;
+  if(sd.exists()){const c=sd.data();if(c.del){if(lt<=(c.t||0))localStorage.removeItem(slotKey(i))}else if((c.t||0)>lt)localStorage.setItem(slotKey(i),c.d)}}
+ if(m.acct)localStorage.setItem('emberfall3d_acct',m.acct);try{ACCT=Object.assign({unl:[]},JSON.parse(localStorage.getItem('emberfall3d_acct')||'{}'))}catch(e){}
+ if(m.cur!==undefined)curSlot=Math.min(NSLOT-1,+m.cur||0);return true}
+async function cloudPush(force){if(!authUser||!FB||cloudBusy)return;if(!force&&!cloudDirty)return;cloudBusy=true;cloudDirty=false;const{fs,D}=FB,uid=authUser.uid;
+ try{save();for(let i=0;i<NSLOT;i++){const raw=localStorage.getItem(slotKey(i));if(raw){const d=JSON.parse(raw);await fs.setDoc(fs.doc(D,'users',uid,'slots',''+i),{d:raw,t:(d.s&&d.s.lastSeen)||Date.now(),name:(d.s&&d.s.name)||'',lvl:(d.s&&d.s.lvl)||1})}}
+  await fs.setDoc(fs.doc(D,'users',uid),{acct:localStorage.getItem('emberfall3d_acct')||'{}',cur:curSlot,t:Date.now(),prov:provName(authUser),name:authUser.displayName||''},{merge:true});cloudLast=Date.now()}
+ catch(e){console.warn('cloud save',e);cloudDirty=true}cloudBusy=false}
+async function cloudDelSlot(i){if(!authUser||!FB)return;try{await FB.fs.setDoc(FB.fs.doc(FB.D,'users',authUser.uid,'slots',''+i),{del:true,t:Date.now()})}catch(e){}}
+setInterval(()=>{if(authUser)cloudPush()},45000);document.addEventListener('visibilitychange',()=>{if(document.hidden&&authUser)cloudPush(true)});
+async function afterLogin(u){authUser=u;setAcctLine();const box=$('loginBox');if(box)box.querySelector('.lmsg').textContent='☁️ กำลังซิงก์เซฟ...';
+ try{await cloudPull()}catch(e){console.warn(e)}st=loadSlot(curSlot);curWT=curPT=undefined;try{setHandWeapon();setHandPet()}catch(e){}php=S().hp;buildScenery();renderAll();
+ const ov=$('loginOv');if(ov)ov.remove();sfx('level');openSlots()}
+const authErr=e=>({'auth/popup-closed-by-user':'ปิดหน้าต่างล็อกอินก่อนเสร็จ','auth/cancelled-popup-request':'ยกเลิกแล้ว','auth/invalid-email':'อีเมลไม่ถูกต้อง','auth/missing-password':'กรุณาใส่รหัสผ่าน','auth/weak-password':'รหัสผ่านต้องยาว 6 ตัวขึ้นไป','auth/email-already-in-use':'อีเมลนี้สมัครแล้ว — กด "เข้าสู่ระบบ" แทน','auth/invalid-credential':'อีเมลหรือรหัสผ่านไม่ถูกต้อง','auth/wrong-password':'รหัสผ่านไม่ถูกต้อง','auth/user-not-found':'ไม่พบบัญชีนี้ — กด "สมัครสมาชิก"','auth/too-many-requests':'ลองบ่อยเกินไป รอสักครู่','auth/operation-not-allowed':'ผู้ดูแลยังไม่ได้เปิดวิธีล็อกอินนี้','auth/unauthorized-domain':'โดเมนนี้ยังไม่ได้รับอนุญาตใน Firebase','auth/popup-blocked':'เบราว์เซอร์บล็อกป๊อปอัป — อนุญาตป๊อปอัปแล้วลองใหม่','auth/account-exists-with-different-credential':'อีเมลนี้เคยใช้ล็อกอินวิธีอื่น'})[e.code]||e.message;
+async function doLogin(kind,box){const msg=box.querySelector('.lmsg');msg.textContent='กำลังเข้าสู่ระบบ...';msg.className='lmsg';
+ try{await fbInit();const{auth,A}=FB,cur=A.currentUser,anon=cur&&cur.isAnonymous;let r;
+  if(kind==='guest'){r=await auth.signInAnonymously(A)}
+  else if(kind==='google'||kind==='facebook'){const pv=kind==='google'?new auth.GoogleAuthProvider():new auth.FacebookAuthProvider();
+   if(anon){try{r=await auth.linkWithPopup(cur,pv)}catch(e){if(e.code==='auth/credential-already-in-use'){const cr=(kind==='google'?auth.GoogleAuthProvider:auth.FacebookAuthProvider).credentialFromError(e);r=await auth.signInWithCredential(A,cr)}else throw e}}else r=await auth.signInWithPopup(A,pv)}
+  else{const em=box.querySelector('#lEm').value.trim(),pw=box.querySelector('#lPw').value;
+   if(kind==='reset'){await auth.sendPasswordResetEmail(A,em);msg.textContent='📧 ส่งลิงก์ตั้งรหัสผ่านใหม่ไปที่อีเมลแล้ว';return}
+   if(kind==='register'){if(anon)r=await auth.linkWithCredential(cur,auth.EmailAuthProvider.credential(em,pw));else r=await auth.createUserWithEmailAndPassword(A,em,pw)}
+   else r=await auth.signInWithEmailAndPassword(A,em,pw)}
+  await afterLogin(r.user)}catch(e){msg.textContent='❌ '+authErr(e);msg.className='lmsg err'}}
+function openLogin(){if($('loginOv'))return;const ov=document.createElement('div');ov.id='loginOv';const linking=authUser&&authUser.isAnonymous;
+ ov.innerHTML=`<div class="lbox" id="loginBox"><div class="lhead"><div class="tflame sm">🔥</div><b>${linking?'ผูกบัญชีเพื่อไม่ให้ตัวละครหาย':'เข้าสู่ระบบ'}</b><small>${linking?'ตัวละคร Guest ของท่านจะย้ายไปอยู่กับบัญชีนี้':'เซฟตัวละครบนคลาวด์ เล่นต่อได้ทุกเครื่อง'}</small></div>
+ <button class="lbtn google" data-k="google"><span class="gic">G</span> เข้าสู่ระบบด้วย Google</button>
+ <button class="lbtn fb" data-k="facebook"><span class="fic">f</span> เข้าสู่ระบบด้วย Facebook</button>
+ <div class="lor"><span>หรือใช้อีเมล</span></div>
+ <input id="lEm" class="lin" type="email" placeholder="อีเมล" autocomplete="email"><input id="lPw" class="lin" type="password" placeholder="รหัสผ่าน (6 ตัวขึ้นไป)" autocomplete="current-password">
+ <div class="lrow"><button class="lbtn gold" data-k="email">เข้าสู่ระบบ</button><button class="lbtn ghost" data-k="register">สมัครสมาชิก</button></div><a class="lfor" data-k="reset">ลืมรหัสผ่าน?</a>
+ ${linking?'<button class="lbtn ghost2" data-x="1">ไว้ทีหลัง</button>':'<div class="lor"><span>หรือ</span></div><button class="lbtn guest" data-k="guest">👤 เล่นแบบ Guest ทันที</button><small class="lnote">Guest เซฟบนคลาวด์ของเครื่องนี้ · ผูกบัญชี Google/Facebook/อีเมลภายหลังได้ในตั้งค่า</small>'}
+ <div class="lmsg"></div></div>`;
+ ov.querySelectorAll('[data-k]').forEach(e=>e.onclick=()=>{sfx('click');doLogin(e.dataset.k,ov.querySelector('#loginBox'))});
+ const x=ov.querySelector('[data-x]');if(x)x.onclick=()=>ov.remove();$('title').parentNode.appendChild(ov)}
+async function startFlow(){if(!cloudOn()){openSlots();return}
+ try{await fbInit();const u=FB.A.currentUser||await new Promise(r=>{const un=FB.auth.onAuthStateChanged(FB.A,x=>{un();r(x)})});if(u){await afterLogin(u);return}}catch(e){console.warn(e);openSlots();return}
+ openLogin()}
+function openAccount(){openSheet('👤 บัญชี',`<div class="row"><div class="ri">☁️</div><div class="rt"><b>${cloudOn()?(authUser?acctLabel():'ยังไม่ได้ล็อกอิน'):'เซฟในเครื่องนี้เท่านั้น'}</b><br><small>${cloudOn()?(authUser?'บันทึกขึ้นคลาวด์อัตโนมัติทุก 45 วิ'+(cloudLast?' · ล่าสุด '+new Date(cloudLast).toLocaleTimeString('th-TH'):''):'ล็อกอินเพื่อเก็บตัวละครบนคลาวด์'):'เปิดเกมจากเว็บไซต์ (ลิงก์ github.io) เพื่อล็อกอิน Google/Facebook/อีเมล · ใช้ 💾 สำรอง/ย้ายเซฟ เพื่อย้ายข้อมูล'}</small></div></div>
+ ${cloudOn()?(authUser?`${authUser.isAnonymous?'<button class="btn gold" style="width:100%;padding:9px;margin-bottom:6px" id="acLink">🔗 ผูกบัญชี Google / Facebook / อีเมล (กันตัวละครหาย)</button>':''}<div class="acts"><button class="btn blue" id="acSave" style="flex:1">☁️ บันทึกขึ้นคลาวด์ตอนนี้</button><button class="btn red" id="acOut" style="flex:1">ออกจากระบบ</button></div>`:'<button class="btn gold" style="width:100%;padding:9px" id="acIn">เข้าสู่ระบบ</button>'):''}`,b=>{
+ const L=b.querySelector('#acLink');if(L)L.onclick=()=>{closeSheet();openLogin()};const I=b.querySelector('#acIn');if(I)I.onclick=()=>{closeSheet();openLogin()};
+ const Sv=b.querySelector('#acSave');if(Sv)Sv.onclick=async()=>{Sv.textContent='กำลังบันทึก...';await cloudPush(true);Sv.textContent='✅ บันทึกแล้ว'};
+ const O=b.querySelector('#acOut');if(O)O.onclick=async()=>{if(!O.dataset.c){O.dataset.c=1;O.textContent=authUser.isAnonymous?'Guest จะหายถ้าไม่ผูกบัญชี! ยืนยัน?':'ยืนยันออก?';return}await cloudPush(true);await FB.auth.signOut(FB.A);authUser=null;closeSheet();clearScene();phase='title';$('title').classList.add('on');setAcctLine();openLogin()}})}
 /* ---------- CHARACTER SLOTS ---------- */
 function clearScene(){if(enemy){scene.remove(enemy.ch.holder);enemy=null}['gearOv','evOv','powOv','mapScr'].forEach(x=>$(x).classList.remove('on'));gearItem=null;gearAfter=null;queued=null;
  if(mode==='raid'){clearUnits();mode='adv';raid=null;camTarget=0;$('raidBar').style.display='none';$('dots').style.display='';$('raidBtn').style.display=''}$('bossBar').style.display='none';closeSheet()}
@@ -1603,13 +1699,14 @@ async function switchSlot(i){if(i===curSlot&&st)return;save();curSlot=i;try{loca
 function questTable(){const cls=[...new Set(UNLQ.map(q=>q.c))];return `<div class="cqt"><b>🏆 ภารกิจตัวละคร</b> <small>(ใช้ร่วมกันทุกตัวละคร · นับตามสายที่เลือกตอนสร้าง)</small>`+cls.map(c=>{const h0=heroOf(c),best=Math.max(0,...[...Array(NSLOT)].map((_,i)=>{const d=i===curSlot?st:readSlot(i);return d&&(d.cls||d.main)===c?d.lvl:0}));
   return `<div class="cqr"><span>${h0.ic} <b>${h0.cls}</b> <small>สูงสุด Lv ${best}</small></span><span>${UNLQ.filter(q=>q.c===c).map(q=>{const h=heroOf(q.h),ok=ACCT.unl.includes(q.h);return `<i class="cq ${ok?'ok':''}" style="border-color:${RT[h.r].c}" title="${h.n}">Lv${q.lv} ${ok?'✅':h.ic}</i>`}).join('')}</span></div>`}).join('')+`</div>`}
 function openSlots(){const ov=document.createElement('div');ov.id='create';
- const draw=()=>{ov.innerHTML=`<div class="cbox"><h2 class="stroke">เลือกตัวละคร</h2><div class="sgrid">${[...Array(NSLOT)].map((_,i)=>{const d=i===curSlot&&st.main?st:readSlot(i);
+ const draw=()=>{ov.innerHTML=`<div class="cbox"><h2 class="stroke">เลือกตัวละคร</h2>${authUser?`<div class="accTag">${acctLabel()} · ☁️ ซิงก์อัตโนมัติ${authUser.isAnonymous?' · <a id="lnk">ผูกบัญชี</a>':''}</div>`:''}<div class="sgrid">${[...Array(NSLOT)].map((_,i)=>{const d=i===curSlot&&st.main?st:readSlot(i);
   if(!d||!d.main)return `<div class="sl empty" data-n="${i}"><div class="gp">＋</div><b>ช่อง ${i+1}</b><small>สร้างตัวละครใหม่</small></div>`;
   const h=heroOf(d.main)||HEROES[0];return `<div class="sl ${i===curSlot?'on':''}" data-p="${i}"><div class="gp" style="background-image:url(${PORT[h.k]||''})">${PORT[h.k]?'':h.ic}</div><b>${(d.name||'ผู้ถือคบเพลิง').replace(/</g,'')}</b><small>${EL[h.el].i} ${h.cls} · Lv ${d.lvl}<br>แมป ${(d.maxMap||0)+1} · 🏆 ${d.troph||0}</small><button class="btn red sdel" data-d="${i}">🗑</button></div>`}).join('')}</div>
   ${questTable()}<p style="font-size:11px;margin-top:6px;text-align:center">แตะช่องเพื่อเล่น · แต่ละตัวละครมีความคืบหน้า ทอง และฮีโร่แยกกัน · ฮีโร่ที่ปลดล็อกจากภารกิจใช้ได้ทุกตัว</p></div>`;
+  {const lk=ov.querySelector('#lnk');if(lk)lk.onclick=()=>{openLogin()}}
   ov.querySelectorAll('[data-p]').forEach(e=>e.onclick=async ev=>{if(ev.target.closest('.sdel'))return;const i=+e.dataset.p;sfx('click');await switchSlot(i);ov.remove();enterGame()});
   ov.querySelectorAll('[data-n]').forEach(e=>e.onclick=async()=>{const i=+e.dataset.n;sfx('click');await switchSlot(i);ov.remove();enterGame()});
-  ov.querySelectorAll('.sdel').forEach(e=>e.onclick=ev=>{ev.stopPropagation();if(!e.dataset.c){e.dataset.c=1;e.textContent='ยืนยัน?';return}const i=+e.dataset.d;try{localStorage.removeItem(slotKey(i));if(!i)localStorage.removeItem('emberfall3d_v1')}catch(_){}if(i===curSlot)st=loadSlot(-1);draw()})};
+  ov.querySelectorAll('.sdel').forEach(e=>e.onclick=ev=>{ev.stopPropagation();if(!e.dataset.c){e.dataset.c=1;e.textContent='ยืนยัน?';return}const i=+e.dataset.d;cloudDelSlot(i);try{localStorage.removeItem(slotKey(i));if(!i)localStorage.removeItem('emberfall3d_v1')}catch(_){}if(i===curSlot)st=loadSlot(-1);draw()})};
  draw();$('title').parentNode.appendChild(ov)}
 function toSlots(){if(mode==='raid'&&raid&&!raid.wb&&!raid.dung&&!raid.tower){say('จบการบุกปราสาทก่อนนะ แล้วค่อยเปลี่ยนตัวละคร');return}save();clearScene();phase='title';buildScenery();renderAll();openSlots()}
 
@@ -1711,8 +1808,8 @@ drawGuide();resize();
 (async()=>{
  await loadAll();
  buildScenery();buildIcons();setHandWeapon();setHandPet();php=S().hp;renderAll();loadRest();
- $('loadTxt').textContent='พร้อมแล้ว!';const b=$('startBtn');b.classList.remove('off');b.textContent='เข้าสู่เกม';
- b.onclick=()=>{audioInit();openSlots()};
+ $('loadTxt').textContent='🔥 คบเพลิงลุกโชนแล้ว — พร้อมออกเดินทาง!';const b=$('startBtn');b.classList.remove('off');b.textContent='เข้าสู่เกม';
+ b.onclick=()=>{audioInit();startFlow()};setAcctLine();if(cloudOn())fbInit().then(()=>FB.auth.onAuthStateChanged(FB.A,u=>{if(u&&!authUser){authUser=u;setAcctLine()}})).catch(()=>{});
 })();
 function enterGame(){$('title').classList.remove('on');resize();phase='busy';checkClassQ();if(!st.main){showCreate(()=>{checkUnlock();setTimeout(()=>startWalk(),300);say(`ยินดีต้อนรับ ${pname()}! ธาตุของท่านคือ ${EL[myEl()].i} ${EL[myEl()].n} — ตีศัตรูที่แพ้ทางจะแรงขึ้น 35%`);if(st.kills)setTimeout(welcomeFlow,900);else loginCheck()});return}checkUnlock();say(st.kills?'กลับมาแล้วเหรอ! ถนนยังรออยู่ ไปกันต่อเลย':'สวัสดี ข้าคือลุงเปลว! ฮีโร่จะเดินและสู้เอง เจ้าปัดการ์ดอุปกรณ์ และกดปุ่ม 🔥 ปล่อยสกิลได้! ปุ่ม x1 ไว้เร่งความเร็วนะ');setTimeout(()=>startWalk(),500);if(st.kills)setTimeout(welcomeFlow,900);else{loginCheck();setTimeout(()=>say('มือใหม่? กดปุ่ม ⚙️ ที่รูปโปรไฟล์ แล้วเลือก 📘 คู่มือการเล่น (หรือกด H) ได้เลยนะ'),5000)}}
 try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!/claude/.test(location.hostname)&&window.top===window)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
