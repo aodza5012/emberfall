@@ -515,8 +515,10 @@ const WEAPONS=[
  {k:'wand',n:['ไม้กายสิทธิ์','ไม้วิเศษ','ไม้เรียกฟ้า'],sp:1.15,magic:1},{k:'spellbook_open',n:['คัมภีร์เวท','ตำราต้องห้าม','คัมภีร์ไฟ'],sp:1,magic:1},{k:'crossbow_1handed',n:['หน้าไม้','หน้าไม้พราน','หน้าไม้เหล็ก'],sp:1.1,magic:0}];
 const WCLS={guard:{n:'นักรบโล่',i:'🛡️',w:['sword_1handed','axe_1handed'],st:['sword_1handed','ดาบสั้นฝึกหัด']},heavy:{n:'นักรบหนัก',i:'🪓',w:['sword_2handed','axe_2handed'],st:['axe_2handed','ขวานศึกฝึกหัด']},
  blade:{n:'นักฆ่า',i:'🗡️',w:['dagger'],st:['dagger','มีดสั้นฝึกหัด']},ranger:{n:'นักธนู',i:'🏹',w:['crossbow_1handed'],st:['crossbow_1handed','หน้าไม้ฝึกหัด']},
- caster:{n:'จอมเวท',i:'🔮',w:['staff','wand','spellbook_open'],st:['staff','คทาฝึกหัด']}};
-const HWC={knight:'guard',skwar:'guard',barbarian:'heavy',paladin:'heavy',morg:'heavy',rogue:'blade',thief:'blade',srogue:'blade',hunter:'ranger',mage:'caster',smage:'caster',ignis:'caster',novice:'caster'};
+ caster:{n:'จอมเวท',i:'🔮',w:['staff','wand','spellbook_open'],st:['staff','คทาฝึกหัด']},
+ duel:{n:'นักดาบ',i:'🤺',w:['sword_1handed','dagger'],st:['sword_1handed','ดาบเรเพียร์ฝึกหัด']},druid:{n:'ดรูอิด',i:'🌿',w:['staff','spellbook_open'],st:['staff','ไม้เท้าพงไพร']},
+ curse:{n:'ผู้ใช้คำสาป',i:'🕯️',w:['wand','spellbook_open'],st:['wand','ไม้สาปฝึกหัด']}};
+const HWC={knight:'guard',skwar:'guard',barbarian:'heavy',paladin:'heavy',morg:'heavy',rogue:'blade',thief:'blade',srogue:'blade',hunter:'ranger',mage:'caster',smage:'caster',ignis:'caster',novice:'caster',duelist:'duel',druid:'druid',warlock:'curse',sniper:'ranger',warden:'guard'};
 const hkOf=k=>k==='me'?(st.main||'knight'):k;
 const wclsOf=k=>WCLS[HWC[hkOf(k)]||'guard'];
 const canUse=(k,it)=>!it||it.slot!=='weapon'||!it.wt||wclsOf(k).w.includes(it.wt);
@@ -610,7 +612,17 @@ HEROES.push(
  {k:'ignis',n:'ราชินีเพลิงอิกนิส',cls:'จอมเวทอัคคี',ic:'🔥',f:'mage',keep:['2H_Staff'],tint:0xff9a7a,role:'str',hp:1,dmg:1.35,aps:.85,atk:'cast',star:{a:5,d:2,s:3,v:3},r:3,el:'fire',
   pas:'การโจมตีปกติเผาศัตรู (ไฟลวกต่อเนื่อง)',sk:{n:'อุกกาบาตเพลิง',cd:9,anim:'raise',d:'ถล่มศัตรูทุกตัว 260% และไฟลวก 4 วิ'}},
  {k:'morg',n:'จักรพรรดิกระดูกมอร์ก',cls:'จักรพรรดิอมตะ',ic:'👑',f:'skeleton_warrior',w:'axe_2handed',keep:[],tint:0xffd27a,role:'def',hp:1.8,dmg:.9,aps:.8,atk:'attack2',star:{a:3,d:5,s:3,v:2},r:3,el:'dark',
-  pas:'อมตะ 2 ครั้ง · ดูดเลือด +10%',sk:{n:'บัลลังก์ความตาย',cd:10,anim:'block',d:'ยั่วศัตรูทั้งหมด รับดาเมจลด 40% 5 วิ ฟาดทุกตัว 150% และฟื้น HP ทีม 10%'}});
+  pas:'อมตะ 2 ครั้ง · ดูดเลือด +10%',sk:{n:'บัลลังก์ความตาย',cd:10,anim:'block',d:'ยั่วศัตรูทั้งหมด รับดาเมจลด 40% 5 วิ ฟาดทุกตัว 150% และฟื้น HP ทีม 10%'}},
+ {k:'duelist',n:'ราเฟลนักดาบเงิน',cls:'นักดาบดวล',ic:'🤺',f:'knight',w:'sword_1handed',keep:[],tint:0xd8e4ff,role:'str',hp:1,dmg:.85,aps:1.15,atk:'attack',star:{a:4,d:2,s:2,v:4},r:1,el:'wind',
+  pas:'ดวลเดี่ยว: ดาเมจ +30% ใส่ศัตรูที่ HP มากกว่า 70% · หลบหลีก +8%',sk:{n:'ฟันพายุสามจังหวะ',cd:7,anim:'attack',d:'ฟันเป้าหมาย 3 ครั้ง ครั้งละ 130%'}},
+ {k:'druid',n:'ซิลวานาดรูอิดพงไพร',cls:'ดรูอิดพงไพร',ic:'🌿',f:'mage',keep:['2H_Staff'],tint:0x9fe08a,role:'sup',hp:1.05,dmg:.62,aps:.85,atk:'cast',star:{a:2,d:3,s:5,v:2},r:1,el:'earth',
+  pas:'พลังแห่งป่า: การรักษาแรงขึ้น 30%',sk:{n:'ป่าคืนชีพ',cd:10,anim:'raise',d:'ฟื้น HP เพื่อนทุกคน 22% และลดดาเมจที่ทีมได้รับ 25% นาน 4 วิ'}},
+ {k:'warlock',n:'โมราน่าผู้สาปแช่ง',cls:'จอมคำสาป',ic:'🕯️',f:'mage',w:'wand',keep:['Spellbook_open'],tint:0xb08aff,role:'str',hp:.85,dmg:1.05,aps:.85,atk:'cast',star:{a:5,d:1,s:4,v:2},r:2,el:'dark',
+  pas:'คำสาป: การโจมตีปกติทำให้ศัตรูอ่อนแอ (ดาเมจ −25%) 2 วิ',sk:{n:'คำสาปโลหิต',cd:9,anim:'raise',d:'สาปศัตรูทุกตัว 130% · เลือดไหล 5 วิ · อ่อนแอ 4 วิ'}},
+ {k:'sniper',n:'เรเวนมือหน้าไม้',cls:'นักแม่นธนู',ic:'🎯',f:'rogue_hooded',keep:['1H_Crossbow'],tint:0x8a8aaa,role:'str',hp:.85,dmg:1.1,aps:1,atk:'cast',star:{a:5,d:1,s:2,v:4},r:2,el:'dark',
+  pas:'เล็งจุดตาย: คริติคอล +15% · แรงคริ +30%',sk:{n:'ลูกดอกเจาะเกราะ',cd:8,anim:'cast',d:'ยิงศัตรูที่ HP มากที่สุด 450% คริแน่นอน'}},
+ {k:'warden',n:'โกลิอัทผู้คุมป้อม',cls:'ผู้คุมป้อม',ic:'🏰',f:'knight',w:'axe_1handed',wl:'shield_round',keep:[],tint:0xb8d0a8,role:'def',hp:1.95,dmg:.5,aps:.75,atk:'attack',star:{a:2,d:5,s:3,v:2},r:2,el:'earth',
+  pas:'หนามเหล็ก: สะท้อนดาเมจ 15% กลับใส่ผู้โจมตี',sk:{n:'กำแพงเหล็ก',cd:10,anim:'block',d:'ยั่วศัตรู 5 วิ รับดาเมจลด 50% · เพื่อนรับดาเมจลด 20%'}});
 const RT=[{n:'ธรรมดา',c:'#8d969f',m:1,mb:0,unlock:10},{n:'หายาก',c:'#2f86e0',m:1.15,mb:.05,unlock:20},{n:'มหากาพย์',c:'#9a3fe0',m:1.32,mb:.1,unlock:30},{n:'ตำนาน',c:'#e8a010',m:1.55,mb:.2,unlock:50}];
 const EL={earth:{n:'ดิน',i:'🪨',c:'#9a6a2a',beat:'water',b:{armor:.2,hp:.1},bt:'แข็งแกร่ง: เกราะ +20% · HP +10%'},water:{n:'น้ำ',i:'💧',c:'#3aa0ff',beat:'fire',b:{hp:.12,ls:3},bt:'ฟื้นฟู: HP +12% · ดูดเลือด +3%'},wind:{n:'ลม',i:'🌪️',c:'#2fb45a',beat:'earth',b:{dodge:8,spd:10},bt:'ว่องไว: หลบหลีก +8% · ความเร็วโจมตี +10%'},fire:{n:'ไฟ',i:'🔥',c:'#ff6a3a',beat:'wind',b:{dmg:.15},bt:'ดุดัน: ดาเมจ +15%'},light:{n:'แสง',i:'✨',c:'#e8b800',beat:'dark',b:{crit:8,dmg:.05},bt:'ศักดิ์สิทธิ์: คริติคอล +8% · ดาเมจ +5%'},dark:{n:'มืด',i:'🌑',c:'#8a4ae8',beat:'light',b:{critd:25,ls:3},bt:'กลืนกิน: แรงคริ +25% · ดูดเลือด +3%'}};
 function applyEl(s,e){const b=(EL[e]||{}).b||{};s.dmg*=1+(b.dmg||0);s.hp*=1+(b.hp||0);s.armor*=1+(b.armor||0);s.dodge+=b.dodge||0;s.spd+=b.spd||0;s.crit+=b.crit||0;s.critd+=b.critd||0;s.ls+=b.ls||0}
@@ -629,15 +641,25 @@ const SETS={
  guard:{n:'ชุดผู้พิทักษ์',i:'🛡️',c:'#2b6ad0',st:'สายถึก',t:{2:{hpP:.06},3:{armorP:.1},4:{hpP:.06},5:{tough:4},6:{armorP:.15},7:{hpP:.08},8:{tough:5},9:{armorP:.2},10:{hpP:.12,tough:5}}},
  moon:{n:'ชุดเงาจันทร์',i:'🌙',c:'#7a4ad0',st:'สายว่องไว',t:{2:{dodge:3},3:{spd:5},4:{combo:5},5:{dodge:3},6:{spd:6},7:{combo:6},8:{dodge:4},9:{spd:8},10:{combo:10,dodge:3}}},
  dragon:{n:'ชุดมังกรโลหิต',i:'🐉',c:'#c4251a',st:'สายดูดเลือด',t:{2:{ls:2},3:{bleed:5},4:{dmgP:.04},5:{ls:2},6:{bleed:6},7:{dmgP:.05},8:{ls:3},9:{bleed:8},10:{dmgP:.1,ls:3}}}};
+const GEN_SETS=Object.keys(SETS);
+{const RT_={str:[{dmgP:.05},{dmgP:.05},{dmgP:.06},{critd:20},{dmgP:.12}],def:[{hpP:.06},{armorP:.1},{hpP:.08},{tough:5},{hpP:.12,armorP:.1}],sup:[{hpP:.06},{ls:2},{hpP:.07},{armorP:.12},{hpP:.1,ls:3}]},
+ ET={wind:{dodge:3,spd:4},fire:{crit:3},water:{ls:2},earth:{armorP:.08},dark:{bleed:5,combo:3},light:{crit:3,critd:10}},EC={wind:'#2fb45a',fire:'#e8562a',water:'#3aa0ff',earth:'#9a6a2a',dark:'#5a3a8a',light:'#d0a020'};
+ for(const h of HEROES){const t={},rb=RT_[h.role]||RT_.str,eb=ET[h.el]||ET.fire;[2,4,6,8,10].forEach((n,i)=>t[n]={...rb[i]});[3,5,7,9].forEach((n,i)=>{const m=[1,1,1.3,1.6][i],o={};for(const[a,v]of Object.entries(eb))o[a]=v<1?Math.round(v*m*100)/100:Math.round(v*m);t[n]=o});
+  SETS['h_'+h.k]={n:'ชุด'+h.cls,i:h.ic,c:EC[h.el]||'#8a6a3a',st:'ประจำตัว '+h.n,hero:h.k,t}}}
+const setOwnerOK=(k,hk)=>!SETS[k].hero||SETS[k].hero===hk;
+const SIG_M=1.5;
+function fixSetW(it){const SH=it&&it.set&&SETS[it.set]&&SETS[it.set].hero;if(SH&&it.slot==='weapon'){const wl=WCLS[HWC[SH]||'guard'].w;if(!wl.includes(it.wt)){const w=WEAPONS.find(x=>x.k===pick(wl));it.wt=w.k;it.name=pick(w.n)+pick(SUFR[it.r]||SUFR[0])}}return it}
+function rollSet(){const tk=[...new Set([st.main,...(st.team||[])])].filter(Boolean).map(k=>'h_'+k).filter(k=>SETS[k]);return Math.random()<.5&&tk.length?pick(tk):pick(GEN_SETS)}
+const setShown=(k,n)=>!SETS[k].hero||n>0||SETS[k].hero===st.main||(st.team||[]).includes(SETS[k].hero)||(st.bag||[]).some(x=>x.set===k);
 const setTxt=o=>Object.entries(o).map(([k,v])=>`${SBN[k][0]} +${SBN[k][1]?Math.round(v*100):v}%`).join(' · ');
 const setSum=(k,n)=>{const tot={};for(const[t,o]of Object.entries(SETS[k].t))if(+t<=n)for(const[a,v]of Object.entries(o))tot[a]=(tot[a]||0)+v;return tot};
 function setCounts(eq){const c={};for(const k in eq){const it=eq[k];if(it&&it.set)c[it.set]=(c[it.set]||0)+1}return c}
 function setTiers(k,n,compact){return Object.entries(SETS[k].t).map(([t,o])=>`<div class="setL ${n>=+t?'on':''}">${n>=+t?'✅':'⬜'} ${t} ชิ้น: ${setTxt(o)}</div>`).join('')}
 function setsHTML(eq,title=true){const c=setCounts(eq||{});return (title?`<p style="font-weight:700;margin:10px 0 4px">◆ เซ็ตอุปกรณ์ <small style="font-weight:400">(ใส่ชิ้นเซ็ตเดียวกันได้สูงสุด 10 ช่อง · โบนัสสะสมทุกขั้น)</small></p>`:'')+
- Object.entries(SETS).map(([k,S0])=>{const n=c[k]||0,sum=setSum(k,n);return `<details class="setRow" style="border-color:${S0.c}" ${n>=2?'open':''}><summary class="setH" style="background:${S0.c}">${S0.i} ${S0.n} <small>${S0.st}</small><span>${n}/10</span></summary>
+ Object.entries(SETS).filter(([k])=>setShown(k,c[k]||0)).map(([k,S0])=>{const n=c[k]||0,sum=setSum(k,n);return `<details class="setRow" style="border-color:${S0.c}" ${n>=2?'open':''}><summary class="setH" style="background:${S0.c}">${S0.i} ${S0.n} <small>${S0.st}${S0.hero?' · ใส่ตรงตัว ×'+SIG_M:''}</small><span>${n}/10</span></summary>
  ${n>=2?`<div class="on" style="padding:2px 7px">รวมตอนนี้: ${setTxt(sum)}</div>`:''}${setTiers(k,n)}</details>`}).join('')}
 function gemApply(eq,s){for(const k in eq){const it=eq[k];if(it&&it.so)for(const g of it.so)if(g)s[GEMS[g.g].st]=(s[GEMS[g.g].st]||0)+gemVal(g.g,g.t)}}
-function applySets(eq,s){s.dmgP=0;s.hpP=0;s.armorP=0;const c=setCounts(eq);for(const k in c)for(const[a,v]of Object.entries(setSum(k,c[k])))s[a]=(s[a]||0)+v}
+function applySets(eq,s,hk){s.dmgP=0;s.hpP=0;s.armorP=0;const c=setCounts(eq);for(const k in c){const m=SETS[k]&&SETS[k].hero?(SETS[k].hero===hk?SIG_M:1):1;for(const[a,v]of Object.entries(setSum(k,c[k])))s[a]=(s[a]||0)+v*m}}
 const PETAB={frog:{n:'น้ำลายรักษา',cd:8,d:'ฟื้น HP ให้ท่าน 5%'},owl:{n:'ลูกไฟนกฮูก',cd:5,d:'ยิงเวท 80% ดาเมจ'},chick:{n:'นับเหรียญ',cd:0,d:'ทองเพิ่ม 15% (ติดตัว)'},slime:{n:'โล่เยลลี่',cd:10,d:'สร้างโล่ดูดซับ 10% HP'},fox:{n:'งับไฟ',cd:6,d:'กัด 120% + ไฟลวก'}};
 const PET_FOOD=[0,10,25,60,150];
 const DUNG={mat:{n:'เหมืองศิลาโบราณ',i:'🧱',d:'ได้ 🧱 ศิลาก่อสร้าง สำหรับสร้างอาคารในแคมป์ระดับสูง'},gold:{n:'ดันเจี้ยนขุมทอง',i:'🪙',d:'ได้ทองจำนวนมาก'},scrap:{n:'เหมืองเศษเหล็ก',i:'🔩',d:'ได้เศษเหล็กสำหรับตีบวก'},shard:{n:'ศาลวีรชน',i:'🧩',d:'ได้ชิ้นส่วนฮีโร่ + อาหารสัตว์'},xp:{n:'หอฝึกวีรชน',i:'📘',d:'ได้ XP จำนวนมาก (ช่วยให้ใส่อุปกรณ์เลเวลสูงขึ้นได้)'}};
@@ -697,7 +719,7 @@ function teamBonus(){const b={dmg:0,hp:0,heal:0};if(!teamOn())return b;for(const
 function S(){
  const s={dmg:10+(st.lvl-1)*2,hp:120+(st.lvl-1)*14,armor:2,tough:0,crit:5+st.up.crit,critd:150,combo:0,bleed:0,dodge:2,ls:0,spd:0,gold:0};
  for(const k in st.eq){const it=st.eq[k];if(it){const rf=1+.08*(st.refine[k]||0);for(const t in it.s)s[t]+=it.s[t]*(PRIM[k][t]!==undefined?rf:1)}}
- applySets(st.eq,s);gemApply(st.eq,s);if(st.eq.pet&&st.eq.pet.pt==='chick')s.gold+=15*petMul('chick');
+ applySets(st.eq,s,st.main);gemApply(st.eq,s);if(st.eq.pet&&st.eq.pet.pt==='chick')s.gold+=15*petMul('chick');
  const tb=teamBonus(),pr=1+st.prest*.25,cb=codexBonus();
  s.dmg=(s.dmg+st.buff.dmg)*(1+st.up.dmg*.04)*(1+st.buff.mul)*(1+tb.dmg/100)*pr*(1+cb/100)*(1+s.dmgP);s.hp*=(1+st.up.hp*.04)*(1+tb.hp/100)*pr*(1+cb/100)*(1+s.hpP);s.armor*=1+s.armorP;s.armor*=1+st.up.armor*.04;s.gold+=st.prest*25;
  {const mb=mainBonus(),lg=leagueIdx()*.03,tb2=(TITLES[st.title]||{b:{}}).b;s.dmg*=1+mb.dmg+lg+(tb2.dmg||0);s.hp*=1+mb.hp+lg+(tb2.hp||0);s.armor*=1+mb.armor;s.ls+=mb.ls;applyEl(s,myEl())}
@@ -717,7 +739,7 @@ function genItem(minR=0,luck=0,slotK=null){
  else it.name=pick(BASEN[sl])+pick(SUFR[r]);
  const pool=SEC.slice().sort(()=>Math.random()-.5),n=R.x+(sl==='ring'||sl==='amulet'||sl==='pet'?1:0);
  for(let i=0;i<n;i++){const k=pool[i],v=SECV[k];s[k]=(s[k]||0)+Math.round(rnd(v[0],v[1])+r*v[2])}
- if(r>=1&&sl!=='pet'&&Math.random()<.3+r*.04)it.set=pick(Object.keys(SETS));
+ if(r>=1&&sl!=='pet'&&Math.random()<.3+r*.04){it.set=rollSet();const SH=SETS[it.set].hero;if(SH&&sl==='weapon'){const wl=WCLS[HWC[SH]||'guard'].w;if(!wl.includes(it.wt)){const w=WEAPONS.find(x=>x.k===pick(wl));it.wt=w.k;it.name=pick(w.n)+pick(SUFR[r])}}}
  if(sl!=='pet'){const ns=r>=5?2:r>=2?1:0;if(ns)it.so=Array(ns).fill(null);if(r>=4&&Math.random()<(r>=5?1:.6))it.px=pick(Object.keys(PROCS))}
  return it}
 const BAG_MAX=60,essVal=it=>[0,1,2,4,8,15,30][it.r]||0;
@@ -748,8 +770,8 @@ const wbLeft=w=>Math.max(0,w.max-w.dmg-w.others);
 function heroStats(k){const h=HEROES.find(x=>x.k===k),H=st.heroes[k],lm=1+.22*(Math.max(1,H.lvl)-1);
  const s={dmg:(8+st.lvl*1.6)*lm,hp:(100+st.lvl*13)*lm,armor:2,tough:0,crit:5,critd:150,combo:0,bleed:0,dodge:2,ls:0,spd:0,gold:0};
  for(const sl in H.eq){const it=H.eq[sl];if(it)for(const t in it.s)s[t]+=it.s[t]}
- applySets(H.eq,s);gemApply(H.eq,s);const pr=1+st.prest*.25;const sm=RT[h.r].m*(1+.15*(Math.max(1,H.star)-1))*(H.awk?1.3:1);s.dmg*=h.dmg*sm*(1+st.up.dmg*.04)*pr*(1+s.dmgP);s.hp*=h.hp*sm*(1+st.up.hp*.04)*pr*(1+s.hpP);s.armor*=(1+st.up.armor*.04)*(1+s.armorP);
- if(k==='rogue'){s.crit+=20;s.dodge+=15}if(k==='thief'){s.crit+=5;s.dodge+=12}applyEl(s,h.el);if(k==='morg')s.ls+=10;
+ applySets(H.eq,s,k);gemApply(H.eq,s);const pr=1+st.prest*.25;const sm=RT[h.r].m*(1+.15*(Math.max(1,H.star)-1))*(H.awk?1.3:1);s.dmg*=h.dmg*sm*(1+st.up.dmg*.04)*pr*(1+s.dmgP);s.hp*=h.hp*sm*(1+st.up.hp*.04)*pr*(1+s.hpP);s.armor*=(1+st.up.armor*.04)*(1+s.armorP);
+ if(k==='rogue'){s.crit+=20;s.dodge+=15}if(k==='thief'){s.crit+=5;s.dodge+=12}if(k==='duelist')s.dodge+=8;if(k==='sniper'){s.crit+=15;s.critd+=30}applyEl(s,h.el);if(k==='morg')s.ls+=10;
  for(const c in CAP)s[c]=Math.min(s[c],CAP[c]);s.aps=h.aps*(1+s.spd/100);s.dmg=Math.round(s.dmg);s.hp=Math.round(s.hp);s.armor=Math.round(s.armor);return s}
 const heroPower=k=>power(heroStats(k));
 function heroPowerWith(k,it){const H=st.heroes[k],o=H.eq[it.slot];H.eq[it.slot]=it;const p=heroPower(k);H.eq[it.slot]=o;return p}
@@ -1099,7 +1121,7 @@ $('evL').onclick=()=>chooseEvent(false);$('evR').onclick=()=>chooseEvent(true);
 let gearItem=null,gearAfter=null;
 function cardHTML(it,cmp){const R=RAR[it.r];const keys=[...new Set([...Object.keys(it.s),...(cmp?Object.keys(cmp.s):[])])];
  const rows=keys.map(k=>{const v=it.s[k]||0,o=cmp?(cmp.s[k]||0):null,d=o===null?0:v-o;return `<div class="st"><span>${STN[k]}</span><span>${fmt(v)}${o!==null&&d?` <span class="${d>0?'up':'dn'}">${d>0?'▲':'▼'}</span>`:''}</span></div>`}).join('');
- return `<div class="rh" style="background:${R.c}">${R.n}</div><div class="nm">${it.name}</div><div class="pic" style="background:${R.bg}">${itemIcon(it)}<div class="lv">Lv ${it.ilvl}</div></div><div class="sts">${rows}</div>${it.slot==='weapon'&&it.wt?`<div class="pxTag" style="background:#efe6d2;color:#5a3a10">⚔️ อาชีพที่ใช้ได้: ${wUsers(it.wt)}</div>`:''}${it.px?`<div class="pxTag">✦ ${PROCS[it.px].n}: ${PROCS[it.px].d}</div>`:''}${it.so?`<div class="soTag">${it.so.map(g=>g?`${GEMS[g.g].i}${g.t} ${gemTxt(g.g,g.t)}`:'◇ ช่องว่าง').join(' · ')}</div>`:''}${it.set?(()=>{const S0=SETS[it.set],eq=(typeof gearSel!=='undefined'&&gearSel!=='me'&&st.heroes[gearSel])?st.heroes[gearSel].eq:st.eq;let n=1;for(const k in eq){const o=eq[k];if(o&&o.set===it.set&&k!==it.slot&&o.id!==it.id)n++}const nx=Object.keys(S0.t).map(Number).find(t=>t>n);return `<div class="setTag" style="background:${S0.c}">${S0.i} ${S0.n} · ใส่แล้วจะมี <b>${n}/10</b>${S0.t[n]?`<div class="setL on">✅ ${n} ชิ้น: ${setTxt(S0.t[n])}</div>`:''}${nx?`<div class="setL">⬜ ${nx} ชิ้น: ${setTxt(S0.t[nx])}</div>`:''}</div>`})():''}`}
+ return `<div class="rh" style="background:${R.c}">${R.n}</div><div class="nm">${it.name}</div><div class="pic" style="background:${R.bg}">${itemIcon(it)}<div class="lv">Lv ${it.ilvl}</div></div><div class="sts">${rows}</div>${it.slot==='weapon'&&it.wt?`<div class="pxTag" style="background:#efe6d2;color:#5a3a10">⚔️ อาชีพที่ใช้ได้: ${wUsers(it.wt)}</div>`:''}${it.px?`<div class="pxTag">✦ ${PROCS[it.px].n}: ${PROCS[it.px].d}</div>`:''}${it.so?`<div class="soTag">${it.so.map(g=>g?`${GEMS[g.g].i}${g.t} ${gemTxt(g.g,g.t)}`:'◇ ช่องว่าง').join(' · ')}</div>`:''}${it.set?(()=>{const S0=SETS[it.set],eq=(typeof gearSel!=='undefined'&&gearSel!=='me'&&st.heroes[gearSel])?st.heroes[gearSel].eq:st.eq;let n=1;for(const k in eq){const o=eq[k];if(o&&o.set===it.set&&k!==it.slot&&o.id!==it.id)n++}const nx=Object.keys(S0.t).map(Number).find(t=>t>n);return `<div class="setTag" style="background:${S0.c}">${S0.i} ${S0.n}${S0.hero?` <small>(ประจำตัว ${heroOf(S0.hero).n} · ใส่ตรงตัว ×${SIG_M})</small>`:''} · ใส่แล้วจะมี <b>${n}/10</b>${S0.t[n]?`<div class="setL on">✅ ${n} ชิ้น: ${setTxt(S0.t[n])}</div>`:''}${nx?`<div class="setL">⬜ ${nx} ชิ้น: ${setTxt(S0.t[nx])}</div>`:''}</div>`})():''}`}
 let gearSel='me',gearCands=[];
 function candOf(k){return k==='me'?{eq:st.eq,pow:()=>power(S()),powWith:it=>powerWith(it),name:pname(),port:PORT.me}:{eq:st.heroes[k].eq,pow:()=>heroPower(k),powWith:it=>heroPowerWith(k,it),name:HEROES.find(h=>h.k===k).n,port:PORT[k]}}
 function showGear(it,after){
@@ -1222,8 +1244,8 @@ function dealDmg(u,t,mult,{forceCrit=false,noDodge=false,splash=true,adv=false}=
  if(!t||t.dead)return;if(!noDodge&&Math.random()*100<t.dodge){num('หลบ!','miss',unitScreen(t));return}
  if(t.kit==='knight'&&Math.random()<.2&&!noDodge){num('บล็อก!','miss',unitScreen(t));if(!(t.atkT>0))play(t.ch,'block',{once:true,speed:1.6});return}
  let v=u.dmg*mult*rnd(.9,1.1);const cr=forceCrit||Math.random()*100<u.crit;if(cr)v*=u.critd/100;
- if(u.kit==='barbarian'&&u.hp<u.max*.5)v*=1.4;if(u.weak>0)v*=.75;v*=adv||(u.kit==='novice'&&Math.random()<.3)?1.35:elMul(u.el,t.el);if(u.kit==='paladin'&&t.el==='dark')v*=1.25;if(u.kit==='ignis'&&mult===1&&!(t.bleedT>0)){t.bleedT=2;t.bleedD=u.dmg*.15}
- v=Math.max(1,Math.round(v*(1-Math.min(.8,t.red+t.tmpRed))));if(t.shield>0){const ab=Math.min(t.shield,v);t.shield-=ab;v-=ab}t.hp-=v;sfx(cr?'crit':'hit');if(raid&&raid.wb&&t.isWB)raid.wbDmg+=v;
+ if(u.kit==='barbarian'&&u.hp<u.max*.5)v*=1.4;if(u.weak>0)v*=.75;v*=adv||(u.kit==='novice'&&Math.random()<.3)?1.35:elMul(u.el,t.el);if(u.kit==='paladin'&&t.el==='dark')v*=1.25;if(u.kit==='duelist'&&t.hp>t.max*.7)v*=1.3;if(u.kit==='warlock'&&mult===1)t.weak=Math.max(t.weak||0,2);if(u.kit==='ignis'&&mult===1&&!(t.bleedT>0)){t.bleedT=2;t.bleedD=u.dmg*.15}
+ v=Math.max(1,Math.round(v*(1-Math.min(.8,t.red+t.tmpRed))));if(t.shield>0){const ab=Math.min(t.shield,v);t.shield-=ab;v-=ab}t.hp-=v;sfx(cr?'crit':'hit');if(t.kit==='warden'&&!u.dead&&u!==t){u.hp-=Math.round(v*.15);if(u.hp<=0){killUnit(u)}}if(raid&&raid.wb&&t.isWB)raid.wbDmg+=v;
  num(fmt(v),(cr?'crit ':'')+(t.side==='me'?'bad sm':'sm'),unitScreen(t),cr?'คริ!':'');if(u.ls)u.hp=Math.min(u.max,u.hp+v*u.ls/100);
  if(t.hp<=0)killUnit(t);else if(!(t.atkT>0))play(t.ch,'hit',{once:true,speed:1.5});
  if(splash&&u.kit==='smage'){const o=foesOf(u).filter(x=>x!==t);if(o.length)dealDmg(u,pick(o),mult*.3,{noDodge:true,splash:false})}}
@@ -1241,10 +1263,15 @@ const SKILLS={
  paladin:u=>{for(const o of foesOf(u))dealDmg(u,o,2,{noDodge:true,splash:false});u.hp=Math.min(u.max,u.hp+u.max*.1);burstAt(u.ch.holder,0xffe9a0,2.2)},
  ignis:u=>{for(const o of foesOf(u)){dealDmg(u,o,2.6,{noDodge:true,splash:false});o.bleedT=4;o.bleedD=u.dmg*.3}const t=foesOf(u)[0];if(t)burstAt(t.ch.holder,0xff4a1a,3)},
  morg:u=>{u.taunt=5;u.tmpRed=.4;u.tmpT=5;for(const o of foesOf(u))dealDmg(u,o,1.5,{noDodge:true,splash:false});for(const a of alliesOf(u))a.hp=Math.min(a.max,a.hp+a.max*.1);burstAt(u.ch.holder,0xb07aff,2.4)},
+ duelist:u=>{const t=pickTarget(u);if(!t)return;burstAt(t.ch.holder,0xd8e4ff,1.2);for(let i=0;i<3;i++)setTimeout(()=>{if(!t.dead&&units.includes(t))dealDmg(u,t,1.3,{noDodge:true,splash:false})},i*200)},
+ druid:u=>{for(const a of alliesOf(u)){const v=Math.round(a.max*.22);a.hp=Math.min(a.max,a.hp+v);a.tmpRed=Math.max(a.tmpRed||0,.25);a.tmpT=4;num('+'+fmt(v),'heal',unitScreen(a))}burstAt(u.ch.holder,0x7aff6a,2.4)},
+ warlock:u=>{for(const o of foesOf(u)){dealDmg(u,o,1.3,{noDodge:true,splash:false});o.bleedT=5;o.bleedD=u.dmg*.3;o.weak=4}const t=foesOf(u)[0];if(t)burstAt(t.ch.holder,0x9a3aff,2.6)},
+ sniper:u=>{const f=foesOf(u);if(!f.length)return;const t=f.reduce((a,b)=>a.hp>b.hp?a:b);burstAt(t.ch.holder,0xffe07a,1.3);dealDmg(u,t,4.5,{forceCrit:true,noDodge:true,splash:false})},
+ warden:u=>{u.taunt=5;u.tmpRed=.5;u.tmpT=5;for(const a of alliesOf(u))if(a!==u){a.tmpRed=Math.max(a.tmpRed||0,.2);a.tmpT=5}burstAt(u.ch.holder,0xb8d0a8,2)},
  smage:u=>{for(const o of foesOf(u)){dealDmg(u,o,1.4,{noDodge:true,splash:false});o.weak=4}const t=foesOf(u)[0];if(t)burstAt(t.ch.holder,0x7affee,2.6)}};
 function castUnitSkill(u){sfx('skill');const H0=u.side==='me'&&st.heroes[u.kit];if(H0&&H0.awk&&!u.awkB){u.awkB=1;const d0=u.dmg;u.dmg*=1.5;setTimeout(()=>{u.dmg=d0;u.awkB=0},900)}const d=play(u.ch,u.sk.anim||'attack',{once:true,speed:1.1})||1;u.atkT=d;u.actAt=d*.5;u.done=false;num(u.sk.n,'tag',unitScreen(u,-50));u.act=()=>((u.key==='me'&&u.side!=='me')?SKILLS.me:(SKILLS[u.kit]||SKILLS.me))(u);if(u.key==='me'&&u.side==='me')qp('skill')}
 function unitAct(u){
- if(u.heal){const allies=alliesOf(u).filter(x=>x.hp<x.max*.7);if(allies.length){const t=allies.reduce((a,b)=>a.hp/a.max<b.hp/b.max?a:b);const d=play(u.ch,'cast',{once:true,speed:1.2});u.atkT=d;u.act=()=>{const v=Math.round(u.dmg*1.6);t.hp=Math.min(t.max,t.hp+v);num('+'+fmt(v),'heal',unitScreen(t))};u.actAt=d*.5;u.done=false;return}}
+ if(u.heal){const allies=alliesOf(u).filter(x=>x.hp<x.max*.7);if(allies.length){const t=allies.reduce((a,b)=>a.hp/a.max<b.hp/b.max?a:b);const d=play(u.ch,'cast',{once:true,speed:1.2});u.atkT=d;u.act=()=>{const v=Math.round(u.dmg*1.6*(u.kit==='druid'?1.3:1));t.hp=Math.min(t.max,t.hp+v);num('+'+fmt(v),'heal',unitScreen(t))};u.actAt=d*.5;u.done=false;return}}
  const t=pickTarget(u);if(!t)return;const d=play(u.ch,u.atk,{once:true,speed:1.25})||.8;u.atkT=d;u.actAt=d*.45;u.done=false;
  const ranged=u.atk==='cast';
  const cmb=u.kit==='srogue'&&Math.random()<.2;
@@ -1667,7 +1694,7 @@ const BM_WIN=6*3600e3,BM_N=6;
 const BM_LINES=['"ของดีมีจำกัด … อย่าถามว่าข้าได้มาจากไหน"','"เฮะ ๆ ท่านตาถึงนี่ เลือกเลย ๆ"','"ราคานี้ … เฉพาะคืนนี้เท่านั้น"','"เงียบ ๆ หน่อย ทหารยามอยู่แถวนี้"','"ของจากปราสาทผู้ท้าชิง … ยังอุ่น ๆ อยู่เลย"','"จ่ายเพชรมาสักหน่อย ข้าจะเปิดตู้ลับให้"'];
 const bmG=()=>Math.max(gIdx(),st.maxMap*STEPS);
 function bmOffer(){const g=bmG(),Pg=P(g),r=Math.random(),off=pick([0,0,0,10,10,20,20,30,50]);let o;
- if(r<.38){const rr=Math.min(RAR.length-1,Math.random()<.05?5:Math.random()<.22?4:Math.random()<.5?3:2);const it=genItem(rr,.5);if(it.r>rr+1)it.r=rr+1;if(!it.set&&it.slot!=='pet'&&Math.random()<.45)it.set=pick(Object.keys(SETS));
+ if(r<.38){const rr=Math.min(RAR.length-1,Math.random()<.05?5:Math.random()<.22?4:Math.random()<.5?3:2);const it=genItem(rr,.5);if(it.r>rr+1)it.r=rr+1;if(!it.set&&it.slot!=='pet'&&Math.random()<.45){it.set=rollSet();const SH=SETS[it.set].hero;if(SH&&it.slot==='weapon'&&!WCLS[HWC[SH]||'guard'].w.includes(it.wt))it.set=pick(GEN_SETS)}
   o=rr>=4?{k:'gear',it,cur:'gems',base:[0,0,0,0,60,150,300][it.r]}:{k:'gear',it,cur:'gold',base:Math.round(40*Pg*[1,1.5,3,6,12,25,50][it.r])}}
  else if(r<.52){const pool=HEROES.filter(h=>h.r>=1),h=Math.random()<.6&&HEROES.some(x=>st.heroes[x.k].lvl)?pick(HEROES.filter(x=>st.heroes[x.k].lvl)):pick(pool),n=ri(6,15);o={k:'sh',h:h.k,n,cur:'gems',base:n*3}}
  else if(r<.6)o={k:'sumT',n:3,cur:'gems',base:60};
@@ -2105,7 +2132,7 @@ function openBag(tab='items'){const draw=b=>{
  const sel=st.bag.find(x=>x.id===bagSel);
  b.innerHTML=`<div class="tabs"><button class="${tab==='items'?'on':''}" data-tab="items">🎒 ไอเทม ${st.bag.length}/${BAG_MAX}</button><button class="${tab==='sets'?'on':''}" data-tab="sets">◆ สวมทั้งเซ็ต</button><button data-go="craft">⚒️ โรงคราฟ</button></div>
  <div class="mats">🔩 ${fmt(st.scrap)} · 💠 ${fmt(st.ess)} · 🪙 ${fmt(st.gold)}</div>`+(tab==='items'?`
- <div class="chips">${[['all','ทั้งหมด'],...Object.entries(SETS).map(([k,S0])=>[k,S0.i+' '+S0.n.replace('ชุด','')]),['none','ไม่มีเซ็ต']].map(([k,n])=>`<button class="${bagF===k?'on':''}" data-f="${k}">${n}</button>`).join('')}</div>
+ <div class="chips">${[['all','ทั้งหมด'],...Object.entries(SETS).filter(([k])=>setShown(k,0)).map(([k,S0])=>[k,S0.i+' '+S0.n.replace('ชุด','')]),['none','ไม่มีเซ็ต']].map(([k,n])=>`<button class="${bagF===k?'on':''}" data-f="${k}">${n}</button>`).join('')}</div>
  ${sel?`<div class="bsel"><div class="gcard mini" style="border-color:${RAR[sel.r].c}">${cardHTML(sel,whoEq(bagWho)[sel.slot])}</div>
   <div class="whos">${whoList().map(k=>{const d=whoPow(k,sel);return `<button class="${k===bagWho?'on':''}" data-w="${k}">${whoName(k)} <b style="color:${d>0?'#1f9a2c':'#c4251a'}">${d>0?'▲':'▼'}${fmt(Math.abs(d))}</b></button>`}).join('')}</div>
   ${sockHTML(sel)}<div class="acts"><button class="btn" data-a="eq">สวมใส่ให้ ${whoName(bagWho)}</button><button class="btn blue" data-a="sell">ขาย +${fmt(sellVal(sel))}🪙</button><button class="btn red" data-a="salv">ย่อย +${scrapVal(sel)}🔩${essVal(sel)?' +'+essVal(sel)+'💠':''}</button><button class="btn gray" data-a="lock">${sel.lock?'🔓 ปลดล็อก':'🔒 ล็อก'}</button></div></div>`:'<p class="hint">แตะไอเทมเพื่อดูรายละเอียด สวมใส่ ขาย หรือย่อย · ชิ้นที่ล็อกจะไม่ถูกย่อยแบบรวม</p>'}
@@ -2113,8 +2140,8 @@ function openBag(tab='items'){const draw=b=>{
  <div class="acts" style="margin-top:6px"><button class="btn red" data-bulk="0">♻️ ย่อยระดับธรรมดา</button><button class="btn red" data-bulk="1">♻️ ย่อยถึงไม่ธรรมดา</button><button class="btn red" data-bulk="2">♻️ ย่อยถึงหายาก</button></div>`
  :`<p class="hint">รวมชิ้นในกระเป๋า + ที่ใส่อยู่ · กด "สวมทั้งเซ็ต" เพื่อใส่ชิ้นที่ดีที่สุดของเซ็ตนั้นทุกช่อง (ชิ้นเดิมจะเข้ากระเป๋า)</p>
  <div class="whos">${whoList().map(k=>`<button class="${k===bagWho?'on':''}" data-w="${k}">${whoName(k)}</button>`).join('')}</div>
- <div class="chips"><button class="${setF==='all'?'on':''}" data-sf="all">ทุกเซ็ต</button>${Object.entries(SETS).map(([k,S0])=>{const nb=st.bag.filter(x=>x.set===k).length;return `<button class="${setF===k?'on':''}" data-sf="${k}" style="${setF===k?'background:'+S0.c:''}">${S0.i} ${S0.n.replace('ชุด','')}${nb?' ('+nb+')':''}</button>`}).join('')}</div>`+
- Object.entries(SETS).filter(([k])=>setF==='all'||setF===k).map(([k,S0])=>{const eq=whoEq(bagWho),own=SLOTS.map(sl=>{const e=eq[sl.k]&&eq[sl.k].set===k?eq[sl.k]:null,bg=setChoice(k,sl.k),nc=setCands(k,sl.k).length,skip=(setPick[k]||{})[sl.k]===-1;return{sl,e,bg,nc,skip}});const n=own.filter(o=>o.e).length,can=own.filter(o=>o.bg||o.e).length;
+ <div class="chips"><button class="${setF==='all'?'on':''}" data-sf="all">ทุกเซ็ต</button>${Object.entries(SETS).filter(([k])=>setShown(k,0)).map(([k,S0])=>{const nb=st.bag.filter(x=>x.set===k).length;return `<button class="${setF===k?'on':''}" data-sf="${k}" style="${setF===k?'background:'+S0.c:''}">${S0.i} ${S0.n.replace('ชุด','')}${nb?' ('+nb+')':''}</button>`}).join('')}</div>`+
+ Object.entries(SETS).filter(([k])=>(setF==='all'||setF===k)&&setShown(k,0)).map(([k,S0])=>{const eq=whoEq(bagWho),own=SLOTS.map(sl=>{const e=eq[sl.k]&&eq[sl.k].set===k?eq[sl.k]:null,bg=setChoice(k,sl.k),nc=setCands(k,sl.k).length,skip=(setPick[k]||{})[sl.k]===-1;return{sl,e,bg,nc,skip}});const n=own.filter(o=>o.e).length,can=own.filter(o=>o.bg||o.e).length;
   return `<div class="setRow" style="border-color:${S0.c}"><div class="setH" style="background:${S0.c}">${S0.i} ${S0.n} <small>${S0.st}</small><span>ใส่ ${n}/10 · มีครบได้ ${can}/10</span></div>
   <div class="srow">${own.map(o=>`<div class="sc ${o.bg?'has':o.e?'eq':''}" title="${o.sl.n}" ${o.nc?`data-pk="${k},${o.sl.k}" style="cursor:pointer;position:relative;${o.skip?'opacity:.35':''}"`:''}>${o.bg?itemIcon(o.bg):o.e?itemIcon(o.e):o.sl.ic}${o.nc>1&&!o.skip?`<small style="position:absolute;right:1px;bottom:0;font-size:9px;font-weight:900">${((setPick[k]||{})[o.sl.k]||0)+1}/${o.nc}</small>`:''}${o.skip?'<small style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px">✖</small>':''}</div>`).join('')}</div><div style="padding:0 6px"><small style="opacity:.75">แตะไอคอนเพื่อเลือกชิ้น (มีหลายชิ้น = สลับ · แตะต่อ = ไม่ใส่ช่องนั้น)</small></div>
   <div style="padding:2px 6px 5px"><button class="btn ${can>n?'':'off'}" style="padding:3px 10px;font-size:12px" data-full="${k}">สวมทั้งเซ็ตให้ ${whoName(bagWho)} (${can} ชิ้น)</button> <small>โบนัสถ้าใส่ ${can} ชิ้น: ${can>=2?setTxt(setSum(k,can)):'-'}</small>${can>n?(()=>{const pv=setPreview(k,bagWho),d=pv.p1-pv.p0;return `<br><small>⚔️ พลัง ${whoName(bagWho)}: ${fmt(pv.p0)} → <b style="color:${d>=0?'#1d7a2a':'#c4251a'}">${fmt(pv.p1)}</b> (${d>=0?'+':''}${fmt(d)})${d<0?' ⚠️ เซ็ตนี้ทำให้อ่อนลง':''}</small>`})():''}</div></div>`}).join(''));
@@ -2141,7 +2168,7 @@ function openCraft(tab='make'){const draw=b=>{
  b.innerHTML=`<div class="tabs"><button class="${tab==='make'?'on':''}" data-tab="make">✨ สร้างอุปกรณ์เซ็ต</button><button class="${tab==='ref'?'on':''}" data-tab="ref">🔨 ตีบวก</button><button class="${tab==='salv'?'on':''}" data-tab="salv">♻️ ย่อย</button><button class="${tab==='gem'?'on':''}" data-tab="gem">💎 อัญมณี</button><button data-go="bag">🎒</button></div>
  <div class="mats">🔩 เศษเหล็ก ${fmt(st.scrap)} · 💠 แก่นเวท ${fmt(st.ess)} · 🪙 ${fmt(st.gold)}</div>`+
  (tab==='make'?`<p class="hint">เลือกเซ็ตและช่อง แล้วสร้างอุปกรณ์เลเวลเท่าท่าน (Lv ${Math.min(st.lvl,curLv()+1)}) เข้ากระเป๋า · 💠 ได้จากการย่อยของระดับไม่ธรรมดาขึ้นไป</p>
-  <div class="chips">${Object.entries(SETS).map(([k,S0])=>`<button class="${crSet===k?'on':''}" data-cs="${k}" style="${crSet===k?'background:'+S0.c:''}">${S0.i} ${S0.n}</button>`).join('')}</div>
+  <div class="chips">${Object.entries(SETS).filter(([k])=>setShown(k,0)).map(([k,S0])=>`<button class="${crSet===k?'on':''}" data-cs="${k}" style="${crSet===k?'background:'+S0.c:''}">${S0.i} ${S0.n}</button>`).join('')}</div>
   <div class="chips">${SLOTS.filter(x=>x.k!=='pet').map(sl=>`<button class="${crSlot===sl.k?'on':''}" data-sl="${sl.k}">${sl.ic} ${sl.n}</button>`).join('')}</div>
   ${[0,1].map(hi=>{const c=craftCost(hi),ok=st.ess>=c.es&&st.scrap>=c.sc&&st.gold>=c.g;return `<div class="row"><div class="ri">${hi?'🌟':'✨'}</div><div class="rt"><b>${hi?'สร้างขั้นสูง':'สร้างปกติ'}</b><br><small>${hi?'รับประกัน มหากาพย์ ขึ้นไป':'รับประกัน หายาก ขึ้นไป'} · 💠${c.es} 🔩${c.sc} 🪙${fmt(c.g)}</small></div><button class="btn ${ok&&st.bag.length<BAG_MAX?'':'off'}" data-mk="${hi}">สร้าง</button></div>`}).join('')}`
  :tab==='ref'?`<p class="hint">ตีบวกช่องอุปกรณ์ของท่าน (ค่าหลัก +8%/ขั้น) · เพดาน +${capRef()} (ผ่านหอคอยทุก 3 ชั้น +1) · ใส่ของใหม่ก็ยังได้โบนัส</p>`+
@@ -2154,7 +2181,7 @@ function openCraft(tab='make'){const draw=b=>{
  b.querySelectorAll('[data-tab]').forEach(e=>e.onclick=()=>openCraft(e.dataset.tab));b.querySelector('[data-go]').onclick=()=>openBag();
  b.querySelectorAll('[data-cb]').forEach(e=>e.onclick=()=>{const[g,t]=e.dataset.cb.split(','),ti=+t,c=Math.round(20*P(gIdx()));if(st.gemInv[g][ti]<3||st.gold<c)return;st.gemInv[g][ti]-=3;st.gemInv[g][ti+1]++;st.gold-=c;sfx('level');banner(`${GEMS[g].i} ${GEMS[g].n} ขั้น ${ti+2}!`);renderAll();save();draw(b)});
  b.querySelectorAll('[data-cs]').forEach(e=>e.onclick=()=>{crSet=e.dataset.cs;draw(b)});b.querySelectorAll('[data-sl]').forEach(e=>e.onclick=()=>{crSlot=e.dataset.sl;draw(b)});
- b.querySelectorAll('[data-mk]').forEach(e=>e.onclick=()=>{const hi=+e.dataset.mk,c=craftCost(hi);if(st.ess<c.es||st.scrap<c.sc||st.gold<c.g||st.bag.length>=BAG_MAX)return;st.ess-=c.es;st.scrap-=c.sc;st.gold-=c.g;const it=genItem(hi?3:2,0,crSlot);it.set=crSet;st.bag.push(it);st.stat.craft=(st.stat.craft||0)+1;bagSel=it.id;sfx('level');banner('สร้างสำเร็จ: '+it.name);renderAll();save();draw(b)});
+ b.querySelectorAll('[data-mk]').forEach(e=>e.onclick=()=>{const hi=+e.dataset.mk,c=craftCost(hi);if(st.ess<c.es||st.scrap<c.sc||st.gold<c.g||st.bag.length>=BAG_MAX)return;st.ess-=c.es;st.scrap-=c.sc;st.gold-=c.g;const it=genItem(hi?3:2,0,crSlot);it.set=crSet;fixSetW(it);st.bag.push(it);st.stat.craft=(st.stat.craft||0)+1;bagSel=it.id;sfx('level');banner('สร้างสำเร็จ: '+it.name);renderAll();save();draw(b)});
  b.querySelectorAll('[data-rf]').forEach(e=>e.onclick=()=>{const k=e.dataset.rf,L=st.refine[k]||0,c=refCost(L);if(L>=capRef()||st.scrap<c.sc||st.gold<c.g)return;st.scrap-=c.sc;st.gold-=c.g;if(Math.random()*100<c.rate){const p0=power(S());st.refine[k]=L+1;const p1=power(S());php=Math.min(S().hp,php);banner('ตีบวกสำเร็จ! +'+(L+1));sfx('level');const it=st.eq[k];say(`🔨 ${(SLOTS.find(x=>x.k===k)||{}).n} +${L} → +${L+1}: ค่าหลัก +${L*8}% → +${(L+1)*8}%`+(it?' · '+Object.keys(PRIM[k]).filter(t=>it.s[t]).map(t=>`${STN[t]} ${fmt(Math.round(it.s[t]*(1+.08*L)))} → ${fmt(Math.round(it.s[t]*(1+.08*(L+1))))}`).join(' · '):'')+` · พลัง ${fmt(p0)} → ${fmt(p1)}`)}else say('ค้อนลื่น! ตีบวกไม่สำเร็จ (อุปกรณ์ไม่เสียหาย ลองใหม่ได้)');qp('upgrade',0);renderAll();save();draw(b)});
  b.querySelectorAll('[data-bulk]').forEach(e=>e.onclick=()=>{const m=+e.dataset.bulk,list=st.bag.filter(x=>!x.lock&&x.r<=m);if(!list.length)return;const r=salvage(list);say(`ย่อย ${list.length} ชิ้น ได้ 🔩${r.sc} 💠${r.es}`);renderAll();save();draw(b)})};
  openSheet('⚒️ โรงคราฟ','',draw)}
