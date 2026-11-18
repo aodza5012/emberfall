@@ -358,6 +358,35 @@ textarea.code{width:100%;height:56px;font-size:10px;font-family:monospace;border
 .hub .hc.hot{border-color:#ff6a3d;box-shadow:0 0 12px #ff6a3d88}
 @keyframes afkS{0%,100%{transform:rotate(0)}10%{transform:rotate(-12deg)}20%{transform:rotate(10deg)}30%{transform:rotate(-6deg)}40%{transform:rotate(0)}}
 .afkShake{display:inline-block;animation:afkS 1.6s infinite}
+.bmW{margin:-6px -4px;background:radial-gradient(120% 80% at 50% 0,#2c1846,#120a1c 70%);border-radius:14px;padding:0 0 10px;color:#eadcff;overflow:hidden;border:2px solid #4e2d6e}
+.bmHead{position:relative}.bmArt{width:100%;display:block}
+.bmSay{background:#0008;padding:6px 10px;font-size:12px;border-top:1px solid #4e2d6e;border-bottom:1px solid #4e2d6e}.bmSay i{color:#c9a8ff}
+.bmBar{display:flex;justify-content:space-between;gap:6px;padding:7px 10px;font-size:12px;color:#d8c4ff;flex-wrap:wrap}.bmBar b{color:#ffd27a}
+.bmGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:0 8px}
+body.pc .bmGrid{grid-template-columns:repeat(3,1fr)}
+.bmCard{position:relative;background:linear-gradient(#24153a,#160d24);border:2px solid var(--rc);border-radius:12px;padding:8px 7px 7px;text-align:center;box-shadow:0 0 14px -4px var(--rc),inset 0 0 18px #0006;display:flex;flex-direction:column;gap:3px;animation:bmIn .35s both}
+.bmCard:nth-child(2){animation-delay:.05s}.bmCard:nth-child(3){animation-delay:.1s}.bmCard:nth-child(4){animation-delay:.15s}.bmCard:nth-child(5){animation-delay:.2s}.bmCard:nth-child(6){animation-delay:.25s}
+@keyframes bmIn{from{opacity:0;transform:translateY(10px) scale(.96)}}
+.bmCard.sold{filter:grayscale(.85) brightness(.6)}
+.bmPic{width:62px;height:62px;margin:0 auto;border-radius:12px;background:#0006;border:2px solid #0008;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.bmPic span{font-size:34px;filter:drop-shadow(0 0 8px var(--rc))}.bmPic img{width:80%;height:80%;object-fit:contain}.bmPic .ic{font-size:30px}
+.bmPort{width:100%;height:100%;background-size:cover;background-position:center}
+.bmN{font-weight:800;font-size:12.5px;color:#fff;line-height:1.25}.bmD{font-size:10.5px;color:#b9a4d8;line-height:1.25;min-height:26px}
+.bmOff{position:absolute;top:-2px;left:-2px;background:linear-gradient(#ff4a6a,#c0143a);color:#fff;font-weight:900;font-size:11px;padding:2px 7px;border-radius:10px 0 10px 0;z-index:1}
+.bmHot{position:absolute;top:-2px;right:-2px;background:#ffb02a;color:#3a1600;font-weight:900;font-size:10px;padding:2px 6px;border-radius:0 10px 0 10px;z-index:1;animation:bmPulse 1s infinite}
+@keyframes bmPulse{50%{filter:brightness(1.4)}}
+.bmBuy{margin-top:auto;border:0;border-radius:9px;padding:7px 4px;font-weight:900;font-size:13px;color:#2a1600;background:linear-gradient(#ffe08a,#e0a52a);box-shadow:inset 0 -3px 0 #0003,0 2px 0 #000;cursor:pointer;font-family:inherit}
+.bmBuy.gems{background:linear-gradient(#a8e6ff,#3a9ae0);color:#06233a}.bmBuy s{opacity:.6;font-size:11px}.bmBuy[disabled]{background:#3a3a3a;color:#aaa}
+.bmBuy:not([disabled]):hover{filter:brightness(1.1)}
+.bmInfo{background:none;border:1px dashed #6b4a8a;color:#c9a8ff;border-radius:7px;font-size:10.5px;padding:2px;cursor:pointer;font-family:inherit}
+.bmStat{margin-top:4px;text-align:left;transform:scale(.92);transform-origin:top}
+.bmRf{display:block;width:calc(100% - 16px);margin:10px 8px 4px;padding:10px;border:2px solid #9b6ae0;border-radius:11px;background:linear-gradient(#5a2e8a,#2e1550);color:#fff;font-weight:900;font-size:14px;cursor:pointer;font-family:inherit;box-shadow:0 0 14px #9b46e655}
+.bmFoot{text-align:center;font-size:11px;color:#9a84c0}
+.bmEye{animation:bmBlink 4s infinite}@keyframes bmBlink{0%,92%,100%{opacity:1}95%{opacity:0}}
+.bmFlame{animation:bmF .25s infinite alternate}@keyframes bmF{to{opacity:.7;transform:translateY(1px)}}
+.bmGlow{animation:bmG 2s infinite alternate}@keyframes bmG{to{opacity:.6}}
+.bmLant{transform-origin:250px 0;animation:bmSw 3s ease-in-out infinite alternate}@keyframes bmSw{from{transform:rotate(-5deg)}to{transform:rotate(5deg)}}
+.bmStar{animation:bmTw 2s infinite alternate}@keyframes bmTw{to{opacity:.2}}
 #keysHelp{display:none;font-family:'Kanit';font-size:12px;opacity:.75;margin-top:12px;line-height:1.6}
 .pc #keysHelp{display:block}
 </style>
@@ -1486,7 +1515,7 @@ const AFK_MAX=24*3600e3;
 function afkMs(){if(!st.afkT)st.afkT=st.lastSeen||Date.now();return Math.max(0,Math.min(AFK_MAX,Date.now()-st.afkT))}
 function afkCalc(){const ms=afkMs(),min=ms/60e3,h=min/60,g=Math.max(gIdx(),st.maxMap*STEPS),s=S(),kills=min*3;
  return{ms,min,h,gold:Math.round(kills*6*Math.pow(1.075,g)*(1+s.gold/100)*.5),
-  xp:Math.round(Math.min(kills*9*Math.pow(1.06,g)*.12,xpNeed(st.lvl)*h*.12)),
+  xp:Math.round(Math.min(kills*9*Math.pow(1.06,g)*.12,xpNeed(st.lvl)*h*.2)),
   scrap:Math.floor(min/4),sh:Math.floor(min/90),gems:Math.floor(min/120),food:Math.floor(min/180),items:Math.floor(min/120),tix:Math.floor(min/720)}}
 const fmtDur=ms=>{const m=Math.floor(ms/60e3);return Math.floor(m/60)+' ชม. '+(m%60)+' นาที'};
 function afkClaim(){const r=afkCalc();if(r.min<1)return null;
@@ -1509,7 +1538,7 @@ const CAMP=[['char','🧍','ตัวละคร','ค่าสถานะ & �
  ['tav','🍺','ฮีโร่ & ทีม','อัปเลเวล เลื่อนดาว จัดทีม',()=>NAV.tavern(),1],['sum','🔮','อัญเชิญฮีโร่','สุ่มฮีโร่',()=>openSummon(),1],['pet','🐾','บ้านสัตว์เลี้ยง','วิวัฒนาการ',()=>openPets()],['quest','📜','ภารกิจ','ประจำวัน',()=>openQuests()],
  ['pass','🎖','Season Pass','รางวัล 30 ขั้น',()=>openPass()],['login','📅','เช็คอิน','รางวัล 7 วัน',()=>{if(!st.login)loginCheck();showLogin()}],['ach','🏅','ความสำเร็จ','ฉายา & สกิน',()=>openAch()],['codex','📖','สมุดมอนสเตอร์','โบนัสสะสม',()=>openCodex()],
  ['auto','🤖','ออโต้','ตั้งค่า',()=>openAuto()],['manual','📘','คู่มือ','วิธีเล่น',()=>openManual()]];
-function openCamp(){const c=hubCounts();const cnt={sum:st.freeSum!==new Date().toDateString()&&unlocked()?1:0,pet:c.pet,pass:c.pass,login:c.login,ach:achReady()};
+function openCamp(){const c=hubCounts();const cnt={bm:st.lvl>=UNLOCK_LV&&(!st.bm||st.bm.seen!==Math.floor(Date.now()/BM_WIN))?1:0,sum:st.freeSum!==new Date().toDateString()&&unlocked()?1:0,pet:c.pet,pass:c.pass,login:c.login,ach:achReady()};
  const draw=b=>{b.innerHTML=afkBox()+`<p style="font-weight:800;margin:10px 0 6px">🏕️ พัฒนาตัวละคร</p><div class="hub">`+CAMP.map(([k,i,n,sub,f,lk])=>{const L=lk&&!unlocked();return `<div class="hc ${cnt[k]?'hot':''}" data-c="${k}" style="${L?'filter:grayscale(.8);opacity:.7':''}"><i>${L?'🔒':i}</i>${n}<small>${L?'ปลดล็อก Lv '+UNLOCK_LV:sub}</small>${cnt[k]?`<div class="badge">${cnt[k]}</div>`:''}</div>`}).join('')+'</div>';
   b.querySelector('#afkC').onclick=()=>{const r=afkClaim();if(!r)return;draw(b);
    const box=document.createElement('div');box.className='row';box.style.cssText='background:#c8f5cc;border:2px solid #3a9a45;margin-top:6px';
@@ -1527,6 +1556,76 @@ function openAdv(){const c=hubCounts(),U=unlocked(),bossOk=st.maxMap>0&&Array.fr
   ['wk','🌟','ท้าทายสัปดาห์',`สิทธิ์ ${wkObj().tries}/3`,()=>openWeekly(),1,U?wkObj().tries:0]];
  openSheet('⚔️ ผจญภัย',`<div class="row"><div class="ri">🧭</div><div class="rt"><b>เลือกการผจญภัย</b><br><small>แมป ${st.map+1} · ${mapDef().n} · ขั้น ${st.step}/${STEPS}${st.farm?' · กำลังฟาร์ม':''}</small></div></div><div class="hub">`+A.map(([k,i,n,sub,f,lk,cn])=>{const L=lk&&!U;return `<div class="hc ${cn?'hot':''}" data-a="${k}" style="${L?'filter:grayscale(.8);opacity:.7':''}"><i>${L?'🔒':i}</i>${n}<small>${L?'ปลดล็อก Lv '+UNLOCK_LV:sub}</small>${cn?`<div class="badge">${cn>9?'9+':cn}</div>`:''}</div>`}).join('')+'</div>',
  b=>b.querySelectorAll('[data-a]').forEach(e=>e.onclick=()=>{const x=A.find(y=>y[0]===e.dataset.a);if(x[5]&&!U){say(`${x[2]} ปลดล็อกที่ Lv ${UNLOCK_LV}`);return}x[4]()}))}
+
+/* ================= BLACK MARKET ================= */
+const BM_WIN=6*3600e3,BM_N=6;
+const BM_LINES=['"ของดีมีจำกัด … อย่าถามว่าข้าได้มาจากไหน"','"เฮะ ๆ ท่านตาถึงนี่ เลือกเลย ๆ"','"ราคานี้ … เฉพาะคืนนี้เท่านั้น"','"เงียบ ๆ หน่อย ทหารยามอยู่แถวนี้"','"ของจากปราสาทผู้ท้าชิง … ยังอุ่น ๆ อยู่เลย"','"จ่ายเพชรมาสักหน่อย ข้าจะเปิดตู้ลับให้"'];
+const bmG=()=>Math.max(gIdx(),st.maxMap*STEPS);
+function bmOffer(){const g=bmG(),Pg=P(g),r=Math.random(),off=pick([0,0,0,10,10,20,20,30,50]);let o;
+ if(r<.38){const rr=Math.min(RAR.length-1,Math.random()<.05?5:Math.random()<.22?4:Math.random()<.5?3:2);const it=genItem(rr,.5);if(it.r>rr+1)it.r=rr+1;if(!it.set&&it.slot!=='pet'&&Math.random()<.45)it.set=pick(Object.keys(SETS));
+  o=rr>=4?{k:'gear',it,cur:'gems',base:[0,0,0,0,60,150,300][it.r]}:{k:'gear',it,cur:'gold',base:Math.round(40*Pg*[1,1.5,3,6,12,25,50][it.r])}}
+ else if(r<.52){const pool=HEROES.filter(h=>h.r>=1),h=Math.random()<.6&&HEROES.some(x=>st.heroes[x.k].lvl)?pick(HEROES.filter(x=>st.heroes[x.k].lvl)):pick(pool),n=ri(6,15);o={k:'sh',h:h.k,n,cur:'gems',base:n*3}}
+ else if(r<.6)o={k:'sumT',n:3,cur:'gems',base:60};
+ else if(r<.67)o={k:'tix',n:2,cur:'gold',base:Math.round(30*Pg)};
+ else if(r<.75){const t=ri(1,Math.min(4,1+Math.floor(st.maxMap/3)));o={k:'gem',t,cur:'gold',base:Math.round(25*Pg*t*t)}}
+ else if(r<.81)o={k:'scrap',n:ri(80,200),cur:'gold',base:0};
+ else if(r<.86)o={k:'ess',n:ri(20,60),cur:'gold',base:0};
+ else if(r<.9)o={k:'food',n:ri(8,20),cur:'gold',base:0};
+ else if(r<.96)o={k:'xp',cur:'gold',base:Math.round(55*Pg)};
+ else o={k:'box',cur:'gems',base:30};
+ if(o.k==='scrap')o.base=Math.round(o.n*.35*Pg);if(o.k==='ess')o.base=Math.round(o.n*1.2*Pg);if(o.k==='food')o.base=Math.round(o.n*1.5*Pg);
+ o.off=off;o.price=Math.max(1,Math.round(o.base*(1-off/100)));o.id=Math.random().toString(36).slice(2,8);return o}
+function bmObj(){const w=Math.floor(Date.now()/BM_WIN);if(!st.bm||st.bm.w!==w)st.bm={w,rf:0,o:Array.from({length:BM_N},bmOffer)};return st.bm}
+const bmRfCost=()=>10+bmObj().rf*10;
+function bmInfo(o){const S0=o.it&&o.it.set?SETS[o.it.set]:null;switch(o.k){
+ case 'gear':return{ic:'',n:o.it.name,d:`${RAR[o.it.r].n} · ${(SLOTS.find(x=>x.k===o.it.slot)||{n:''}).n} Lv ${o.it.ilvl}${S0?' · '+S0.i+' '+S0.n:''}${o.it.px?' · ✦'+PROCS[o.it.px].n:''}`,c:RAR[o.it.r].c};
+ case 'sh':{const h=heroOf(o.h);return{ic:h.ic,img:PORT[h.k],n:`ชิ้นส่วน ${h.n} ×${o.n}`,d:`${RT[h.r].n} · ${st.heroes[h.k].lvl?'ใช้เลื่อนดาว':'ใช้ปลดล็อก'}`,c:RT[h.r].c}}
+ case 'sumT':return{ic:'🎫',n:`ตั๋วอัญเชิญ ×${o.n}`,d:'สุ่มฮีโร่ที่โรงเตี๊ยม',c:'#e0b84a'};
+ case 'tix':return{ic:'🎟️',n:`ตั๋วบุกปราสาท ×${o.n}`,d:'บุกได้ทันที',c:'#d0603a'};
+ case 'gem':return{ic:'💠',n:`อัญมณีสุ่ม ขั้น ${o.t}`,d:'ฝังในช่องอุปกรณ์',c:'#3ac0d0'};
+ case 'scrap':return{ic:'🔩',n:`เศษเหล็ก ×${o.n}`,d:'ใช้ตีบวกที่โรงคราฟ',c:'#9a9a9a'};
+ case 'ess':return{ic:'💠',n:`แก่นสาร ×${o.n}`,d:'วัตถุดิบคราฟชั้นสูง',c:'#7a8af0'};
+ case 'food':return{ic:'🍖',n:`อาหารสัตว์ ×${o.n}`,d:'วิวัฒนาการสัตว์คู่ใจ',c:'#c07a3a'};
+ case 'xp':return{ic:'📜',n:'คัมภีร์ประสบการณ์',d:`XP +${fmt(Math.round(xpNeed(st.lvl)*.6))} (60% เลเวล)`,c:'#4ac06a'};
+ case 'box':return{ic:'🎁',n:'หีบปริศนา',d:'อาจได้ของตำนาน ชิ้นส่วน หรือเพชรคืน!',c:'#e04ab0'}}}
+function bmBuy(o){if(o.sold)return;const have=o.cur==='gold'?st.gold:st.gems;if(have<o.price){say(o.cur==='gold'?'"ทองไม่พอนะสหาย … กลับมาใหม่เมื่อกระเป๋าตุง"':'"เพชรไม่พอ … ข้าไม่รับเชื่อ"');return false}
+ if(o.k==='gear'&&st.bag.length>=BAG_MAX){say('กระเป๋าเต็ม! ไปขายหรือย่อยของก่อนนะ');return false}
+ if(o.cur==='gold')st.gold-=o.price;else st.gems-=o.price;let msg='';
+ switch(o.k){case 'gear':stash(o.it);msg='🎒 '+o.it.name+' เข้ากระเป๋าแล้ว';break;
+  case 'sh':addShards(o.h,o.n);msg=`🧩 ชิ้นส่วน ${heroOf(o.h).n} +${o.n}`;break;
+  case 'sumT':st.sumT+=o.n;msg='🎫 +'+o.n;break;case 'tix':st.tix+=o.n;msg='🎟️ +'+o.n;break;
+  case 'gem':{const gg=addGem(o.t);msg=`${GEMS[gg.g].i} ${GEMS[gg.g].n} ขั้น ${gg.t}`;break}
+  case 'scrap':st.scrap+=o.n;msg='🔩 +'+o.n;break;case 'ess':st.ess+=o.n;msg='💠 +'+o.n;break;case 'food':st.food=(st.food||0)+o.n;msg='🍖 +'+o.n;break;
+  case 'xp':addXp(Math.round(xpNeed(st.lvl)*.6));msg='📜 XP +60%';break;
+  case 'box':{const x=Math.random();if(x<.25){const it=genItem(4,.5);if(st.bag.length<BAG_MAX){stash(it);msg='🎁 '+RAR[it.r].n+'! '+it.name}else{st.gems+=40;msg='🎁 💎 +40'}}else if(x<.6){const h=addShards(null,12);msg='🎁 ชิ้นส่วน '+h.n+' +12'}else if(x<.85){st.sumT+=2;msg='🎁 🎫 +2'}else{st.gems+=60;msg='🎁 💎 +60 แจ็กพอต!'}break}}
+ o.sold=1;st.stat.bm=(st.stat.bm||0)+1;sfx('coin');num(msg,'gold',{x:view.clientWidth/2,y:view.clientHeight*.3});save();renderAll();return true}
+function openBM(){if(st.lvl<UNLOCK_LV){say('ตลาดมืดเปิดให้ผู้กล้า Lv '+UNLOCK_LV+' ขึ้นไป … "เด็กน้อยกลับบ้านไป"');return}const B=bmObj();st.bm.seen=B.w;save();renderAll();
+ const draw=b=>{const left=BM_WIN-Date.now()%BM_WIN,hh=Math.floor(left/3600e3),mm=Math.floor(left%3600e3/60e3);
+  b.innerHTML=`<div class="bmW"><div class="bmHead">
+   <svg viewBox="0 0 320 130" class="bmArt"><defs><radialGradient id="bmL" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffd27a"/><stop offset=".4" stop-color="#ff9a2a" stop-opacity=".55"/><stop offset="1" stop-color="#ff6a00" stop-opacity="0"/></radialGradient><linearGradient id="bmC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2156"/><stop offset="1" stop-color="#140a22"/></linearGradient></defs>
+   <rect x="0" y="0" width="320" height="130" fill="url(#bmC)"/>
+   <g opacity=".6">${[20,70,130,190,250,300].map((x,i)=>`<circle cx="${x}" cy="${12+i*7%30}" r="1.2" fill="#fff" class="bmStar" style="animation-delay:${i*.4}s"/>`).join('')}</g>
+   <path d="M0 98 L320 98 L320 130 L0 130Z" fill="#1a0f12"/><path d="M8 98 L60 70 L112 98Z" fill="#5a1f3a"/><path d="M8 98 L60 70 L112 98" stroke="#8a3a5a" stroke-width="2" fill="none"/><path d="M14 98 l0 -6 M26 98 l0 -14 M40 98 l0 -20 M60 98 l0 -28 M80 98 l0 -20 M94 98 l0 -14 M106 98 l0 -6" stroke="#8a3a5a" stroke-width="2"/>
+   <g class="bmLant"><line x1="250" y1="0" x2="250" y2="34" stroke="#555" stroke-width="2"/><circle cx="250" cy="46" r="34" fill="url(#bmL)" class="bmGlow"/><rect x="242" y="34" width="16" height="22" rx="3" fill="#2a1a10" stroke="#c88a3a" stroke-width="2"/><rect x="246" y="38" width="8" height="14" rx="2" fill="#ffcf6a" class="bmFlame"/></g>
+   <g transform="translate(150 22)"><path d="M-34 78 Q-38 20 0 0 Q38 20 34 78Z" fill="#241433" stroke="#4e2d6e" stroke-width="2"/><path d="M-20 34 Q0 10 20 34 Q18 52 0 56 Q-18 52 -20 34Z" fill="#07030c"/>
+    <circle cx="-8" cy="38" r="3.2" fill="#b6ff5a" class="bmEye"/><circle cx="8" cy="38" r="3.2" fill="#b6ff5a" class="bmEye"/><path d="M-12 48 Q0 53 12 48" stroke="#6b4a8a" stroke-width="1.5" fill="none"/>
+    <path d="M-30 62 Q-46 70 -40 78 M30 62 Q46 70 40 78" stroke="#3a2152" stroke-width="7" stroke-linecap="round"/><circle cx="-42" cy="76" r="6" fill="#d9b48a"/><circle cx="42" cy="76" r="6" fill="#d9b48a"/></g>
+   <rect x="96" y="98" width="128" height="24" rx="4" fill="#4a2a1a" stroke="#2a160c" stroke-width="2"/><text x="160" y="115" text-anchor="middle" font-size="12" fill="#ffd27a" font-weight="800">ตลาดมืด</text>
+   <g font-size="16"><text x="18" y="94">🧪</text><text x="44" y="94">💰</text><text x="76" y="94">🗡️</text><text x="236" y="122">💎</text><text x="270" y="122">📦</text><text x="294" y="122">🦴</text></g></svg>
+   <div class="bmSay">🕯️ ซาลาซ พ่อค้าเงา: <i>${pick(BM_LINES)}</i></div></div>
+   <div class="bmBar"><span>⏳ ของชุดใหม่ใน <b>${hh} ชม. ${mm} น.</b></span><span>🪙 ${fmt(st.gold)} · 💎 ${fmt(st.gems)}</span></div>
+   <div class="bmGrid">${B.o.map((o,i)=>{const f=bmInfo(o);return `<div class="bmCard ${o.sold?'sold':''}" style="--rc:${f.c}">${o.off?`<div class="bmOff">-${o.off}%</div>`:''}${o.off>=50?'<div class="bmHot">🔥 ดีลเด็ด</div>':''}
+    <div class="bmPic" ${o.k==='gear'?`style="background:${RAR[o.it.r].bg}"`:''}>${o.k==='gear'?itemIcon(o.it):f.img?`<div class="bmPort" style="background-image:url(${f.img})"></div>`:`<span>${f.ic}</span>`}</div>
+    <div class="bmN">${f.n}</div><div class="bmD">${f.d}</div>
+    ${o.k==='gear'?`<button class="bmInfo" data-v="${i}">🔍 ดูค่าสถานะ</button>`:''}
+    <button class="bmBuy ${o.cur}" data-b="${i}" ${o.sold?'disabled':''}>${o.sold?'✔ ขายแล้ว':`${o.off?`<s>${fmt(o.base)}</s> `:''}${o.cur==='gold'?'🪙':'💎'} ${fmt(o.price)}`}</button></div>`}).join('')}</div>
+   <button class="bmRf" id="bmRf">🔄 เปิดตู้ลับ (สุ่มของใหม่) · 💎 ${bmRfCost()}</button>
+   <div class="bmFoot">ของเปลี่ยนทุก 6 ชั่วโมง · อุปกรณ์ที่ซื้อจะเข้ากระเป๋า 🎒</div></div>`;
+  b.querySelectorAll('[data-b]').forEach(e=>e.onclick=()=>{const o=bmObj().o[+e.dataset.b];if(bmBuy(o))draw(b)});
+  b.querySelectorAll('[data-v]').forEach(e=>e.onclick=()=>{const o=bmObj().o[+e.dataset.v];const c=e.closest('.bmCard');const x=c.querySelector('.bmStat');if(x){x.remove();return}c.insertAdjacentHTML('beforeend',`<div class="bmStat card">${cardHTML(o.it,st.eq[o.it.slot])}</div>`)});
+  b.querySelector('#bmRf').onclick=()=>{const c=bmRfCost();if(st.gems<c){say('"เพชรไม่พอจะเปิดตู้ลับหรอก"');return}st.gems-=c;st.bm.rf++;st.bm.o=Array.from({length:BM_N},bmOffer);sfx('level');save();renderAll();draw(b)}};
+ openSheet('🌑 ตลาดมืด','',draw)}
+CAMP.splice(4,0,['bm','🌑','ตลาดมืด','ของหายาก ลดราคา',()=>openBM()]);
 NAV.camp=openCamp;NAV.adv=openAdv;
 
 function heroDetail(k){const h=heroOf(k),H=st.heroes[k],s=heroStats(k),own=H.lvl>0,isM=k===st.main,lc=heroCost(H.lvl,h),cap=capHero(H),sc=STAR_COST[H.star]||0;
