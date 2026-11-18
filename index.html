@@ -1817,7 +1817,7 @@ function helperDef(){const H=st.helper;if(!H||H.d!==today()||!raid||raid.wk)retu
 /* ---- GUILD ---- */
 const GB_MS=[[.25,{gems:20}],[.5,{gems:30,scrap:40}],[.75,{gems:40,stone:12}],[1,{gems:60,sumT:2,ess:30}]];
 async function gGet(){if(!ACCT.guild||!online())return null;try{const d=await FB.fs.getDoc(FB.fs.doc(FB.D,'guilds',ACCT.guild));if(!d.exists()){ACCT.guild='';ACCT.gname='';saveAcct();return null}const g=d.data();if(g.wk!==weekId()){g.wk=weekId();g.dmg=0;g.hp=gbHp(g);await FB.fs.updateDoc(FB.fs.doc(FB.D,'guilds',ACCT.guild),{wk:g.wk,dmg:0,hp:g.hp})}return g}catch(e){console.warn(e);return null}}
-function gbHp(g){const ms=Object.values(g.members||{});return Math.round(Math.max(1,ms.reduce((a,m)=>a+(m.pow||1000),0))*600)}
+function gbHp(g){const ms=Object.values(g.members||{});return Math.round(Math.max(1,ms.reduce((a,m)=>a+(m.pow||1000),0))*150)}
 async function gContrib(d){if(!ACCT.guild||!online()||!d)return;try{const g=await gGet();if(!g)return;const u={dmg:FB.fs.increment(Math.round(d))};u['members.'+myUid()+'.d']=FB.fs.increment(Math.round(d));u['members.'+myUid()+'.pow']=power(S());u['members.'+myUid()+'.n']=pname();await FB.fs.updateDoc(FB.fs.doc(FB.D,'guilds',ACCT.guild),u)}catch(e){console.warn(e)}}
 async function openGuild(){if(!online()){openSheet('🏰 กิลด์',offMsg);return}openSheet('🏰 กิลด์','<p class="hint">กำลังโหลด...</p>');const g=await gGet();
  if(!g){openSheet('🏰 กิลด์',`<div class="row"><div class="ri">🏰</div><div class="rt"><b>ยังไม่มีกิลด์</b><br><small>รวมพลกับเพื่อน ๆ ตีบอสกิลด์ประจำสัปดาห์ (ดาเมจจากบอสโลกของสมาชิกทุกคนนับรวม) รับรางวัลขั้น 25/50/75/100%</small></div></div>
