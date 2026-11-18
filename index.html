@@ -358,6 +358,14 @@ textarea.code{width:100%;height:56px;font-size:10px;font-family:monospace;border
 .hub .hc.hot{border-color:#ff6a3d;box-shadow:0 0 12px #ff6a3d88}
 @keyframes afkS{0%,100%{transform:rotate(0)}10%{transform:rotate(-12deg)}20%{transform:rotate(10deg)}30%{transform:rotate(-6deg)}40%{transform:rotate(0)}}
 .afkShake{display:inline-block;animation:afkS 1.6s infinite}
+#campHud{position:absolute;left:0;right:0;bottom:8px;z-index:6;display:none;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
+#campHud.on{display:flex}
+#campHud .chT{font-size:20px;font-weight:900;color:#ffd27a;letter-spacing:1px}
+#campHud .chB{display:flex;gap:6px;pointer-events:auto;flex-wrap:wrap;justify-content:center}
+#campHud button{font-family:inherit;font-weight:800;font-size:13px;border:2px solid #2a170a;border-radius:11px;padding:7px 11px;background:linear-gradient(#ffe08a,#e0a52a);color:#3a1d06;box-shadow:0 3px 0 #2a170a;cursor:pointer}
+#campHud button.go{background:linear-gradient(#ff8a5a,#d4401a);color:#fff;text-shadow:0 1px 0 #000}
+#campHud button.full{animation:bmPulse 1s infinite;background:linear-gradient(#fff2a0,#ffb02a)}
+
 .bmW{margin:-6px -4px;background:radial-gradient(120% 80% at 50% 0,#2c1846,#120a1c 70%);border-radius:14px;padding:0 0 10px;color:#eadcff;overflow:hidden;border:2px solid #4e2d6e}
 .bmHead{position:relative}.bmArt{width:100%;display:block}
 .bmSay{background:#0008;padding:6px 10px;font-size:12px;border-top:1px solid #4e2d6e;border-bottom:1px solid #4e2d6e}.bmSay i{color:#c9a8ff}
@@ -398,6 +406,7 @@ body.pc .bmGrid{grid-template-columns:repeat(3,1fr)}
   <div id="view">
     <canvas id="gl"></canvas>
     <div id="vign"></div>
+    <div id="campHud"><div class="chT stroke">🏕️ แคมป์พักแรม</div><div class="chB"><button id="chMenu">📋 เมนูแคมป์</button><button id="chAfk">🧰 หีบ AFK</button><button id="chGo" class="go">⚔️ ออกผจญภัย</button></div></div>
     <div id="top">
       <div id="prof"><div id="avatar"></div><div id="pname">ผู้ถือคบเพลิง ⚙️</div></div>
       <div id="mid"><div id="dots"></div><div id="mapLbl"></div><div id="guideBar"></div></div>
@@ -782,7 +791,7 @@ function play(ch,name,{once=false,fade=.15,speed=1}={}){const a=ch.acts[name];if
 let props=[],mts=[],clouds=[],castle=null;
 function clearScenery(){for(const o of[...props.map(p=>p.o),...mts,...clouds])scene.remove(o);props=[];mts=[];clouds=[];if(castle)scene.remove(castle);castle=null}
 function buildScenery(raid=false){
- clearScenery();const M=raid?{sky:0x4a3560,fog:0x7a5a80,gr:0x6f6a64,rd:0,castle:'building_castle_red',mts:['mountain_A','mountain_C']}:MAPS[st.map%MAPS.length];
+ campOff();clearScenery();const M=raid?{sky:0x4a3560,fog:0x7a5a80,gr:0x6f6a64,rd:0,castle:'building_castle_red',mts:['mountain_A','mountain_C']}:MAPS[st.map%MAPS.length];
  scene.background=new THREE.Color(M.sky);scene.fog=new THREE.Fog(M.fog,20,90);
  groundMat.map=grassTex(M.gr,M.snow);groundMat.map.repeat.set(60,60);groundMat.needsUpdate=true;
  roadMat.map=raid?carpetTex():roadTex(M.rd);roadMat.map.repeat.set(1,46);roadMat.needsUpdate=true;
@@ -906,11 +915,11 @@ const WALK_SPEED=5.6,APPROACH=4.8,STEP_LEN=12;
 const mapDef=()=>MAPS[st.map%MAPS.length];
 function encounterType(){if(st.step===STEPS)return 'boss';if(mode==='adv'&&(st.step===10||st.step===20))return 'path';if(st.step%5===0)return pick(['event','event','chest']);return 'mob'}
 let queued=null;function queueAct(fn,msg){queued=fn;say(msg||'รับทราบ! จะทำให้ทันทีที่จบการต่อสู้นี้')}
-function startWalk(len=STEP_LEN){phase='walk';walkLeft=len;if(mode==='adv'&&queued){const f=queued;queued=null;setTimeout(f,50);}if(mode==='adv'&&Math.random()<.22&&st.step%5!==0)spawnPickup()}
+function startWalk(len=STEP_LEN){if(inCamp){phase='camp';return}phase='walk';walkLeft=len;if(mode==='adv'&&queued){const f=queued;queued=null;setTimeout(f,50);}if(mode==='adv'&&Math.random()<.22&&st.step%5!==0)spawnPickup()}
 function nextStep(){st.step++;if(st.step>STEPS){mapClear();return}renderTop();save();startWalk()}
 function mapClear(){const first=st.map>=st.maxMap;st.deathStreak=0;if(st.auto.on&&st.pushLeft>0&&!first){st.pushLeft--;if(!st.pushLeft){st.farm=false;st.map=st.maxMap-1;say('ออโต้: ฟาร์มพอแล้ว กลับไปลุยแมปล่าสุดกัน!')}}if(first){st.troph+=15;st.gems+=10}else{st.gems+=3}if(!st.farm||first)st.map++;st.maxMap=Math.max(st.maxMap,st.map);st.step=1;st.buff={dmg:0,mul:0};
  banner(first?'ผ่านแมปแล้ว! +15 🏆':st.farm?'ฟาร์มรอบใหม่!':'ผ่านแมปแล้ว!');say(`เยี่ยมมาก! ต่อไปคือ "${mapDef().n}" ระวังตัวด้วยล่ะ`);buildScenery();php=S().hp;renderAll();save();setTimeout(()=>startWalk(),1200)}
-function spawnEnemy(boss=false,defOverride=null){
+function spawnEnemy(boss=false,defOverride=null){if(inCamp){campOff();buildScenery()}
  const M=mapDef(),g=gIdx();let defn,name,hp=42*.85*eCurve(g,ECH),atk=7*eCurve(g,ECA);
  if(boss){const b=M.boss;defn={...MON[b.m],s:b.s,tint:b.tint,glow:MON[b.m].glow||0x330000};if(b.w)defn.w=b.w;if(b.keep)defn.keep=b.keep;name='👑 '+b.n;hp*=7;atk*=1.5}
  let mk='boss'+(st.map%MAPS.length);
@@ -952,7 +961,7 @@ function killEnemy(){
  heal(s.hp*(.15+s.heal/100),true);
  setTimeout(()=>{scene.remove(e.ch.holder);if(enemy===e)enemy=null;$('bossBar').style.display='none';
   const drop=e.boss?genItem(2,1.5):e.fromBossTab?genItem(2,1):e.danger?genItem(1,1.2):genItem();
-  const after=e.fromBossTab?()=>{phase='walk'}:(e.boss?mapClear:nextStep);showGear(drop,after)},1100/SPD());
+  const after=e.fromBossTab?()=>{phase=inCamp?'camp':'walk'}:(e.boss?mapClear:nextStep);showGear(drop,after)},1100/SPD());
  checkUnlock();renderAll()}
 function defeat(){
  st.deathStreak++;const retreat=st.auto.on&&st.auto.retreat&&st.deathStreak>=3&&st.map>0;
@@ -1101,7 +1110,7 @@ function gearQueue(items,done){if(!items.length){done&&done();return}const it=it
 /* ================= RAID (PvP บุกปราสาท) ================= */
 let raid=null,units=[];
 const SEQ=['walk','guard','walk','power','walk','guard','walk','throne'];
-function canAct(){return mode==='adv'&&phase==='walk'&&!enemy}
+function canAct(){return mode==='adv'&&(phase==='walk'||phase==='camp')&&!enemy}
 function startRaid(){
  regenTix();if(!unlocked()){say(`บุกปราสาทได้ตอนถึง Lv ${UNLOCK_LV} นะ`);return}
  if(!allLoaded){say('กำลังโหลดโมเดลฮีโร่อยู่ รอสักครู่นะ');return}
@@ -1319,7 +1328,7 @@ function passReward(i){if(i%5===0&&i%10)return{i:'🎫',n:'ตั๋วอัญ
 function openPass(){const draw=b=>{const P0=passObj(),tier=Math.min(PASS_TIERS,Math.floor(P0.pts/PASS_PT)),left=Math.ceil(((P0.se+1)*SEASON_LEN-Date.now())/864e5);
  b.innerHTML=`<div class="row"><div class="ri">🎖</div><div class="rt"><b>Season Pass (ฟรีทั้งหมด) · ขั้น ${tier}/${PASS_TIERS}</b><br>แต้ม ${P0.pts % PASS_PT}/${PASS_PT} สู่ขั้นถัดไป · ฤดูกาลจบใน ${left} วัน<br><small>ได้แต้มจาก: ปราบมอนสเตอร์ บอส ภารกิจ บุกปราสาท หอคอย ดันเจี้ยน บอสโลก</small></div></div>`+
  Array.from({length:PASS_TIERS},(_,k)=>{const i=k+1,r=passReward(i),got=P0.cl.includes(i),ok=i<=tier;return `<div class="pass ${i%10===0?'big':''} ${got?'done':''}"><div class="tn">${i}</div><div class="ri2">${r.i}</div><div style="flex:1">${r.n}</div><button class="btn ${ok&&!got?'':'off'}" style="padding:4px 10px" data-ps="${i}">${got?'✓':ok?'รับ':'🔒'}</button></div>`}).join('');
- b.querySelectorAll('[data-ps]').forEach(e=>e.onclick=()=>{const i=+e.dataset.ps,P1=passObj();if(P1.cl.includes(i)||i>Math.floor(P1.pts/PASS_PT))return;P1.cl.push(i);const it=passReward(i).f();sfx('coin');save();renderAll();if(it){closeSheet();if(canAct()){phase='busy';showGear(it,()=>{phase='walk'})}else queueAct(()=>{phase='busy';showGear(it,()=>{phase='walk'})})}else draw(b)})};
+ b.querySelectorAll('[data-ps]').forEach(e=>e.onclick=()=>{const i=+e.dataset.ps,P1=passObj();if(P1.cl.includes(i)||i>Math.floor(P1.pts/PASS_PT))return;P1.cl.push(i);const it=passReward(i).f();sfx('coin');save();renderAll();if(it){closeSheet();if(canAct()){phase='busy';showGear(it,()=>{phase=inCamp?'camp':'walk'})}else queueAct(()=>{phase='busy';showGear(it,()=>{phase=inCamp?'camp':'walk'})})}else draw(b)})};
  openSheet('🎖 Season Pass','',draw)}
 
 
@@ -1407,7 +1416,7 @@ function openChest(i){const c=st.chests[i];if(!c)return;const C=CHESTS[c.t],left
  if(cost)st.gems-=cost;
  st.chests.splice(i,1);const g=Math.round(C.g*P(gIdx()));st.gold+=g;const h=addShards(null,C.sh);if(C.gem)st.gems+=C.gem;
  $('mapScr').classList.remove('on');say(`${C.n}: +${fmt(g)} 🪙, ชิ้นส่วน ${h.n} +${C.sh}${C.gem?', +'+C.gem+' 💎':''}`);renderAll();save();
- phase='busy';gearQueue([genItem(C.r,1),genItem(Math.max(0,C.r-1),1)],()=>{phase='walk'})}
+ phase='busy';gearQueue([genItem(C.r,1),genItem(Math.max(0,C.r-1),1)],()=>{phase=inCamp?'camp':'walk'})}
 
 /* ================= GUIDE / HUD ================= */
 function drawGuide(){const c=$('gFace').getContext('2d');c.clearRect(0,0,156,156);
@@ -1432,7 +1441,7 @@ function renderAll(){renderTop();renderGrid();renderBuffs();$('heroLv').textCont
  const _bT=(unlocked()&&(st.freeSum!==new Date().toDateString()||HEROES.some(h=>{const H=st.heroes[h.k];return H.lvl?H.star<5&&H.sh>=STAR_COST[H.star]:H.sh>=RT[h.r].unlock})));
 const _bB=(st.maxMap>0&&Array.from({length:st.maxMap},(_,i)=>i).some(i=>Date.now()>=(st.bossCd[i]||0)));
  const _bM=(st.chests.some(c=>Date.now()>=c.ready)||(unlocked()&&st.tix>0));badge('camp',_bT||afkMs()>=3600e3);badge('adv',_bB||_bM);
- $('raidBtn').style.display=unlocked()&&mode==='adv'?'block':'none';$('raidBtn').textContent=`⚔️ บุก ${st.tix}/${MAXTIX}`;
+ $('raidBtn').style.display=unlocked()&&mode==='adv'&&!inCamp?'block':'none';$('raidBtn').textContent=`⚔️ บุก ${st.tix}/${MAXTIX}`;
  $('spdBtn').textContent='x'+st.speed;$('side').classList.toggle('min',!!st.sideMin);$('sideT').textContent=st.sideMin?'▶':'◀';$('bagBtn').textContent=`🎒 ${st.bag.length}/${BAG_MAX}`;$('bagBtn').style.display=st.lvl>=2||st.bag.length?'':'none';$('craftBtn').style.display=st.lvl>=4?'':'none';renderQuestBtn();$('autoBtn').classList.toggle('on',st.auto.on);$('autoBtn').textContent=st.auto.on?'🤖 ON':'🤖 AUTO';$('evtBtn').style.display=unlocked()?'':'none';{const c=hubCounts(),n=c.wb+c.pass+c.login+c.pet+c.sum+(c.dg?1:0)+achReady()+(unlocked()?wkObj().tries:0);$('evtBtn').innerHTML='🎉 กิจกรรม'+(n?`<div class="badge">${n>9?'9+':n}</div>`:'')}}
 function renderQuestBtn(){const D=daily(),n=D.q.filter(q=>q.p>=q.g&&!q.c).length;const b=$('questBtn');b.innerHTML='📜 เควส'+(n?`<div class="badge">${n}</div>`:'')}
 $('grid').addEventListener('click',e=>{const s=e.target.closest('.slot');if(!s)return;if(s.dataset.k==='pet'){openPets();return}const it=st.eq[s.dataset.k];const sl=SLOTS.find(x=>x.k===s.dataset.k);
@@ -1501,7 +1510,7 @@ const NAV={
   {const tc=b.querySelector('#toCraft');if(tc)tc.onclick=()=>openCraft('ref')}
   b.querySelectorAll('[data-c]').forEach(e=>e.onclick=()=>{const cur=e.dataset.cur,v=+e.dataset.cost,m=+e.dataset.m;if(st[cur]<v)return;
    if(m<0){st[cur]-=v;st.tix++;renderAll();save();draw(b);return}
-   if(!canAct()){e.textContent='รอจบการต่อสู้';return}st[cur]-=v;closeSheet();renderAll();showGear(genItem(m,1),()=>{phase='walk'})})};
+   if(!canAct()){e.textContent='รอจบการต่อสู้';return}st[cur]-=v;closeSheet();renderAll();showGear(genItem(m,1),()=>{phase=inCamp?'camp':'walk'})})};
   openSheet('🛒 ร้านค้า','',draw)},
  bosses:()=>{const draw=b=>{if(st.maxMap===0){b.innerHTML='<div class="row"><div class="ri">👹</div><div class="rt"><b>ยังไม่มีบอสให้ท้าซ้ำ</b><br>ปราบบอสท้ายแมปแรกก่อน แล้วจะกลับมาล่าบอสเพื่อเอาอุปกรณ์หายากได้ทุก 10 นาที</div></div>';return}
   b.innerHTML=Array.from({length:st.maxMap},(_,i)=>{const M=MAPS[i%MAPS.length],cd=(st.bossCd[i]||0)-Date.now(),ok=cd<=0;return `<div class="row"><div class="ri">👑</div><div class="rt"><b>${M.boss.n}</b><br>แมป ${i+1} · ${M.n}<br>รางวัล: อุปกรณ์หายากขึ้นไป + ชิ้นส่วนฮีโร่</div><button class="btn red ${ok?'':'off'}" data-b="${i}">${ok?'ท้าสู้':Math.ceil(cd/60000)+' นาที'}</button></div>`}).join('');
@@ -1547,7 +1556,7 @@ function openCamp(){const c=hubCounts();const cnt={bm:st.lvl>=UNLOCK_LV&&(!st.bm
   b.querySelectorAll('[data-c]').forEach(e=>e.onclick=()=>{const x=CAMP.find(y=>y[0]===e.dataset.c);if(x[5]&&!unlocked()){say(`${x[2]} ปลดล็อกที่ Lv ${UNLOCK_LV}`);return}x[4]()})};
  openSheet('🏕️ แคมป์','',draw)}
 function openAdv(){const c=hubCounts(),U=unlocked(),bossOk=st.maxMap>0&&Array.from({length:st.maxMap},(_,i)=>i).some(i=>Date.now()>=(st.bossCd[i]||0)),w=wbObj();
- const A=[['map','🗺️','ด่านหลัก',`แมป ${st.map+1} · ไกลสุด ${st.maxMap+1}`,()=>openMap(),0,st.chests.some(x=>Date.now()>=x.ready)?1:0],
+ const A=[...(inCamp?[['go','🚶','ออกจากแคมป์',`ลุยต่อ แมป ${st.map+1}`,()=>leaveCamp(),0,0]]:[]),['map','🗺️','ด่านหลัก / แผนที่',`แมป ${st.map+1} · ไกลสุด ${st.maxMap+1}`,()=>openMap(),0,st.chests.some(x=>Date.now()>=x.ready)?1:0],
   ['boss','👑','ล่าบอส','ท้าบอสแมปที่ผ่านแล้ว',()=>NAV.bosses(),0,bossOk?1:0],
   ['dg','⚔️','ดันเจี้ยนรายวัน','ทอง · เศษเหล็ก · ชิ้นส่วน',()=>openDung(),0,c.dg?1:0],
   ['wb','👹','บอสโลก','WAR ACTIVE',()=>openWB(),0,c.wb],
@@ -1626,7 +1635,56 @@ function openBM(){if(st.lvl<UNLOCK_LV){say('ตลาดมืดเปิดใ
   b.querySelector('#bmRf').onclick=()=>{const c=bmRfCost();if(st.gems<c){say('"เพชรไม่พอจะเปิดตู้ลับหรอก"');return}st.gems-=c;st.bm.rf++;st.bm.o=Array.from({length:BM_N},bmOffer);sfx('level');save();renderAll();draw(b)}};
  openSheet('🌑 ตลาดมืด','',draw)}
 CAMP.splice(4,0,['bm','🌑','ตลาดมืด','ของหายาก ลดราคา',()=>openBM()]);
-NAV.camp=openCamp;NAV.adv=openAdv;
+/* ================= CAMP SCENE (3D) ================= */
+let inCamp=false,campG=null,campChars=[],campFire=null,campEmbers=[],campChest=null;
+const _q=new THREE.Quaternion(),_ax=new THREE.Vector3(1,0,0);
+function campTent(col,x,z,ry){const g=new THREE.Group();const t=new THREE.Mesh(new THREE.ConeGeometry(1.5,1.9,4,1,true),new THREE.MeshLambertMaterial({color:col,side:THREE.DoubleSide}));t.position.y=.95;t.rotation.y=Math.PI/4;g.add(t);
+ const d=new THREE.Mesh(new THREE.PlaneGeometry(.9,1.2),new THREE.MeshBasicMaterial({color:0x140a06}));d.position.set(0,.55,1.08);d.rotation.x=-.5;g.add(d);
+ const pole=new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,2.3),new THREE.MeshLambertMaterial({color:0x5a3a1a}));pole.position.y=1.1;g.add(pole);g.position.set(x,0,z);g.rotation.y=ry;return g}
+function campLog(len=1.5){const m=new THREE.Mesh(new THREE.CylinderGeometry(.17,.19,len,10),new THREE.MeshLambertMaterial({color:0x6a4222}));m.rotation.z=Math.PI/2;const g=new THREE.Group();g.add(m);
+ for(const sx of[-1,1]){const c=new THREE.Mesh(new THREE.CircleGeometry(.17,10),new THREE.MeshLambertMaterial({color:0xc89a5a}));c.position.x=sx*len/2+sx*.001;c.rotation.y=sx*Math.PI/2;g.add(c)}return g}
+function campChestMesh(){const g=new THREE.Group(),wood=new THREE.MeshLambertMaterial({color:0x8a4a1a}),gold=new THREE.MeshLambertMaterial({color:0xf0c040,emissive:0x664400,emissiveIntensity:.4});
+ const b=new THREE.Mesh(new THREE.BoxGeometry(1,.55,.65),wood);b.position.y=.28;g.add(b);const lid=new THREE.Mesh(new THREE.CylinderGeometry(.33,.33,1,12,1,false,0,Math.PI),wood);lid.rotation.z=Math.PI/2;lid.rotation.y=Math.PI/2;lid.position.y=.56;g.add(lid);
+ for(const x of[-.35,.35]){const band=new THREE.Mesh(new THREE.BoxGeometry(.08,.6,.68),gold);band.position.set(x,.3,0);g.add(band)}const lock=new THREE.Mesh(new THREE.BoxGeometry(.16,.2,.06),gold);lock.position.set(0,.45,.34);g.add(lock);
+ const glow=new THREE.PointLight(0xffd060,0,3);glow.position.set(0,1,.4);g.add(glow);g.userData.glow=glow;return g}
+function campOn(){if(inCamp)return;inCamp=true;clearScenery();if(pickup){scene.remove(pickup.sp);pickup=null}
+ campG=new THREE.Group();scene.add(campG);road.visible=false;
+ scene.background=new THREE.Color(0x141c38);scene.fog=new THREE.Fog(0x141c38,10,42);hemi.intensity=.55;sun.intensity=.35;sun.color.set(0x8aa0ff);amb.intensity=.25;
+ groundMat.map=grassTex(0x3a5a2a);groundMat.map.repeat.set(60,60);groundMat.map.offset.set(0,0);groundMat.needsUpdate=true;
+ const M=mapDef();
+ for(let i=0;i<26;i++){const a=i/26*6.283+rnd(-.1,.1),r=rnd(9,16);const o=cloneStatic(pick(M.trees||['tree_single_A']));o.position.set(Math.cos(a)*r,0,Math.sin(a)*r-2);o.scale.setScalar(rnd(1.6,2.4));o.rotation.y=rnd(0,6.28);campG.add(o)}
+ for(let i=0;i<5;i++){const o=cloneStatic(pick(M.mts||['mountain_A']));const a=-Math.PI/2+rnd(-1,1);o.position.set(Math.cos(a)*rnd(30,45),-.3,Math.sin(a)*rnd(30,45));o.scale.setScalar(rnd(6,9));campG.add(o)}
+ campG.add(campTent(0xb04a2a,-4.2,-3.2,.5));campG.add(campTent(0x2a6ab0,4.4,-3.6,-.6));
+ const fl=cloneStatic('flag_blue');fl.position.set(2.6,0,-4.6);fl.scale.setScalar(1.4);campG.add(fl);
+ const F=new THREE.Group();campG.add(F);for(let i=0;i<9;i++){const a=i/9*6.283,o=cloneStatic('rock_single_A');o.position.set(Math.cos(a)*.62,0,Math.sin(a)*.62);o.scale.setScalar(.28);o.rotation.y=a;F.add(o)}
+ for(let i=0;i<3;i++){const l=campLog(.9);l.scale.setScalar(.6);l.rotation.y=i*2.1;l.position.y=.1;F.add(l)}
+ const flames=[];for(const [r,h,c,y] of [[.34,.95,0xff5a1a,.45],[.24,.75,0xff9a2a,.42],[.14,.5,0xffe07a,.36]]){const m=new THREE.Mesh(new THREE.ConeGeometry(r,h,8),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:.92,blending:THREE.AdditiveBlending,depthWrite:false}));m.position.y=y;F.add(m);flames.push(m)}
+ const fireL=new THREE.PointLight(0xff8a3a,12,14,1.6);fireL.position.y=1;F.add(fireL);campFire={flames,light:fireL};
+ campEmbers=[];const em=new THREE.MeshBasicMaterial({color:0xffb050,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false});for(let i=0;i<22;i++){const e=new THREE.Mesh(new THREE.SphereGeometry(.025,5,4),em.clone());e.userData={t:Math.random()*2,vx:rnd(-.2,.2),vz:rnd(-.2,.2)};F.add(e);campEmbers.push(e)}
+ const sg=new THREE.BufferGeometry(),pos=[];for(let i=0;i<220;i++){const a=rnd(0,6.283),e=rnd(.15,1.3),r=60;pos.push(Math.cos(a)*Math.cos(e)*r,Math.sin(e)*r,Math.sin(a)*Math.cos(e)*r-10)}sg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));campG.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0xffffff,size:.35,fog:false})));
+ campChest=campChestMesh();campChest.position.set(-2.4,0,-4.2);campChest.rotation.y=.35;campG.add(campChest);
+ campChars=[];const mh=heroOf(st.main)||{f:'knight'};const team=[{f:mh.f,keep:(mh.keep||[]).filter(x=>/Cape|Helmet|Hat|Hood/.test(x)),tint:mh.tint},...st.team.filter(k=>st.heroes[k].lvl&&k!==st.main).map(k=>{const h=heroOf(k);return{f:h.f,keep:(h.keep||[]).filter(x=>/Cape|Helmet|Hat|Hood/.test(x)),tint:h.tint}})].slice(0,4);
+ const angs=[-1.95,-1.2,-2.7,-.45];
+ team.forEach((d,i)=>{const a=angs[i],r=2.15,x=Math.cos(a)*r,z=Math.sin(a)*r;const lg=campLog(1.3);lg.position.set(x*1.08,.17,z*1.08);lg.rotation.y=Math.atan2(-x,-z)+Math.PI/2;campG.add(lg);
+  const c=makeChar({...d,h:1.8});c.holder.position.set(x,0,z);c.holder.rotation.y=Math.atan2(-x,-z);campG.add(c.holder);play(c,'idle',{speed:.7});c.mixer.update(Math.random()*2);
+  c.bones={ul:c.root.getObjectByName('upperleg.l'),ur:c.root.getObjectByName('upperleg.r'),ll:c.root.getObjectByName('lowerleg.l'),lr:c.root.getObjectByName('lowerleg.r')};campChars.push(c)});
+ $('campHud').classList.add('on');$('raidBtn').style.display='none';$('skillBtn').style.display='none';campHud();mode='adv';phase='camp'}
+function campOff(){if(!inCamp)return;inCamp=false;if(campG)scene.remove(campG);campG=null;campChars=[];campFire=null;campEmbers=[];campChest=null;road.visible=true;$('campHud').classList.remove('on')}
+const CSIT={ul:-1.45,ll:1.5,y:-.62};
+function campUpdate(dt){const t=T;
+ for(const c of campChars){c.mixer.update(dt*.6);const B=c.bones;if(B.ul&&B.ur){B.ul.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ul));B.ur.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ul))}if(B.ll&&B.lr){B.ll.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ll));B.lr.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ll))}c.holder.position.y=CSIT.y*c.height/1.8}
+ if(campFire){campFire.flames.forEach((m,i)=>{const k=1+Math.sin(t*(9+i*3))*.08+Math.sin(t*(23+i*5))*.05;m.scale.set(1/k,k,1/k);m.rotation.y+=dt*(1+i)});campFire.light.intensity=11+Math.sin(t*13)*1.5+Math.sin(t*31)*1}
+ for(const e of campEmbers){const u=e.userData;u.t+=dt*.7;if(u.t>2){u.t=0;u.vx=rnd(-.25,.25);u.vz=rnd(-.25,.25)}e.position.set(u.vx*u.t,.4+u.t*1.2,u.vz*u.t);e.material.opacity=1-u.t/2}
+ if(campChest){const full=afkMs()>=3600e3;campChest.userData.glow.intensity=full?2+Math.sin(t*4)*1.2:0;campChest.position.y=full?Math.abs(Math.sin(t*3))*.04:0}}
+function campCam(rdt){const t=T;camera.position.set(Math.sin(t*.12)*.5,2.9+Math.sin(t*.2)*.08,6.4);camera.lookAt(0,.75,-1.2);arms.visible=false}
+function campHud(){const ms=afkMs(),b=$('chAfk');b.textContent='🧰 หีบ AFK · '+(ms>=AFK_MAX?'เต็ม!':Math.floor(ms/3600e3)+' ชม. '+Math.floor(ms%3600e3/60e3)+' น.');b.classList.toggle('full',ms>=3600e3)}
+setInterval(()=>{if(inCamp)campHud()},20e3);
+function enterCamp(){if(inCamp){openCamp();return}if(mode!=='adv'){say('จบภารกิจนี้ก่อน แล้วค่อยกลับแคมป์นะ');return}
+ if(!canAct()){queueAct(enterCamp,'จะกลับแคมป์ทันทีที่จบการต่อสู้นี้');return}
+ closeSheet();campOn();renderAll();say(pick(['พักก่อนเถอะ … กองไฟอุ่นดีจริง ๆ','ที่แคมป์ปลอดภัย พักผ่อน อัปตัวละคร แล้วค่อยออกเดินทางใหม่','ฮีโร่ล้อมวงรอบกองไฟ เล่าเรื่องการผจญภัยกันอย่างสนุก']));setTimeout(openCamp,450)}
+function leaveCamp(){if(!inCamp)return;closeSheet();campOff();buildScenery();php=S().hp;renderAll();say('ออกเดินทางต่อ! แมป '+(st.map+1)+' · '+mapDef().n);startWalk()}
+$('chMenu').onclick=()=>openCamp();$('chAfk').onclick=()=>openCamp();$('chGo').onclick=()=>leaveCamp();
+NAV.camp=enterCamp;NAV.adv=openAdv;
 
 function heroDetail(k){const h=heroOf(k),H=st.heroes[k],s=heroStats(k),own=H.lvl>0,isM=k===st.main,lc=heroCost(H.lvl,h),cap=capHero(H),sc=STAR_COST[H.star]||0;
  openSheet('🧝 '+h.n,`<div class="row" style="border-left:6px solid ${RT[h.r].c}"><div class="rp" style="width:80px;height:80px;background-image:url(${PORT[k]||''})">${PORT[k]?'':h.ic}</div><div class="rt"><b>${h.cls}</b> ${rTag(h.r)} ${elTag(h.el)} · <span class="tag ${h.role}">${ROLEN[h.role]}</span><br>${own?`Lv ${H.lvl}/${cap} · <span style="color:#d89a00">${'★'.repeat(H.star)}</span>${'☆'.repeat(5-H.star)}`:'ยังไม่ได้ปลดล็อก (🧩 '+H.sh+'/'+RT[h.r].unlock+')'}<br>${starStr(h.star)}<br><b>พลัง ${fmt(power(s))}</b>${isM?' · 👑 ตัวหลัก':''}</div></div>
@@ -1925,7 +1983,7 @@ addEventListener('keydown',e=>{
 /* ================= LOOP ================= */
 const clock=new THREE.Clock();
 function update(dt){
- T+=dt;const s=S();
+ T+=dt;if(inCamp)campUpdate(dt);const s=S();
  if(phase==='walk'){const d=WALK_SPEED*dt;scrollWorld(d);if(mode==='adv')pickupUpdate(d);walkLeft-=d;
   const bob=Math.sin(T*10);R.g.position.y=-.66+bob*.018;L.g.position.y=-.62-bob*.018;CAM_FP.p.y=1.55+Math.abs(bob)*.03;
   if(mode==='raid')raidProg();
@@ -1950,7 +2008,7 @@ function update(dt){
  for(let i=projs.length-1;i>=0;i--){const p=projs[i];p.t+=dt*3;const to=new THREE.Vector3();p.toObj.getWorldPosition(to);to.y+=1.1;p.m.position.lerpVectors(p.from,to,Math.min(1,p.t));if(p.t>=1){scene.remove(p.m);projs.splice(i,1);p.onHit()}}
  if(petMesh)petMesh.position.y=.05+Math.abs(Math.sin(T*(phase==='walk'?10:3)))*.03;
  for(const c of clouds){c.position.x+=dt*.4;if(c.position.x>40)c.position.x=-40}}
-function updateCamera(rdt){camT=lerp(camT,camTarget,Math.min(1,rdt*3.5));
+function updateCamera(rdt){if(inCamp){campCam(rdt);return}camT=lerp(camT,camTarget,Math.min(1,rdt*3.5));
  _cp.lerpVectors(CAM_FP.p,CAM_TP.p,camT);_ct.lerpVectors(CAM_FP.t,CAM_TP.t,camT);camera.position.copy(_cp);camera.lookAt(_ct);arms.visible=camT<.4;
  if(shake>0){shake-=rdt;camera.rotateZ(rnd(-.02,.02)*shake*4);camera.rotateX(rnd(-.02,.02)*shake*4)}}
 function setHB0(){const m=S().hp;$('hpBar').querySelector('b').style.width=clamp(php/m*100,0,100)+'%';$('hpBar').querySelector('span').textContent=fmt(php)+'/'+fmt(m)}
