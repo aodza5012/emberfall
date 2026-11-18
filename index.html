@@ -1992,7 +1992,7 @@ function openEco(){const draw=b=>{b.innerHTML=`<p class="hint">สำหรั�
  b.querySelector('#wkB').onclick=async()=>{ACCT.wake=ACCT.wake?0:1;saveAcct();await wakeToggle(!!ACCT.wake);draw(b)}};openSheet('🔋 โหมดประหยัดพลังงาน','',draw)}
 $('ecoBtn').onclick=e=>{e.stopPropagation();openEco()};$('ecoOv').onclick=()=>{setEco(1);say('ออกจากโหมดจอดำ (ยังอยู่โหมดประหยัด 🔋 — กด 🔋 เพื่อเปลี่ยน)')};
 document.addEventListener('keydown',e=>{if((e.key==='b'||e.key==='B')&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)){setEco((ECO+1)%3)}});
-setTimeout(()=>setEco(ECO),0);
+setTimeout(()=>setEco(ECO===2?1:ECO),0);
 CAMP.push(['eco','🔋','ประหยัดพลังงาน','สำหรับเปิดออโต้ยาว ๆ',()=>openEco()]);
 NAV.camp=enterCamp;NAV.adv=openAdv;const RANK_LOCAL=NAV.rank;NAV.rank=()=>openRankOnline();
 
