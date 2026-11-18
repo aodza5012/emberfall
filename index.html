@@ -1656,27 +1656,27 @@ function campOn(){if(inCamp)return;inCamp=true;clearScenery();if(pickup){scene.r
  for(let i=0;i<5;i++){const o=cloneStatic(pick(M.mts||['mountain_A']));const a=-Math.PI/2+rnd(-1,1);o.position.set(Math.cos(a)*rnd(30,45),-.3,Math.sin(a)*rnd(30,45));o.scale.setScalar(rnd(6,9));campG.add(o)}
  campG.add(campTent(0xb04a2a,-4.2,-3.2,.5));campG.add(campTent(0x2a6ab0,4.4,-3.6,-.6));
  const fl=cloneStatic('flag_blue');fl.position.set(2.6,0,-4.6);fl.scale.setScalar(1.4);campG.add(fl);
- const F=new THREE.Group();campG.add(F);for(let i=0;i<9;i++){const a=i/9*6.283,o=cloneStatic('rock_single_A');o.position.set(Math.cos(a)*.62,0,Math.sin(a)*.62);o.scale.setScalar(.28);o.rotation.y=a;F.add(o)}
+ const F=new THREE.Group();F.position.set(0,0,-1.5);campG.add(F);for(let i=0;i<9;i++){const a=i/9*6.283,o=cloneStatic('rock_single_A');o.position.set(Math.cos(a)*.62,0,Math.sin(a)*.62);o.scale.setScalar(.28);o.rotation.y=a;F.add(o)}
  for(let i=0;i<3;i++){const l=campLog(.9);l.scale.setScalar(.6);l.rotation.y=i*2.1;l.position.y=.1;F.add(l)}
  const flames=[];for(const [r,h,c,y] of [[.34,.95,0xff5a1a,.45],[.24,.75,0xff9a2a,.42],[.14,.5,0xffe07a,.36]]){const m=new THREE.Mesh(new THREE.ConeGeometry(r,h,8),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:.92,blending:THREE.AdditiveBlending,depthWrite:false}));m.position.y=y;F.add(m);flames.push(m)}
  const fireL=new THREE.PointLight(0xff8a3a,12,14,1.6);fireL.position.y=1;F.add(fireL);campFire={flames,light:fireL};
  campEmbers=[];const em=new THREE.MeshBasicMaterial({color:0xffb050,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false});for(let i=0;i<22;i++){const e=new THREE.Mesh(new THREE.SphereGeometry(.025,5,4),em.clone());e.userData={t:Math.random()*2,vx:rnd(-.2,.2),vz:rnd(-.2,.2)};F.add(e);campEmbers.push(e)}
  const sg=new THREE.BufferGeometry(),pos=[];for(let i=0;i<220;i++){const a=rnd(0,6.283),e=rnd(.15,1.3),r=60;pos.push(Math.cos(a)*Math.cos(e)*r,Math.sin(e)*r,Math.sin(a)*Math.cos(e)*r-10)}sg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));campG.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0xffffff,size:.35,fog:false})));
- campChest=campChestMesh();campChest.position.set(-2.4,0,-4.2);campChest.rotation.y=.35;campG.add(campChest);
+ campChest=campChestMesh();campChest.position.set(-2.6,0,-4.4);campChest.rotation.y=.35;campG.add(campChest);
  campChars=[];const mh=heroOf(st.main)||{f:'knight'};const team=[{f:mh.f,keep:(mh.keep||[]).filter(x=>/Cape|Helmet|Hat|Hood/.test(x)),tint:mh.tint},...st.team.filter(k=>st.heroes[k].lvl&&k!==st.main).map(k=>{const h=heroOf(k);return{f:h.f,keep:(h.keep||[]).filter(x=>/Cape|Helmet|Hat|Hood/.test(x)),tint:h.tint}})].slice(0,4);
- const angs=[-1.95,-1.2,-2.7,-.45];
- team.forEach((d,i)=>{const a=angs[i],r=2.15,x=Math.cos(a)*r,z=Math.sin(a)*r;const lg=campLog(1.3);lg.position.set(x*1.08,.17,z*1.08);lg.rotation.y=Math.atan2(-x,-z)+Math.PI/2;campG.add(lg);
-  const c=makeChar({...d,h:1.8});c.holder.position.set(x,0,z);c.holder.rotation.y=Math.atan2(-x,-z);campG.add(c.holder);play(c,'idle',{speed:.7});c.mixer.update(Math.random()*2);
+ const angs=[Math.PI,0,-2.25,-.9];
+ team.forEach((d,i)=>{const a=angs[i],r=1.95,x=Math.cos(a)*r,z=Math.sin(a)*r-1.5;const lg=campLog(1.3);lg.position.set(x+Math.cos(a)*.12,.17,z+Math.sin(a)*.12);lg.rotation.y=Math.atan2(-Math.cos(a),-Math.sin(a))+Math.PI/2;campG.add(lg);
+  const c=makeChar({...d,h:1.8});c.holder.position.set(x,0,z);c.holder.rotation.y=Math.atan2(-Math.cos(a),-Math.sin(a));campG.add(c.holder);play(c,'idle',{speed:.7});c.mixer.update(Math.random()*2);
   c.bones={ul:c.root.getObjectByName('upperleg.l'),ur:c.root.getObjectByName('upperleg.r'),ll:c.root.getObjectByName('lowerleg.l'),lr:c.root.getObjectByName('lowerleg.r')};campChars.push(c)});
  $('campHud').classList.add('on');$('raidBtn').style.display='none';$('skillBtn').style.display='none';campHud();mode='adv';phase='camp'}
 function campOff(){if(!inCamp)return;inCamp=false;if(campG)scene.remove(campG);campG=null;campChars=[];campFire=null;campEmbers=[];campChest=null;road.visible=true;edges.forEach(e=>e.visible=true);$('campHud').classList.remove('on')}
-const CSIT={ul:-1.45,ll:1.5,y:-.62};
+const CSIT={ul:-1.45,ll:1.5,y:-.62};window.__CSIT=CSIT;
 function campUpdate(dt){const t=T;
  for(const c of campChars){c.mixer.update(dt*.6);const B=c.bones;if(B.ul&&B.ur){B.ul.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ul));B.ur.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ul))}if(B.ll&&B.lr){B.ll.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ll));B.lr.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ll))}c.holder.position.y=CSIT.y*c.height/1.8}
  if(campFire){campFire.flames.forEach((m,i)=>{const k=1+Math.sin(t*(9+i*3))*.08+Math.sin(t*(23+i*5))*.05;m.scale.set(1/k,k,1/k);m.rotation.y+=dt*(1+i)});campFire.light.intensity=11+Math.sin(t*13)*1.5+Math.sin(t*31)*1}
  for(const e of campEmbers){const u=e.userData;u.t+=dt*.7;if(u.t>2){u.t=0;u.vx=rnd(-.25,.25);u.vz=rnd(-.25,.25)}e.position.set(u.vx*u.t,.4+u.t*1.2,u.vz*u.t);e.material.opacity=1-u.t/2}
  if(campChest){const full=afkMs()>=3600e3;campChest.userData.glow.intensity=full?2+Math.sin(t*4)*1.2:0;campChest.position.y=full?Math.abs(Math.sin(t*3))*.04:0}}
-function campCam(rdt){const t=T;camera.position.set(Math.sin(t*.12)*.35,2.05+Math.sin(t*.2)*.05,3.9);camera.lookAt(0,.7,-1.1);arms.visible=false}
+function campCam(rdt){const t=T;camera.position.set(Math.sin(t*.12)*.3,2.5+Math.sin(t*.2)*.05,3.3);camera.lookAt(0,.55,-1.4);arms.visible=false}
 function campHud(){const ms=afkMs(),b=$('chAfk');b.textContent='🧰 หีบ AFK · '+(ms>=AFK_MAX?'เต็ม!':Math.floor(ms/3600e3)+' ชม. '+Math.floor(ms%3600e3/60e3)+' น.');b.classList.toggle('full',ms>=3600e3)}
 setInterval(()=>{if(inCamp)campHud()},20e3);
 function enterCamp(){if(inCamp){openCamp();return}if(mode!=='adv'){say('จบภารกิจนี้ก่อน แล้วค่อยกลับแคมป์นะ');return}
