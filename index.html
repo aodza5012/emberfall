@@ -356,6 +356,8 @@ textarea.code{width:100%;height:56px;font-size:10px;font-family:monospace;border
 .hub .hc small{display:block;font-weight:600;font-size:11px;margin-top:2px}
 .hub .hc .badge{position:absolute;top:-6px;right:-6px;background:#e8382b;color:#fff;border:2px solid #fff;border-radius:50%;width:20px;height:20px;font-size:12px;line-height:16px}
 .hub .hc.hot{border-color:#ff6a3d;box-shadow:0 0 12px #ff6a3d88}
+@keyframes afkS{0%,100%{transform:rotate(0)}10%{transform:rotate(-12deg)}20%{transform:rotate(10deg)}30%{transform:rotate(-6deg)}40%{transform:rotate(0)}}
+.afkShake{display:inline-block;animation:afkS 1.6s infinite}
 #keysHelp{display:none;font-family:'Kanit';font-size:12px;opacity:.75;margin-top:12px;line-height:1.6}
 .pc #keysHelp{display:block}
 </style>
@@ -388,10 +390,8 @@ textarea.code{width:100%;height:56px;font-size:10px;font-family:monospace;border
     <div id="grid"></div>
   </div>
   <nav>
-    <div class="nb lock" data-n="tavern"><div class="ni">🍺</div><span>โรงเตี๊ยม</span></div>
-    <div class="nb" data-n="shop"><div class="ni">🛒</div><span>ร้านค้า</span></div>
-    <div class="nb big" data-n="map"><div class="ni">⚔️</div><span>ผจญภัย</span></div>
-    <div class="nb" data-n="bosses"><div class="ni">👹</div><span>บอส</span></div>
+    <div class="nb" data-n="camp"><div class="ni">🏕️</div><span>แคมป์</span></div>
+    <div class="nb big" data-n="adv"><div class="ni">⚔️</div><span>ผจญภัย</span></div>
     <div class="nb" data-n="rank"><div class="ni">🏆</div><span>อันดับ</span></div>
   </nav></div>
 
@@ -618,7 +618,7 @@ let st;
 function loadSlot(i){let st;try{st=Object.assign(fresh(),readSlot(i)||{})}catch(e){st=fresh()}
 for(const h of HEROES){st.heroes[h.k]=Object.assign({lvl:0,sh:0,eq:{},star:1},st.heroes[h.k]||{});const H=st.heroes[h.k];if(H.lvl>lvCap(H))H.star=Math.min(5,Math.ceil(H.lvl/10))}
 st.snd=Object.assign({music:true,sfx:true,mv:.5,sv:.8},st.snd||{});st.sumT=st.sumT||0;st.pity=st.pity||0;
-st.auto=Object.assign({dung:true,wb:true,pass:true,pet:true,on:false,gear:true,events:true,skill:true,chest:true,quest:true,raid:true,tower:false,upgrade:false,hero:true,retreat:true,path:true},st.auto||{});if(!st.autoV2){st.autoV2=1;st.auto.events=true;st.auto.path=true}if(!st.autoV4){st.autoV4=1;for(const k of AUTO_ON)st.auto[k]=true}
+st.auto=Object.assign({dung:true,wb:true,pass:true,pet:true,on:false,gear:true,events:true,skill:true,chest:true,quest:true,raid:true,tower:false,upgrade:false,hero:true,retreat:true,path:true},st.auto||{});if(!st.autoV2){st.autoV2=1;st.auto.events=true;st.auto.path=true}if(!st.afkT)st.afkT=st.lastSeen||Date.now();if(!st.autoV4){st.autoV4=1;for(const k of AUTO_ON)st.auto[k]=true}
 if(!SPEEDS.includes(st.speed))st.speed=st.speed>=3?4:1;for(const k in st.auto)if(k!=='on'&&!AUTO_ON.includes(k))st.auto[k]=false;st.bag=st.bag||[];st.ess=st.ess||0;st.stat=st.stat||{};st.ach=st.ach||[];st.titles=st.titles||[];st.skins=st.skins||['none'];if(!st.skin)st.skin='none';if(st.guide===undefined)st.guide=st.kills>50?GUIDE.length:0;st.gemInv=st.gemInv||{};for(const g in GEMS)st.gemInv[g]=st.gemInv[g]||[0,0,0,0,0];if(st.main&&!st.cls)st.cls=st.main;for(const k of ACCT.unl){const H=st.heroes[k];if(H&&!H.lvl){H.lvl=1;H.star=Math.max(1,H.star||1)}}
 return st}
 st=loadSlot(curSlot);
@@ -1336,7 +1336,7 @@ function loginCheck(){const today=new Date().toDateString();if(st.login&&st.logi
  const streak=st.login&&st.login.d===y?(st.login.streak%7)+1:1;st.login={d:today,streak,claimed:false};save();return true}
 function showLogin(){const L0=st.login;openSheet('📅 เช็คอินรายวัน',`<p style="font-size:13px">เข้าเกมต่อเนื่องทุกวันเพื่อรับรางวัลใหญ่ขึ้น! (วันที่ ${L0.streak}/7)</p><div class="cal">${LOGIN.map((x,i)=>`<div class="${i+1===L0.streak?'today':''} ${i+1<L0.streak||(i+1===L0.streak&&L0.claimed)?'got':''}"><i>${x.i}</i>วัน ${i+1}<br>${x.n}</div>`).join('')}</div>
  <button class="btn ${L0.claimed?'off':''}" style="width:100%;padding:11px" id="lgC">${L0.claimed?'รับแล้ว วันนี้':'รับรางวัลวันที่ '+L0.streak}</button>`,b=>b.querySelector('#lgC').onclick=()=>{if(L0.claimed)return;L0.claimed=true;const r=LOGIN[L0.streak-1].f();save();renderAll();say('เช็คอินสำเร็จ! ได้ '+r);closeSheet()})}
-function welcomeFlow(){const off=offlineReward(),newDay=loginCheck(),steps=[];
+function welcomeFlow(){const off=null;if(afkMs()>=600e3)setTimeout(()=>say(`🧰 หีบสมบัติที่แคมป์สะสมรางวัลไว้ ${fmtDur(afkMs())} แล้ว! กด 🏕️ แคมป์ เพื่อรับ (สูงสุด 24 ชม.)`),2500);const newDay=loginCheck(),steps=[];
  if(off)steps.push(()=>{openSheet('🌙 ระหว่างที่ท่านไม่อยู่',`<div class="row"><div class="ri">⏳</div><div class="rt"><b>ฮีโร่ฟาร์มต่อให้ ${Math.floor(off.min/60)} ชม. ${Math.round(off.min%60)} นาที</b><br><small>สะสมได้สูงสุด 8 ชั่วโมง</small></div></div>
   <div class="statg"><div><span>🪙 ทอง</span><span>${fmt(off.gold)}</span></div><div><span>⭐ XP</span><span>${fmt(off.xp)}</span></div><div><span>🔩 เศษเหล็ก</span><span>${off.scrap}</span></div><div><span>🧩 ชิ้นส่วน</span><span>${off.sh}</span></div></div>
   <button class="btn" style="width:100%;padding:11px;margin-top:10px" id="offC">รับรางวัล</button>`,b=>b.querySelector('#offC').onclick=()=>{st.gold+=off.gold;addXp(off.xp);st.scrap+=off.scrap;if(off.sh)addShards(null,off.sh);save();renderAll();closeSheet()});onSheetClose=next});
@@ -1400,10 +1400,9 @@ function renderBuffs(){let h='';if(st.buff.dmg)h+=`<div>⚔️ +${fmt(st.buff.dm
 function renderGrid(){$('grid').innerHTML=SLOTS.map(s=>{const it=st.eq[s.k];if(!it)return `<div class="slot empty" data-k="${s.k}"><div class="ic">${s.ic}</div></div>`;const R=RAR[it.r];return `<div class="slot" data-k="${s.k}" style="background:${R.bg};border-color:${R.c}">${itemIcon(it)}<div class="lv">Lv ${it.ilvl}</div></div>`}).join('')}
 function badge(n,on){const el=document.querySelector(`[data-n=${n}]`);el.querySelector('.badge')?.remove();if(on)el.insertAdjacentHTML('beforeend','<div class="badge">!</div>')}
 function renderAll(){renderTop();renderGrid();renderBuffs();$('heroLv').textContent='Lv '+st.lvl;regenTix();
- document.querySelector('[data-n=tavern]').classList.toggle('lock',!unlocked());
- badge('tavern',unlocked()&&(st.freeSum!==new Date().toDateString()||HEROES.some(h=>{const H=st.heroes[h.k];return H.lvl?H.star<5&&H.sh>=STAR_COST[H.star]:H.sh>=RT[h.r].unlock})));
- badge('bosses',st.maxMap>0&&Array.from({length:st.maxMap},(_,i)=>i).some(i=>Date.now()>=(st.bossCd[i]||0)));
- badge('map',st.chests.some(c=>Date.now()>=c.ready)||(unlocked()&&st.tix>0));
+ const _bT=(unlocked()&&(st.freeSum!==new Date().toDateString()||HEROES.some(h=>{const H=st.heroes[h.k];return H.lvl?H.star<5&&H.sh>=STAR_COST[H.star]:H.sh>=RT[h.r].unlock})));
+const _bB=(st.maxMap>0&&Array.from({length:st.maxMap},(_,i)=>i).some(i=>Date.now()>=(st.bossCd[i]||0)));
+ const _bM=(st.chests.some(c=>Date.now()>=c.ready)||(unlocked()&&st.tix>0));badge('camp',_bT||afkMs()>=3600e3);badge('adv',_bB||_bM);
  $('raidBtn').style.display=unlocked()&&mode==='adv'?'block':'none';$('raidBtn').textContent=`⚔️ บุก ${st.tix}/${MAXTIX}`;
  $('spdBtn').textContent='x'+st.speed;$('side').classList.toggle('min',!!st.sideMin);$('sideT').textContent=st.sideMin?'▶':'◀';$('bagBtn').textContent=`🎒 ${st.bag.length}/${BAG_MAX}`;$('bagBtn').style.display=st.lvl>=2||st.bag.length?'':'none';$('craftBtn').style.display=st.lvl>=4?'':'none';renderQuestBtn();$('autoBtn').classList.toggle('on',st.auto.on);$('autoBtn').textContent=st.auto.on?'🤖 ON':'🤖 AUTO';$('evtBtn').style.display=unlocked()?'':'none';{const c=hubCounts(),n=c.wb+c.pass+c.login+c.pet+c.sum+(c.dg?1:0)+achReady()+(unlocked()?wkObj().tries:0);$('evtBtn').innerHTML='🎉 กิจกรรม'+(n?`<div class="badge">${n>9?'9+':n}</div>`:'')}}
 function renderQuestBtn(){const D=daily(),n=D.q.filter(q=>q.p>=q.g&&!q.c).length;const b=$('questBtn');b.innerHTML='📜 เควส'+(n?`<div class="badge">${n}</div>`:'')}
@@ -1481,6 +1480,54 @@ const NAV={
  rank:()=>{const days=Math.floor((Date.now()-st.seasonStart)/864e5),left=7-days%7,r=[...RANKS].reverse().find(x=>st.troph>=x[1]),nx=RANKS.find(x=>x[1]>st.troph);
   const lb=RIVALS.map((n,i)=>({n,t:Math.round((40+i*45)*(1+days*.15)+((i*97)%23))})).concat([{n:pname(),t:st.troph,me:1}]).sort((a,b)=>b.t-a.t);
   openSheet('🏆 อันดับ',`<div class="row" style="justify-content:center;text-align:center"><div class="rt"><b style="font-size:20px;color:${r[2]};text-shadow:0 1px 0 #000">${r[0]}</b><br>โบนัสลีก: ดาเมจ & HP +${leagueIdx()*3}% (ถาวรตามลีก)<br>🏆 ${st.troph} ถ้วย${nx?' · อีก '+(nx[1]-st.troph)+' สู่'+nx[0]:''} · ฤดูกาลจบใน ${left} วัน<br><small>ได้ถ้วยจากบุกปราสาท ปราบบอส และผ่านแมป · บุกชนะ ${st.rw}/${st.raids}</small></div></div>`+lb.map((p,i)=>`<div class="lead ${p.me?'me':''}"><div class="rk">${i+1}</div><div class="nm">${p.n}</div><div>🏆 ${p.t}</div></div>`).join(''))}};
+
+/* ================= CAMP & AFK ================= */
+const AFK_MAX=24*3600e3;
+function afkMs(){if(!st.afkT)st.afkT=st.lastSeen||Date.now();return Math.max(0,Math.min(AFK_MAX,Date.now()-st.afkT))}
+function afkCalc(){const ms=afkMs(),min=ms/60e3,h=min/60,g=Math.max(gIdx(),st.maxMap*STEPS),s=S(),kills=min*3;
+ return{ms,min,h,gold:Math.round(kills*6*Math.pow(1.075,g)*(1+s.gold/100)*.5),
+  xp:Math.round(Math.min(kills*9*Math.pow(1.06,g)*.12,xpNeed(st.lvl)*h*.12)),
+  scrap:Math.floor(min/4),sh:Math.floor(min/90),gems:Math.floor(min/120),food:Math.floor(min/180),items:Math.floor(min/120),tix:Math.floor(min/720)}}
+const fmtDur=ms=>{const m=Math.floor(ms/60e3);return Math.floor(m/60)+' ชม. '+(m%60)+' นาที'};
+function afkClaim(){const r=afkCalc();if(r.min<1)return null;
+ st.gold+=r.gold;addXp(r.xp);st.scrap+=r.scrap;st.gems+=r.gems;st.food=(st.food||0)+r.food;st.sumT+=r.tix;if(r.sh)addShards(null,r.sh);
+ let eq=0,sold=0,bag=0,best=null;
+ for(let n=0;n<r.items;n++){const it=genItem(0,.3);const cands=['me',...st.team.filter(k=>st.heroes[k].lvl)];const d=cands.map(k=>{const c=candOf(k);return c.powWith(it)-c.pow()}),b=Math.max(...d);
+  if(!best||it.r>best.r)best=it;
+  if(b>0){const k=cands[d.indexOf(b)];if(k==='me'){const old=st.eq[it.slot];st.eq[it.slot]=it;dropOld(old)}else{const H=st.heroes[k],old=H.eq[it.slot];H.eq[it.slot]=it;dropOld(old)}eq++}
+  else if(it.set&&it.r>=2&&!st.auto.on&&stash(it))bag++;else{st.gold+=sellVal(it);st.scrap+=scrapVal(it);sold++}}
+ st.afkT=Date.now();try{setHandWeapon();setHandPet()}catch(e){}php=Math.min(php,S().hp);sfx('level');save();renderAll();return{...r,eq,sold,bag,best}}
+function afkBox(){const r=afkCalc(),pct=r.ms/AFK_MAX*100,full=r.ms>=AFK_MAX;
+ return `<div class="row afkb" style="flex-direction:column;align-items:stretch;background:linear-gradient(#ffe9b0,#f2c66b);border:3px solid #b07a1a">
+ <div style="display:flex;gap:10px;align-items:center"><div style="font-size:44px;line-height:1" class="${r.min>=60?'afkShake':''}">🧰</div><div style="flex:1"><b>หีบสมบัติแคมป์ (AFK)</b><br><small>ฮีโร่ในแคมป์ออกล่าให้ตลอดเวลา ทั้งตอนเล่นและตอนออฟไลน์ · สะสมสูงสุด 24 ชม.</small></div></div>
+ <div class="shard" style="height:12px;margin:8px 0 4px"><b style="width:${pct}%;background:${full?'#ff6a3d':''}"></b></div>
+ <small style="text-align:center">${full?'⚠️ หีบเต็มแล้ว! รับรางวัลก่อนจะเสียเวลาเปล่า':'สะสมแล้ว '+fmtDur(r.ms)+' / 24 ชม.'}</small>
+ <div class="statg" style="margin-top:6px"><div><span>🪙 ทอง</span><span>${fmt(r.gold)}</span></div><div><span>⭐ XP</span><span>${fmt(r.xp)}</span></div><div><span>🎁 อุปกรณ์สุ่ม</span><span>${r.items}</span></div><div><span>🔩 เศษเหล็ก</span><span>${r.scrap}</span></div><div><span>🧩 ชิ้นส่วนฮีโร่</span><span>${r.sh}</span></div><div><span>💎 เพชร</span><span>${r.gems}</span></div><div><span>🍖 อาหารสัตว์</span><span>${r.food}</span></div><div><span>🎫 ตั๋วอัญเชิญ</span><span>${r.tix}</span></div></div>
+ <button class="btn ${r.min>=1?'':'off'}" style="padding:11px;margin-top:8px;font-size:16px" id="afkC">🧰 รับรางวัล</button>
+ <small style="text-align:center;margin-top:4px;opacity:.8">อุปกรณ์ 1 ชิ้น/2 ชม. · ดีกว่าที่ใส่อยู่จะสวมให้เลย ที่เหลือขายเป็นทอง · รางวัลขึ้นกับแมปไกลสุดที่ผ่าน</small></div>`}
+const CAMP=[['char','🧍','ตัวละคร','ค่าสถานะ & อุปกรณ์',()=>$('infoBtn').click()],['smith','⚒️','ช่างตีเหล็ก','อัปเกรดถาวร',()=>NAV.shop()],['craft','🔨','โรงคราฟ','ตีบวก ย่อย สร้างของ',()=>openCraft()],['bag','🎒','กระเป๋า','เก็บชิ้นเซ็ต',()=>openBag()],
+ ['tav','🍺','ฮีโร่ & ทีม','อัปเลเวล เลื่อนดาว จัดทีม',()=>NAV.tavern(),1],['sum','🔮','อัญเชิญฮีโร่','สุ่มฮีโร่',()=>openSummon(),1],['pet','🐾','บ้านสัตว์เลี้ยง','วิวัฒนาการ',()=>openPets()],['quest','📜','ภารกิจ','ประจำวัน',()=>openQuests()],
+ ['pass','🎖','Season Pass','รางวัล 30 ขั้น',()=>openPass()],['login','📅','เช็คอิน','รางวัล 7 วัน',()=>{if(!st.login)loginCheck();showLogin()}],['ach','🏅','ความสำเร็จ','ฉายา & สกิน',()=>openAch()],['codex','📖','สมุดมอนสเตอร์','โบนัสสะสม',()=>openCodex()],
+ ['auto','🤖','ออโต้','ตั้งค่า',()=>openAuto()],['manual','📘','คู่มือ','วิธีเล่น',()=>openManual()]];
+function openCamp(){const c=hubCounts();const cnt={sum:st.freeSum!==new Date().toDateString()&&unlocked()?1:0,pet:c.pet,pass:c.pass,login:c.login,ach:achReady()};
+ const draw=b=>{b.innerHTML=afkBox()+`<p style="font-weight:800;margin:10px 0 6px">🏕️ พัฒนาตัวละคร</p><div class="hub">`+CAMP.map(([k,i,n,sub,f,lk])=>{const L=lk&&!unlocked();return `<div class="hc ${cnt[k]?'hot':''}" data-c="${k}" style="${L?'filter:grayscale(.8);opacity:.7':''}"><i>${L?'🔒':i}</i>${n}<small>${L?'ปลดล็อก Lv '+UNLOCK_LV:sub}</small>${cnt[k]?`<div class="badge">${cnt[k]}</div>`:''}</div>`}).join('')+'</div>';
+  b.querySelector('#afkC').onclick=()=>{const r=afkClaim();if(!r)return;draw(b);
+   const box=document.createElement('div');box.className='row';box.style.cssText='background:#c8f5cc;border:2px solid #3a9a45;margin-top:6px';
+   box.innerHTML=`<div class="ri">🎉</div><div class="rt"><b>ได้รับ!</b> ${fmt(r.gold)} 🪙 · ${fmt(r.xp)} XP · ${r.scrap} 🔩${r.sh?' · '+r.sh+' 🧩':''}${r.gems?' · '+r.gems+' 💎':''}${r.food?' · '+r.food+' 🍖':''}${r.tix?' · '+r.tix+' 🎫':''}<br><small>อุปกรณ์ ${r.items} ชิ้น: สวมใส่ ${r.eq} · ขาย ${r.sold}${r.bag?' · เก็บ '+r.bag:''}${r.best?' · ดีสุด: '+RAR[r.best.r].n+' '+r.best.name:''}</small></div>`;
+   b.querySelector('.afkb').after(box);num('🧰 รับรางวัล AFK!','gold',{x:view.clientWidth/2,y:view.clientHeight*.3})};
+  b.querySelectorAll('[data-c]').forEach(e=>e.onclick=()=>{const x=CAMP.find(y=>y[0]===e.dataset.c);if(x[5]&&!unlocked()){say(`${x[2]} ปลดล็อกที่ Lv ${UNLOCK_LV}`);return}x[4]()})};
+ openSheet('🏕️ แคมป์','',draw)}
+function openAdv(){const c=hubCounts(),U=unlocked(),bossOk=st.maxMap>0&&Array.from({length:st.maxMap},(_,i)=>i).some(i=>Date.now()>=(st.bossCd[i]||0)),w=wbObj();
+ const A=[['map','🗺️','ด่านหลัก',`แมป ${st.map+1} · ไกลสุด ${st.maxMap+1}`,()=>openMap(),0,st.chests.some(x=>Date.now()>=x.ready)?1:0],
+  ['boss','👑','ล่าบอส','ท้าบอสแมปที่ผ่านแล้ว',()=>NAV.bosses(),0,bossOk?1:0],
+  ['dg','⚔️','ดันเจี้ยนรายวัน','ทอง · เศษเหล็ก · ชิ้นส่วน',()=>openDung(),0,c.dg?1:0],
+  ['wb','👹','บอสโลก','WAR ACTIVE',()=>openWB(),0,c.wb],
+  ['raid','🏰','บุกปราสาท',`ตั๋ว ${st.tix}`,()=>{closeSheet();startRaid()},1,U&&st.tix>0?st.tix:0],
+  ['tower','🗼','หอคอย',`ชั้นสูงสุด ${st.tower.best}`,()=>{closeSheet();startTower()},1,0],
+  ['wk','🌟','ท้าทายสัปดาห์',`สิทธิ์ ${wkObj().tries}/3`,()=>openWeekly(),1,U?wkObj().tries:0]];
+ openSheet('⚔️ ผจญภัย',`<div class="row"><div class="ri">🧭</div><div class="rt"><b>เลือกการผจญภัย</b><br><small>แมป ${st.map+1} · ${mapDef().n} · ขั้น ${st.step}/${STEPS}${st.farm?' · กำลังฟาร์ม':''}</small></div></div><div class="hub">`+A.map(([k,i,n,sub,f,lk,cn])=>{const L=lk&&!U;return `<div class="hc ${cn?'hot':''}" data-a="${k}" style="${L?'filter:grayscale(.8);opacity:.7':''}"><i>${L?'🔒':i}</i>${n}<small>${L?'ปลดล็อก Lv '+UNLOCK_LV:sub}</small>${cn?`<div class="badge">${cn>9?'9+':cn}</div>`:''}</div>`}).join('')+'</div>',
+ b=>b.querySelectorAll('[data-a]').forEach(e=>e.onclick=()=>{const x=A.find(y=>y[0]===e.dataset.a);if(x[5]&&!U){say(`${x[2]} ปลดล็อกที่ Lv ${UNLOCK_LV}`);return}x[4]()}))}
+NAV.camp=openCamp;NAV.adv=openAdv;
 
 function heroDetail(k){const h=heroOf(k),H=st.heroes[k],s=heroStats(k),own=H.lvl>0,isM=k===st.main,lc=heroCost(H.lvl,h),cap=capHero(H),sc=STAR_COST[H.star]||0;
  openSheet('🧝 '+h.n,`<div class="row" style="border-left:6px solid ${RT[h.r].c}"><div class="rp" style="width:80px;height:80px;background-image:url(${PORT[k]||''})">${PORT[k]?'':h.ic}</div><div class="rt"><b>${h.cls}</b> ${rTag(h.r)} ${elTag(h.el)} · <span class="tag ${h.role}">${ROLEN[h.role]}</span><br>${own?`Lv ${H.lvl}/${cap} · <span style="color:#d89a00">${'★'.repeat(H.star)}</span>${'☆'.repeat(5-H.star)}`:'ยังไม่ได้ปลดล็อก (🧩 '+H.sh+'/'+RT[h.r].unlock+')'}<br>${starStr(h.star)}<br><b>พลัง ${fmt(power(s))}</b>${isM?' · 👑 ตัวหลัก':''}</div></div>
