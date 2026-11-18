@@ -1188,7 +1188,7 @@ function startBattle(n,throne){
  const mine=myTeamDefs(),foes=enemyDefs(n,throne,teamRef(mine));units=[];
  mine.forEach((o,i)=>units.push(makeUnit('me',o,i,mine.length)));foes.forEach((o,i)=>units.push(makeUnit('foe',o,i,foes.length)));
  if(raid.hpCarry){units.filter(u=>u.side==='me').forEach(u=>{const c=raid.hpCarry[u.name];if(c!==undefined)u.hp=u.max*Math.min(1,Math.max(.25,c)+.35)})}
- $('raidBar').style.display='none';renderTeam();if(raid.wb){units.filter(u=>u.side==='foe').forEach(u=>u.isWB=true);raid.t=WB_TIME;$('wbTimer').style.display='block';sfx('boss')}banner(raid.wb?'👹 บอสโลกปรากฏตัว!':raid.dung?DUNG[raid.dung].n+' · '+DTIER[raid.tier].n:raid.tower?`🗼 หอคอย ชั้น ${raid.floor}`+(raid.floor%10===0?' · ผู้คุมชั้น!':''):throne?'ห้องบัลลังก์!':'ทหารยามขวางทาง!');if(throne)say(`${raid.opp}: "ใครกล้าบุกปราสาทข้า!"`)}
+ $('raidBar').style.display='none';renderTeam();if(raid.wb){units.filter(u=>u.side==='foe').forEach(u=>u.isWB=true);raid.t=WB_TIME;$('wbTimer').style.display='block';sfx('boss')}banner(raid.wb?'👹 บอสโลกปรากฏตัว!':raid.dung?DUNG[raid.dung].n+' · ชั้น '+raid.stage:raid.tower?`🗼 หอคอย ชั้น ${raid.floor}`+(raid.floor%10===0?' · ผู้คุมชั้น!':''):throne?'ห้องบัลลังก์!':'ทหารยามขวางทาง!');if(throne)say(`${raid.opp}: "ใครกล้าบุกปราสาทข้า!"`)}
 function renderTeam(){$('team').innerHTML=units.filter(u=>u.side==='me').map(u=>`<div class="tc ${u.dead?'dead':''}"><div class="pp" style="background-image:url(${u.port||''})"><i class="stroke">${ROLEN[u.role]}</i></div><div class="hb g"><b style="width:${u.hp/u.max*100}%"></b></div>${u.name}</div>`).join('');$('team').classList.add('on')}
 function unitScreen(u,dy=0){const p=new THREE.Vector3();u.ch.holder.getWorldPosition(p);p.y+=u.ch.height*.7;p.project(camera);return{x:(p.x*.5+.5)*view.clientWidth+rnd(-15,15),y:(-p.y*.5+.5)*view.clientHeight+dy}}
 function pickTarget(u){const foes=units.filter(x=>x.side!==u.side&&!x.dead);if(!foes.length)return null;const tn=foes.filter(x=>x.taunt>0);if(tn.length)return tn[0];const def=foes.filter(x=>x.role==='def');return def.length?pick(def):foes.reduce((a,b)=>a.hp<b.hp?a:b)}
@@ -1297,27 +1297,43 @@ function towerResult(win){const f=raid.floor;phase='busy';
 function exitTower(){mode='adv';raid=null;$('raidBar').style.display='none';buildScenery();$('dots').style.display='';renderAll();startWalk()}
 
 /* ---------- DAILY DUNGEONS ---------- */
-function dungDefs(ref){const T=DTIER[raid.tier],list=[],pool=[{n:'ผู้เฝ้าคลัง',f:'skeleton_warrior',w:'sword_1handed',wl:'shield_round',role:'def',hp:1.4,dmg:.6},{n:'โจรขุมทรัพย์',f:'rogue_hooded',keep:['Knife'],role:'str',hp:.9,dmg:1},{n:'ช่างเหล็กคลั่ง',f:'barbarian',keep:['1H_Axe'],role:'str',hp:1.1,dmg:.9},{n:'หมอผีเฝ้าศาล',f:'skeleton_mage',w:'staff',role:'str',atk:'cast',hp:.8,dmg:1.1}];
- const n=Math.min(5,ref.n+1);for(let i=0;i<n;i++){const g=pool[(i+(raid.dung==='scrap'?1:raid.dung==='shard'?2:raid.dung==='xp'?3:0))%pool.length];list.push({key:'guard',name:g.n,f:g.f,w:g.w,wl:g.wl,keep:g.keep,role:g.role,hp:ref.hp*g.hp*T.m*.75,dmg:ref.dps*g.dmg*T.m*.7/.85,aps:.85,atk:g.atk,tint:raid.dung==='gold'?0xffe08a:raid.dung==='scrap'||raid.dung==='mat'?0xb0c0d0:0xd0a0ff})}return list}
-function startDung(type,tier){const D0=dgObj();if(D0.u[type]>=2){say('วันนี้เข้าดันเจี้ยนนี้ครบ 2 รอบแล้ว พรุ่งนี้มาใหม่นะ');return}
+const DG_MAX=40;
+const dgFloor=st0=>2+2.5*(st0-1);
+function dgEnemies(type,stage){const f=dgFloor(stage),hp=120*Math.pow(1.125,f),dps=15*Math.pow(1.11,f),n=stage<10?3:stage<20?4:5,list=[],pool=[{n:'ผู้เฝ้าคลัง',f:'skeleton_warrior',w:'sword_1handed',wl:'shield_round',role:'def',hp:1.4,dmg:.6},{n:'โจรขุมทรัพย์',f:'rogue_hooded',keep:['Knife'],role:'str',hp:.9,dmg:1},{n:'ช่างเหล็กคลั่ง',f:'barbarian',keep:['1H_Axe'],role:'str',hp:1.1,dmg:.9},{n:'หมอผีเฝ้าศาล',f:'skeleton_mage',w:'staff',role:'str',atk:'cast',hp:.8,dmg:1.1}];
+ const off={gold:0,scrap:1,shard:2,xp:3,mat:1}[type]||0;for(let i=0;i<n;i++){const g=pool[(i+off)%pool.length];list.push({key:'guard',name:g.n,f:g.f,w:g.w,wl:g.wl,keep:g.keep,role:g.role,hp:hp*g.hp,dmg:dps*g.dmg/.85,aps:.85,atk:g.atk,tint:type==='gold'?0xffe08a:type==='scrap'||type==='mat'?0xb0c0d0:0xd0a0ff})}
+ if(stage%10===0)list[0]={...list[0],name:'👑 ผู้คุมดันเจี้ยน',hp:list[0].hp*3,dmg:list[0].dmg*1.5,h:2.6};return list}
+const dgRec=(type,stage)=>dgEnemies(type,stage).reduce((a,u)=>a+unitPow(u),0);
+function dungDefs(ref){return dgEnemies(raid.dung,raid.stage)}
+function dgReward(type,stage){const g=10+(stage-1)*8;return type==='gold'?{gold:Math.round(100*P(g))}:type==='scrap'?{scrap:15+5*stage}:type==='xp'?{xp:Math.round(xpNeed(1+Math.floor(g*.4))*.45)}:type==='mat'?{stone:3+Math.floor(stage*.6)}:{sh:2+Math.floor(stage/2),food:3+Math.floor(stage/2)}}
+const dgRewTxt=r=>Object.entries(r).map(([k,v])=>k==='gold'?fmt(v)+' 🪙':k==='xp'?fmt(v)+' XP':v+' '+(RWN[k]||k)).join(' · ')
+const dgBest=t=>(st.dgLv&&st.dgLv[t])||0;
+function startDung(type,stage){stage=Math.max(1,Math.min(stage||1,dgBest(type)+1,DG_MAX));const D0=dgObj();if(D0.u[type]>=2){say('วันนี้เข้าดันเจี้ยนนี้ครบ 2 รอบแล้ว พรุ่งนี้มาใหม่นะ');return}
  if(!unlocked()||!allLoaded){say('ดันเจี้ยนปลดล็อกที่ Lv '+UNLOCK_LV);return}
- if(!canAct()){if(mode==='adv'){closeSheet();queueAct(()=>startDung(type,tier),'จะเข้าดันเจี้ยนทันทีที่จบการต่อสู้นี้')}return}
+ if(!canAct()){if(mode==='adv'){closeSheet();queueAct(()=>startDung(type,stage),'จะเข้าดันเจี้ยนทันทีที่จบการต่อสู้นี้')}return}
  closeSheet();$('mapScr').classList.remove('on');if(pickup){scene.remove(pickup.sp);pickup=null}
- raid={dung:type,tier,opp:DUNG[type].n,ratio:1,i:0,mods:{dmg:0,hp:0,crit:0,aps:0,red:0,ls:0}};mode='raid';buildScenery(true);scene.background=new THREE.Color(type==='gold'?0x5a4010:type==='scrap'?0x30383f:type==='xp'?0x1a3a5a:0x3a2050);scene.fog=new THREE.Fog(scene.background.getHex(),15,70);
- $('dots').style.display='none';$('raidBtn').style.display='none';$('mapLbl').textContent=`${DUNG[type].i} ${DUNG[type].n} · ${DTIER[tier].n}`;phase='busy';setTimeout(()=>startBattle(0,false),600)}
-function dungResult(win){const type=raid.dung,T=DTIER[raid.tier];phase='busy';let txt='';
- st.dgFail=st.dgFail||{};if(!win)st.dgFail[type]=Math.min(2,(st.dgFail[type]||0)+1);
- if(win){dgObj().u[type]++;addPass(50);const g=gIdx();{const gg=addGem(raid.tier+1);setTimeout(()=>num(`+${GEMS[gg.g].i} ${GEMS[gg.g].n} ขั้น ${gg.t}`,'tag',{x:view.clientWidth/2,y:view.clientHeight*.3}),500)}
-  if(type==='gold'){const v=Math.round(120*P(g)*T.r);st.gold+=v;txt=`+${fmt(v)} 🪙`}
-  if(type==='mat'){const v=Math.round(5*T.r);st.stone=(st.stone||0)+v;txt=`+${v} 🧱 ศิลาก่อสร้าง`}
-  if(type==='scrap'){const v=Math.round(25*T.r);st.scrap+=v;txt=`+${v} 🔩`}
-  if(type==='xp'){const v=Math.round(xpNeed(st.lvl)*.4*T.r);addXp(v);txt=`+${fmt(v)} XP (Lv ${st.lvl})`}
-  if(type==='shard'){const n=Math.round(3*T.r),h=addShards(null,n),f=Math.round(4*T.r);st.food+=f;txt=`🧩 ${h.n} +${n} · 🍖 +${f}`}save();renderAll()}
- openSheet(win?'🏆 ผ่านดันเจี้ยน!':'💀 ไม่ผ่านดันเจี้ยน',`<div class="row"><div class="ri">${DUNG[type].i}</div><div class="rt"><b>${DUNG[type].n} · ${DTIER[raid.tier].n}</b><br>${win?'รางวัล: '+txt:'ไม่เสียสิทธิ์ ลองระดับที่ง่ายลงดูนะ'}<br><small>เหลือ ${2-dgObj().u[type]} รอบวันนี้</small></div></div><button class="btn" style="width:100%;padding:11px" id="dgOk">กลับไปผจญภัย</button>`,b=>b.querySelector('#dgOk').onclick=closeSheet);
+ raid={dung:type,stage,opp:DUNG[type].n,ratio:1,i:0,mods:{dmg:0,hp:0,crit:0,aps:0,red:0,ls:0}};mode='raid';buildScenery(true);scene.background=new THREE.Color(type==='gold'?0x5a4010:type==='scrap'?0x30383f:type==='xp'?0x1a3a5a:0x3a2050);scene.fog=new THREE.Fog(scene.background.getHex(),15,70);
+ $('dots').style.display='none';$('raidBtn').style.display='none';$('mapLbl').textContent=`${DUNG[type].i} ${DUNG[type].n} · ชั้น ${stage}`;phase='busy';setTimeout(()=>startBattle(0,false),600)}
+function dungResult(win){const type=raid.dung,sg=raid.stage;phase='busy';let txt='';
+ if(win){dgObj().u[type]++;addPass(50);st.dgLv=st.dgLv||{};const first=sg>dgBest(type);if(first){st.dgLv[type]=sg;st.gems+=5+sg}
+  {const gg=addGem(Math.min(5,1+Math.floor(sg/6)));setTimeout(()=>num(`+${GEMS[gg.g].i} ${GEMS[gg.g].n} ขั้น ${gg.t}`,'tag',{x:view.clientWidth/2,y:view.clientHeight*.3}),500)}
+  const r=dgReward(type,sg);if(r.xp){addXp(r.xp)}const r2={...r};delete r2.xp;giveR2(r2);txt=dgRewTxt(r)+(first?` · 🎉 ผ่านชั้นใหม่! 💎+${5+sg}`:'');save();renderAll()}
+ openSheet(win?'🏆 ผ่านดันเจี้ยน!':'💀 ไม่ผ่านดันเจี้ยน',`<div class="row"><div class="ri">${DUNG[type].i}</div><div class="rt"><b>${DUNG[type].n} · ชั้น ${sg}</b><br>${win?'รางวัล: '+txt:'ไม่เสียสิทธิ์ — ลองชั้นที่ต่ำกว่า หรือพัฒนาทีมแล้วกลับมาใหม่'}<br><small>เหลือ ${2-dgObj().u[type]} รอบวันนี้ · ชั้นสูงสุดที่ผ่าน ${dgBest(type)}</small></div></div><button class="btn" style="width:100%;padding:11px" id="dgOk">กลับไปผจญภัย</button>`,b=>b.querySelector('#dgOk').onclick=closeSheet);
  onSheetClose=exitTower;if(st.auto.on)setTimeout(()=>{if($('sheet').classList.contains('on')&&onSheetClose===exitTower)closeSheet()},2500)}
-function DREW(k){const g=gIdx();return DTIER.map(T=>k==='gold'?fmt(Math.round(120*P(g)*T.r))+'🪙':k==='scrap'?Math.round(25*T.r)+'🔩':k==='xp'?fmt(Math.round(xpNeed(st.lvl)*.4*T.r))+' XP':k==='mat'?Math.round(5*T.r)+'🧱':Math.round(3*T.r)+'🧩').join(' / ')+' + อัญมณี'}
-function openDung(){const D0=dgObj();openSheet('⚔️ ดันเจี้ยนรายวัน',`<p style="font-size:13px;margin-bottom:6px">แต่ละดันเจี้ยนเข้าได้วันละ 2 รอบ (ถ้าแพ้ไม่เสียสิทธิ์) · ศัตรูปรับตามความแข็งแกร่งทีม</p>`+(()=>{const tp=teamPow(),n=1+(teamOn()?st.team.filter(k=>k!==st.main&&st.heroes[k]&&st.heroes[k].lvl).length:0),ne=Math.min(5,n+1);return `<div class="row" style="background:#e8f4ff"><div class="ri">⚔️</div><div class="rt"><b>พลังทีมท่าน ${fmt(tp)}</b> (${n} คน)<br><small>ศัตรู ${ne} ตัว ปรับตามทีมท่าน · พลังศัตรูโดยประมาณ: ${DTIER.map(t=>`${t.n} <b>${fmt(Math.round(tp*ne/n*t.m*.72))}</b> ${powTag(tp,tp*ne/n*t.m*.72)}`).join(' · ')}</small></div></div>`})()+Object.entries(DUNG).map(([k,d])=>`<div class="row"><div class="ri">${d.i}</div><div class="rt"><b>${d.n}</b> · เหลือ ${2-D0.u[k]}/2<br><small>${d.d}<br>รางวัล ง่าย/ปกติ/ยาก: ${DREW(k)}</small><div style="display:flex;gap:5px;margin-top:5px">${DTIER.map((t,i)=>`<button class="btn ${['','blue','red'][i]} ${D0.u[k]>=2?'off':''}" style="flex:1;padding:5px" data-dg="${k}" data-t="${i}">${t.n} ×${t.r}</button>`).join('')}</div></div></div>`).join(''),
- b=>b.querySelectorAll('[data-dg]').forEach(e=>e.onclick=()=>startDung(e.dataset.dg,+e.dataset.t)))}
+function giveR2(r){for(const k in r){const v=r[k];if(k==='gold')st.gold+=v;else if(k==='sh')addShards(null,v);else if(k==='food')st.food=(st.food||0)+v;else st[k]=(st[k]||0)+v}}
+let dgSel={};
+function openDung(){const D0=dgObj();const draw=b=>{const tp=towerTeamPow();
+ b.innerHTML=`<p style="font-size:13px;margin-bottom:6px">เข้าได้วันละ 2 รอบต่อดันเจี้ยน (แพ้ไม่เสียสิทธิ์) · ศัตรูมีพลังตายตัวตามชั้น ผ่านชั้นใหม่ได้ 💎 โบนัสและปลดชั้นถัดไป (สูงสุด ${DG_MAX}) · ฟาร์มชั้นที่ผ่านแล้วได้เสมอ</p>
+ <div class="row" style="background:#e8f4ff"><div class="ri">⚔️</div><div class="rt"><b>พลังทีมท่าน ${fmt(tp)}</b><br><small>${1+(teamOn()?st.team.filter(k=>k!==st.main&&st.heroes[k]&&st.heroes[k].lvl).length:0)} คน · เทียบกับพลังศัตรูของแต่ละชั้นด้านล่าง</small></div></div>`+
+ Object.entries(DUNG).map(([k,d])=>{const best=dgBest(k),sel=Math.max(1,Math.min(dgSel[k]||best+1,best+1,DG_MAX)),rp=dgRec(k,sel),left=2-D0.u[k];
+  return `<div class="row" style="flex-direction:column;align-items:stretch"><div style="display:flex;gap:8px;align-items:center"><div class="ri">${d.i}</div><div class="rt"><b>${d.n}</b> · เหลือ ${left}/2 · ผ่านสูงสุดชั้น ${best}<br><small>${d.d}</small></div></div>
+  <div style="display:flex;gap:6px;align-items:center;margin-top:6px"><button class="btn" style="padding:4px 12px" data-dm="${k}">−</button><div style="flex:1;text-align:center"><b>ชั้น ${sel}${sel%10===0?' 👑':''}</b> ${sel>best?'<span class="tag" style="background:#ffb02a">ใหม่</span>':'<span class="tag">ฟาร์ม</span>'}<br><small>พลังศัตรู <b>${fmt(rp)}</b> ${powTag(tp,rp)} · ${dgEnemies(k,sel).length} ตัว</small></div><button class="btn" style="padding:4px 12px" data-dp="${k}">+</button></div>
+  <small style="text-align:center;margin:4px 0">รางวัล: ${dgRewTxt(dgReward(k,sel))} · อัญมณีขั้น ${Math.min(5,1+Math.floor(sel/6))}${sel>best?` · ผ่านครั้งแรก 💎+${5+sel}`:''}</small>
+  <button class="btn ${sel>best?'red':''} ${left<=0?'off':''}" style="padding:7px" data-dg="${k}" data-s="${sel}">⚔️ ลุยชั้น ${sel}</button></div>`}).join('')+
+ `<details style="margin-top:6px"><summary style="font-weight:800;cursor:pointer">📊 ตารางพลังศัตรูแต่ละชั้น</summary><table class="odds"><tr><th>ชั้น</th><th>พลังศัตรู</th><th>ศัตรู</th><th>เทียบทีมท่าน</th></tr>${[1,3,5,8,10,13,15,18,20,25,30,35,40].map(x=>{const rp=dgRec('gold',x);return `<tr><td>${x}${x%10===0?' 👑':''}</td><td>${fmt(rp)}</td><td>${dgEnemies('gold',x).length}</td><td>${powTag(tp,rp)}</td></tr>`}).join('')}</table></details>`;
+ b.querySelectorAll('[data-dm]').forEach(e=>e.onclick=()=>{const k=e.dataset.dm,best=dgBest(k);dgSel[k]=Math.max(1,(dgSel[k]||best+1)-1);draw(b)});
+ b.querySelectorAll('[data-dp]').forEach(e=>e.onclick=()=>{const k=e.dataset.dp,best=dgBest(k);dgSel[k]=Math.min(best+1,DG_MAX,(dgSel[k]||best+1)+1);draw(b)});
+ b.querySelectorAll('[data-dg]').forEach(e=>e.onclick=()=>startDung(e.dataset.dg,+e.dataset.s))};
+ openSheet('⚔️ ดันเจี้ยนรายวัน','',draw)}
 
 /* ---------- WORLD BOSS ---------- */
 const wbEl=()=>ELK[Math.floor(Date.now()/WB_PERIOD)%6];
@@ -1434,7 +1450,7 @@ function autoTick(){if(!st.auto.on||phase==='title')return;const A0=st.auto;if(A
   if(A0.chest){const i=st.chests.findIndex(c=>Date.now()>=c.ready);if(i>=0){openChest(i);return}}
   if(A0.raid&&unlocked()&&allLoaded&&st.tix>0){startRaid();return}
   if(A0.wb&&unlocked()&&allLoaded){const w=wbObj();if(w.tries>0&&wbLeft(w)>0){startWB();return}}
-  if(A0.dung&&unlocked()&&allLoaded){const D0=dgObj();const k=Object.keys(DUNG).find(x=>D0.u[x]<2);if(k){const fails=(st.dgFail||{})[k]||0;startDung(k,Math.max(0,2-fails));return}}}
+  if(A0.dung&&unlocked()&&allLoaded){const D0=dgObj();const k=Object.keys(DUNG).find(x=>D0.u[x]<2);if(k){startDung(k,Math.max(1,dgBest(k)));return}}}
  if(A0.pass){const P0=passObj(),tier=Math.min(PASS_TIERS,Math.floor(P0.pts/PASS_PT));for(let i=1;i<=tier;i++)if(!P0.cl.includes(i)&&i%10!==0){P0.cl.push(i);passReward(i).f();num('🎖 รับรางวัล Pass','gold',{x:view.clientWidth/2,y:view.clientHeight*.3});break}}
  if(A0.pet&&st.eq.pet&&st.eq.pet.pt){const P0=petOf(st.eq.pet.pt);if(P0.star<5&&st.food>=PET_FOOD[P0.star]){st.food-=PET_FOOD[P0.star];P0.star++;curPT=null;setHandPet();num('🐾 สัตว์คู่ใจวิวัฒนาการ!','tag',{x:view.clientWidth/2,y:view.clientHeight*.3})}}
  renderTop();renderQuestBtn()}
