@@ -203,7 +203,7 @@ table.odds{width:100%;border-collapse:collapse;margin:6px 0;font-size:12px;text-
 .setL{font-weight:600;opacity:.75;text-align:left;margin-top:1px}.setL.on{opacity:1}
 .srow1{display:flex;gap:4px}
 #side button{font-size:11px!important;padding:2px 6px!important;border-width:2px!important;border-radius:9px!important;box-shadow:0 2px 0 #0006!important;line-height:1.3}
-#sideT,#pauseBtn{background:#000a;color:#fff;border:2px solid #ffffff55;font-weight:800;min-width:26px}
+#sideT,#pauseBtn,#ecoBtn{background:#000a;color:#fff;border:2px solid #ffffff55;font-weight:800;min-width:26px}
 #sideIn{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
 #side.min #sideIn,#side.min #buffs{display:none}
 .sb2{background:linear-gradient(#c08a4a,#8a5a24);border:2px solid #4a2a0c;color:#fff;font-family:'Kanit';font-weight:800}
@@ -359,6 +359,9 @@ textarea.code{width:100%;height:56px;font-size:10px;font-family:monospace;border
 .hub .hc.hot{border-color:#ff6a3d;box-shadow:0 0 12px #ff6a3d88}
 @keyframes afkS{0%,100%{transform:rotate(0)}10%{transform:rotate(-12deg)}20%{transform:rotate(10deg)}30%{transform:rotate(-6deg)}40%{transform:rotate(0)}}
 .afkShake{display:inline-block;animation:afkS 1.6s infinite}
+#ecoOv{position:absolute;inset:0;z-index:30;background:#000;display:none;align-items:center;justify-content:center;color:#7a8a9a;font-family:'Kanit';text-align:center;cursor:pointer}
+#ecoOv.on{display:flex}#ecoOv .ecoT{font-size:15px;color:#9fb0c0;margin-bottom:10px}#ecoOv #ecoS{font-size:14px;line-height:1.9;color:#c0ccd8}#ecoOv #ecoS b{color:#ffd27a}#ecoOv .ecoH{font-size:11px;margin-top:14px;opacity:.6}
+#ecoBtn.on{background:#2a7a2a;border-color:#8f8}
 #tipCard{position:absolute;left:8px;right:8px;top:118px;z-index:7;display:none;gap:8px;align-items:center;background:linear-gradient(#fff6dc,#f2dca0);border:3px solid #b07a1a;border-radius:14px;padding:8px 10px;font-family:'Kanit';font-size:12.5px;color:#3a2210;box-shadow:0 6px 18px #0008;animation:bmIn .35s}
 #tipCard.on{display:flex}#tipCard .tpI{font-size:30px}#tipCard .tpB{flex:1;line-height:1.35}#tipCard .tpA{display:flex;flex-direction:column;gap:4px}
 #tipCard button{font-family:inherit;font-weight:800;font-size:12px;border:2px solid #2a170a;border-radius:9px;padding:4px 9px;background:linear-gradient(#ffe08a,#e0a52a);cursor:pointer}
@@ -415,6 +418,7 @@ body.pc .bmGrid{grid-template-columns:repeat(3,1fr)}
   <div id="view">
     <canvas id="gl"></canvas>
     <div id="vign"></div>
+    <div id="ecoOv"><div class="ecoIn"><div class="ecoT">🌙 โหมดประหยัดพลังงาน (จอดำ)</div><div id="ecoS"></div><div class="ecoH">เกมยังเล่นต่อเบื้องหลัง · แตะหน้าจอเพื่อกลับ</div></div></div>
     <div id="tipCard"></div>
     <div id="campHud"><div class="chT stroke">🏕️ แคมป์พักแรม</div><div class="chB"><button id="chMenu">📋 เมนูแคมป์</button><button id="chAfk">🧰 หีบ AFK</button><button id="chGo" class="go">⚔️ ออกผจญภัย</button></div></div>
     <div id="top">
@@ -422,7 +426,7 @@ body.pc .bmGrid{grid-template-columns:repeat(3,1fr)}
       <div id="mid"><div id="dots"></div><div id="mapLbl"></div><div id="guideBar"></div></div>
       <div id="cur"><div class="cpill"><i>🪙</i><span id="gold">0</span></div><div class="cpill"><i>💎</i><span id="gems">0</span></div><div class="cpill" id="trophPill"><i>🏆</i><span id="troph">0</span></div></div>
     </div>
-    <div id="side"><div class="srow1"><button id="sideT" title="ย่อ/ขยาย">◀</button><button id="pauseBtn" title="หยุดเกม (P)">⏸</button><button id="spdBtn" class="stroke">▶ x1</button></div><div id="sideIn"><button id="raidBtn">⚔️ บุกปราสาท</button><button id="questBtn">📜 ภารกิจ</button><button id="autoBtn">🤖 AUTO</button><button id="evtBtn">🎉 กิจกรรม</button><button id="bagBtn" class="sb2">🎒 กระเป๋า</button><button id="craftBtn" class="sb2">⚒️ คราฟ</button></div><div id="buffs"></div></div><div id="pauseOv"><div>⏸ หยุดเกมชั่วคราว<small>แตะ ▶ หรือกด P เพื่อเล่นต่อ</small><button class="btn" id="resumeBtn">▶ เล่นต่อ</button></div></div><div id="legFx"></div><div id="bossWarn"><div>⚠ บอสปรากฏตัว! ⚠</div></div>
+    <div id="side"><div class="srow1"><button id="sideT" title="ย่อ/ขยาย">◀</button><button id="pauseBtn" title="หยุดเกม (P)">⏸</button><button id="ecoBtn" title="โหมดประหยัดพลังงาน">🔋</button><button id="spdBtn" class="stroke">▶ x1</button></div><div id="sideIn"><button id="raidBtn">⚔️ บุกปราสาท</button><button id="questBtn">📜 ภารกิจ</button><button id="autoBtn">🤖 AUTO</button><button id="evtBtn">🎉 กิจกรรม</button><button id="bagBtn" class="sb2">🎒 กระเป๋า</button><button id="craftBtn" class="sb2">⚒️ คราฟ</button></div><div id="buffs"></div></div><div id="pauseOv"><div>⏸ หยุดเกมชั่วคราว<small>แตะ ▶ หรือกด P เพื่อเล่นต่อ</small><button class="btn" id="resumeBtn">▶ เล่นต่อ</button></div></div><div id="legFx"></div><div id="bossWarn"><div>⚠ บอสปรากฏตัว! ⚠</div></div>
     <div id="wbTimer"></div>
     <div id="bossBar"><div class="nmT stroke" id="bossNm"></div><div class="hb"><s></s><b></b><span class="stroke"></span></div></div>
     <div id="ebar"><div class="nmT stroke"></div><div class="hb"><s></s><b></b><span class="stroke"></span></div></div>
@@ -1973,6 +1977,23 @@ setInterval(tipTick,4000);if(location.hash==='#dbg7731')window.__g={get st(){ret
 function openTips(){st.tips=st.tips||[];openSheet('📘 คำแนะนำ',TIPS.filter(t=>st.tips.includes(t.id)).map(t=>`<div class="row"><div class="ri">${t.i}</div><div class="rt"><b>${t.t}</b><br><small>${t.b}</small></div>${t.go?`<button class="btn blue" data-tp="${t.id}">ไป</button>`:''}</div>`).join('')+`<button class="btn" style="width:100%;padding:9px;margin-top:6px" id="tpRe">🔄 แสดงคำแนะนำทั้งหมดอีกครั้ง</button>`,
  b=>{b.querySelectorAll('[data-tp]').forEach(e=>e.onclick=()=>{closeSheet();TIPS.find(t=>t.id===e.dataset.tp).go()});b.querySelector('#tpRe').onclick=()=>{st.tips=[];save();closeSheet()}})}
 CAMP.push(['tips','📘','คำแนะนำ','ทบทวนวิธีเล่น',()=>openTips()]);CAMP.splice(5,0,['sets','◆','สวมทั้งเซ็ต','ใช้ชิ้นเซ็ตในกระเป๋า',()=>{bagWho='me';openBag('sets')}]);
+
+/* ================= ECO MODE (ประหยัดพลังงาน) ================= */
+let ECO=0,wakeL=null;try{ECO=+(localStorage.getItem('emberfall3d_eco')||0)}catch(e){}
+function setEco(v){ECO=v;try{localStorage.setItem('emberfall3d_eco',v)}catch(e){}renderer.setPixelRatio(v?Math.min(devicePixelRatio,1)*.6:Math.min(devicePixelRatio,2));resize();$('ecoOv').classList.toggle('on',v===2);$('ecoBtn').classList.toggle('on',v>0);$('ecoBtn').textContent=v===2?'🌙':'🔋';if(v===2)ecoHud();clock.getDelta()}
+function ecoHud(){if(!st)return;const ms=afkMs();$('ecoS').innerHTML=`${phase==='title'?'อยู่หน้าเมนู':inCamp?'🏕️ พักที่แคมป์':mode==='raid'?'⚔️ '+($('mapLbl').textContent||'ต่อสู้'):'🗺️ แมป <b>'+(st.map+1)+'</b> · ขั้น <b>'+st.step+'/'+STEPS+'</b>'}<br>Lv <b>${st.lvl}</b> · XP ${Math.floor(st.xp/xpNeed(st.lvl)*100)}% · ⚔️ ${fmt(power(S()))}<br>🪙 <b>${fmt(st.gold)}</b> · 💎 ${fmt(st.gems)} · 🔩 ${fmt(st.scrap)}<br>❤️ ${fmt(php)}/${fmt(S().hp)} · ปราบแล้ว ${fmt(st.kills)} ตัว<br>🧰 หีบ AFK ${Math.floor(ms/3600e3)} ชม. ${Math.floor(ms%3600e3/60e3)} น. · 🤖 ${st.auto.on?'ออโต้ทำงาน':'ออโต้ปิด'}${enemy?'<br>👾 '+enemy.name+' '+Math.max(0,Math.round(enemy.hp/enemy.max*100))+'%':''}`}
+async function wakeToggle(on){try{if(on){wakeL=await navigator.wakeLock.request('screen');say('☀️ กันหน้าจอดับ: เปิด (หน้าจอจะไม่ดับเองขณะเปิดเกม)')}else{if(wakeL)await wakeL.release();wakeL=null;say('กันหน้าจอดับ: ปิด')}}catch(e){say('อุปกรณ์/เบราว์เซอร์นี้ไม่รองรับการกันหน้าจอดับ')}}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ACCT.wake&&!wakeL)wakeToggle(true)});
+function openEco(){const draw=b=>{b.innerHTML=`<p class="hint">สำหรับเปิดออโต้ยาว ๆ บนคอมหรือมือถือ — เกมยังเล่นต่อตามปกติ แต่ใช้แบตเตอรี่/ไฟ/ความร้อนน้อยลงมาก</p>`+
+ [[0,'⚡','ปกติ','กราฟิกเต็ม 60 เฟรม/วินาที'],[1,'🔋','ประหยัด','ลดเหลือ ~15 เฟรม/วินาที และลดความละเอียดภาพ (ใช้พลังงานลด ~70%)'],[2,'🌙','จอดำ','ไม่วาดภาพ 3D เลย แสดงแค่ข้อมูลสำคัญบนจอดำ (ประหยัดสุด ~90% · จอ OLED ใช้ไฟน้อยมาก)']].map(([v,i,n,d])=>`<div class="row" style="${ECO===v?'background:#c8f5cc;border-color:#3a9a45':''}"><div class="ri">${i}</div><div class="rt"><b>${n}</b>${ECO===v?' ✓':''}<br><small>${d}</small></div><button class="btn ${ECO===v?'gold off':'blue'}" data-e="${v}">${ECO===v?'ใช้อยู่':'เลือก'}</button></div>`).join('')+
+ `<div class="row"><div class="ri">☀️</div><div class="rt"><b>กันหน้าจอดับ</b><br><small>มือถือ: ถ้าจอดับ เบราว์เซอร์จะหยุดเกม — เปิดตัวนี้คู่กับโหมดจอดำเพื่อให้ออโต้เล่นต่อ (เสียบชาร์จไว้จะดีที่สุด)</small></div><button class="btn ${ACCT.wake?'gold':''}" id="wkB">${ACCT.wake?'เปิดอยู่':'เปิด'}</button></div>
+ <p class="hint">💡 แท็บที่ถูกย่อ/สลับไปแอปอื่น เบราว์เซอร์จะหยุดเกมเอง — แต่หีบ AFK ที่แคมป์สะสมรางวัลให้ตลอด 24 ชม. ถึงจะปิดเกม · คีย์ลัดคอม: B สลับโหมด</p>`;
+ b.querySelectorAll('[data-e]').forEach(e=>e.onclick=()=>{setEco(+e.dataset.e);if(+e.dataset.e===2)closeSheet();else draw(b)});
+ b.querySelector('#wkB').onclick=async()=>{ACCT.wake=ACCT.wake?0:1;saveAcct();await wakeToggle(!!ACCT.wake);draw(b)}};openSheet('🔋 โหมดประหยัดพลังงาน','',draw)}
+$('ecoBtn').onclick=e=>{e.stopPropagation();openEco()};$('ecoOv').onclick=()=>{setEco(1);say('ออกจากโหมดจอดำ (ยังอยู่โหมดประหยัด 🔋 — กด 🔋 เพื่อเปลี่ยน)')};
+document.addEventListener('keydown',e=>{if((e.key==='b'||e.key==='B')&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)){setEco((ECO+1)%3)}});
+setTimeout(()=>setEco(ECO),0);
+CAMP.push(['eco','🔋','ประหยัดพลังงาน','สำหรับเปิดออโต้ยาว ๆ',()=>openEco()]);
 NAV.camp=enterCamp;NAV.adv=openAdv;const RANK_LOCAL=NAV.rank;NAV.rank=()=>openRankOnline();
 
 function heroDetail(k){const h=heroOf(k),H=st.heroes[k],s=heroStats(k),own=H.lvl>0,isM=k===st.main,lc=heroCost(H.lvl,h),cap=capHero(H),sc=STAR_COST[H.star]||0;
@@ -2314,10 +2335,11 @@ function updateCamera(rdt){if(inCamp){campCam(rdt);return}camT=lerp(camT,camTarg
  if(shake>0){shake-=rdt;camera.rotateZ(rnd(-.02,.02)*shake*4);camera.rotateX(rnd(-.02,.02)*shake*4)}}
 function setHB0(){const m=S().hp;$('hpBar').querySelector('b').style.width=clamp(php/m*100,0,100)+'%';$('hpBar').querySelector('span').textContent=fmt(php)+'/'+fmt(m)}
 let saveT=0,uiT=0;
-function frame(){const rdt=Math.min(.05,clock.getDelta());
- if(paused){updateCamera(0);renderer.render(scene,camera);requestAnimationFrame(frame);return}
- if(phase!=='title'){update(rdt*SPD());saveT+=rdt;if(saveT>6){saveT=0;save()}uiT+=rdt;if(uiT>.15){uiT=0;setHB0();skillBtnUpdate()}autoT+=rdt;if(autoT>1){autoT=0;autoTick()}}else{scrollWorld(rdt*1.5);T+=rdt}
- updateCamera(rdt);renderer.render(scene,camera);requestAnimationFrame(frame)}
+function frame(){const eco=ECO,rdt=Math.min(eco?.35:.05,clock.getDelta()),next=()=>eco?setTimeout(frame,eco===2?250:66):requestAnimationFrame(frame);
+ if(paused){if(eco!==2){updateCamera(0);renderer.render(scene,camera)}next();return}
+ if(phase!=='title'){{let r=rdt*SPD();while(r>1e-4){const d=Math.min(.05*SPD(),r);update(d);r-=d}}saveT+=rdt;if(saveT>6){saveT=0;save()}uiT+=rdt;if(uiT>.15){uiT=0;setHB0();skillBtnUpdate()}autoT+=rdt;if(autoT>1){autoT=0;autoTick()}}else{scrollWorld(rdt*1.5);T+=rdt}
+ if(eco!==2){updateCamera(rdt);renderer.render(scene,camera)}else if((ecoT+=rdt)>1){ecoT=0;ecoHud()}next()}
+let ecoT=0;
 
 /* ================= BOOT ================= */
 drawGuide();resize();
