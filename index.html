@@ -1734,6 +1734,14 @@ function campBuildings(){const add=(o,x,z,ry=0,sc=1)=>{o.position.set(x,0,z);o.r
  if(bLv('library')){const g=new THREE.Group();const tb=new THREE.Mesh(new THREE.BoxGeometry(.8,.06,.5),wood);tb.position.y=.6;g.add(tb);for(const x of[-.32,.32])for(const z of[-.18,.18]){const l=new THREE.Mesh(new THREE.BoxGeometry(.06,.6,.06),wood);l.position.set(x,.3,z);g.add(l)}const bk=cloneStatic('spellbook_open');bk.position.y=.66;bk.scale.setScalar(1.2);g.add(bk);add(g,3.1,-7.4,-.4)}
  if(bLv('energy')){const c=new THREE.Mesh(new THREE.OctahedronGeometry(.35),new THREE.MeshLambertMaterial({color:0xb070ff,emissive:0x7020ff,emissiveIntensity:.8}));c.position.set(-.2,1.3,-7.8);c.scale.y=1.6;campG.add(c);c.add(new THREE.PointLight(0xa060ff,3,4));campG.userData.crystal=c;
   const base=new THREE.Mesh(new THREE.CylinderGeometry(.4,.5,.3,8),new THREE.MeshLambertMaterial({color:0x666677}));base.position.set(-.2,.15,-7.8);campG.add(base)}}
+
+function setMain(k){const h=heroOf(k),old=st.main;st.main=k;st.team=st.team.filter(x=>x!==k);if(old&&old!==k&&st.heroes[old]&&st.heroes[old].lvl&&st.team.length<3)st.team.push(old);php=Math.min(S().hp,php);save();renderAll();banner('👑 ตัวหลักใหม่: '+h.n);if(inCamp){campOff();campOn()}}
+function openMainPick(){const own=HEROES.filter(h=>st.heroes[h.k].lvl);
+ openSheet('👑 เปลี่ยนตัวละครหลัก',`<p style="font-size:13px;margin-bottom:6px">ตัวหลักกำหนดธาตุ โบนัสสถานะ และหน้าตาตัวละครของท่าน · ตัวหลักเดิมจะเข้าทีมแทน (ถ้ามีที่ว่าง)</p>`+
+ own.map(h=>{const H=st.heroes[h.k],isM=h.k===st.main;return `<div class="row" style="border-left:6px solid ${RT[h.r].c};${isM?'background:#fff0b0':''}"><div class="rp" style="background-image:url(${PORT[h.k]||''})">${PORT[h.k]?'':h.ic}</div><div class="rt"><b>${h.n}</b> ${rTag(h.r)} ${elTag(h.el)}<br><small>${h.cls} · Lv ${H.lvl} ${'★'.repeat(H.star)} · 👑 ${mainTxt(h)}</small></div>${isM?'<button class="btn gold off">ตัวหลัก</button>':`<button class="btn blue" data-m="${h.k}">เลือก</button>`}</div>`}).join('')+
+ `<p style="font-size:12px;margin:8px 0 4px">ได้ฮีโร่เพิ่มจาก 🔮 อัญเชิญ · 🧩 ชิ้นส่วน · ภารกิจตัวละคร</p><button class="btn" style="width:100%;padding:10px" id="toSl">🔄 สลับไปตัวละครอื่น (ช่องเซฟ 1–4)</button>`,
+ b=>{b.querySelectorAll('[data-m]').forEach(e=>e.onclick=()=>{setMain(e.dataset.m);openMainPick()});b.querySelector('#toSl').onclick=()=>{closeSheet();if(inCamp)campOff();toSlots()}})}
+CAMP.unshift(['main','👑','เปลี่ยนตัวหลัก','สลับฮีโร่/ตัวละคร',()=>openMainPick()]);
 NAV.camp=enterCamp;NAV.adv=openAdv;
 
 function heroDetail(k){const h=heroOf(k),H=st.heroes[k],s=heroStats(k),own=H.lvl>0,isM=k===st.main,lc=heroCost(H.lvl,h),cap=capHero(H),sc=STAR_COST[H.star]||0;
@@ -1751,7 +1759,7 @@ ${setsHTML(H.eq)}
   const lv=b.querySelector('#hLv');if(lv)lv.onclick=()=>{if(H.lvl>=cap||st.gold<lc.g)return;st.gold-=lc.g;H.lvl++;qp&&0;sfx('level');php=Math.min(S().hp,php);save();renderAll();heroDetail(k)};
   const sb=b.querySelector('#hSt');if(sb)sb.onclick=()=>{if(H.star>=5||H.sh<sc)return;H.sh-=sc;H.star++;sfx('level');banner(h.n+' ★'+H.star);save();renderAll();heroDetail(k)};
   const aw=b.querySelector('#hAwk');if(aw)aw.onclick=()=>{const c=Math.round(500*P(gIdx()));if(H.awk||H.lvl<50||H.star<5||H.sh<100||st.ess<150||st.gold<c)return;H.sh-=100;st.ess-=150;st.gold-=c;H.awk=1;sfx('level');banner('⚡ '+h.n+' ตื่นรู้!');save();renderAll();heroDetail(k)};
-  const mb=b.querySelector('#hMain');if(mb)mb.onclick=()=>{st.main=k;st.team=st.team.filter(x=>x!==k);php=Math.min(S().hp,php);save();renderAll();banner('ตัวหลักใหม่: '+h.n);heroDetail(k)}})}
+  const mb=b.querySelector('#hMain');if(mb)mb.onclick=()=>{setMain(k);heroDetail(k)}})}
 
 /* ---------- SUMMON (อัญเชิญ) ---------- */
 const goldBoxCost=()=>Math.round(40*P(gIdx()));
