@@ -358,6 +358,14 @@ textarea.code{width:100%;height:56px;font-size:10px;font-family:monospace;border
 .hub .hc.hot{border-color:#ff6a3d;box-shadow:0 0 12px #ff6a3d88}
 @keyframes afkS{0%,100%{transform:rotate(0)}10%{transform:rotate(-12deg)}20%{transform:rotate(10deg)}30%{transform:rotate(-6deg)}40%{transform:rotate(0)}}
 .afkShake{display:inline-block;animation:afkS 1.6s infinite}
+#tipCard{position:absolute;left:8px;right:8px;top:118px;z-index:7;display:none;gap:8px;align-items:center;background:linear-gradient(#fff6dc,#f2dca0);border:3px solid #b07a1a;border-radius:14px;padding:8px 10px;font-family:'Kanit';font-size:12.5px;color:#3a2210;box-shadow:0 6px 18px #0008;animation:bmIn .35s}
+#tipCard.on{display:flex}#tipCard .tpI{font-size:30px}#tipCard .tpB{flex:1;line-height:1.35}#tipCard .tpA{display:flex;flex-direction:column;gap:4px}
+#tipCard button{font-family:inherit;font-weight:800;font-size:12px;border:2px solid #2a170a;border-radius:9px;padding:4px 9px;background:linear-gradient(#ffe08a,#e0a52a);cursor:pointer}
+#tipCard #tpOk{background:#e8dcc0}
+body.pc #tipCard{left:auto;right:12px;width:360px}
+.nb.tipHi .ni{animation:tipP 1s infinite;box-shadow:0 0 0 3px #ffd84a,0 0 16px #ffd84a}
+@keyframes tipP{50%{transform:scale(1.15)}}
+.num.team{color:#9fe8ff;font-size:18px}
 #campHud{position:absolute;left:0;right:0;bottom:8px;z-index:6;display:none;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
 #campHud.on{display:flex}
 #campHud .chT{font-size:20px;font-weight:900;color:#ffd27a;letter-spacing:1px}
@@ -406,6 +414,7 @@ body.pc .bmGrid{grid-template-columns:repeat(3,1fr)}
   <div id="view">
     <canvas id="gl"></canvas>
     <div id="vign"></div>
+    <div id="tipCard"></div>
     <div id="campHud"><div class="chT stroke">🏕️ แคมป์พักแรม</div><div class="chB"><button id="chMenu">📋 เมนูแคมป์</button><button id="chAfk">🧰 หีบ AFK</button><button id="chGo" class="go">⚔️ ออกผจญภัย</button></div></div>
     <div id="top">
       <div id="prof"><div id="avatar"></div><div id="pname">ผู้ถือคบเพลิง ⚙️</div></div>
@@ -670,7 +679,7 @@ const curLv=()=>monLv(gIdx());
 const leagueIdx=()=>Math.max(0,RANKS.reduce((a,x,i)=>st.troph>=x[1]?i:a,0));
 const capUp=()=>st.lvl,capRef=()=>Math.min(15,2+Math.floor(st.tower.best/3)),capHero=H=>Math.min(lvCap(H),st.lvl);
 const unlocked=()=>st.lvl>=UNLOCK_LV||st.maxMap>0;
-function teamBonus(){const b={dmg:0,hp:0,heal:0};for(const k of st.team){const h=HEROES.find(x=>x.k===k),L=st.heroes[k].lvl;if(!L)continue;if(h.role==='def')b.hp+=6*L;else if(h.role==='str')b.dmg+=5*L;else b.heal+=3*L}return b}
+function teamBonus(){const b={dmg:0,hp:0,heal:0};if(!teamOn())return b;for(const k of st.team){const h=HEROES.find(x=>x.k===k),L=st.heroes[k].lvl;if(!L)continue;if(h.role==='def')b.hp+=6*L;else if(h.role==='str')b.dmg+=5*L;else b.heal+=3*L}return b}
 function S(){
  const s={dmg:10+(st.lvl-1)*2,hp:120+(st.lvl-1)*14,armor:2,tough:0,crit:5+st.up.crit,critd:150,combo:0,bleed:0,dodge:2,ls:0,spd:0,gold:0};
  for(const k in st.eq){const it=st.eq[k];if(it){const rf=1+.08*(st.refine[k]||0);for(const t in it.s)s[t]+=it.s[t]*(PRIM[k][t]!==undefined?rf:1)}}
@@ -792,7 +801,7 @@ function play(ch,name,{once=false,fade=.15,speed=1}={}){const a=ch.acts[name];if
 let props=[],mts=[],clouds=[],castle=null;
 function clearScenery(){for(const o of[...props.map(p=>p.o),...mts,...clouds])scene.remove(o);props=[];mts=[];clouds=[];if(castle)scene.remove(castle);castle=null}
 function buildScenery(raid=false){
- campOff();clearScenery();const M=raid?{sky:0x4a3560,fog:0x7a5a80,gr:0x6f6a64,rd:0,castle:'building_castle_red',mts:['mountain_A','mountain_C']}:MAPS[st.map%MAPS.length];
+ campOff();clearScenery();advTeamClear();const M=raid?{sky:0x4a3560,fog:0x7a5a80,gr:0x6f6a64,rd:0,castle:'building_castle_red',mts:['mountain_A','mountain_C']}:MAPS[st.map%MAPS.length];
  scene.background=new THREE.Color(M.sky);scene.fog=new THREE.Fog(M.fog,20,90);
  groundMat.map=grassTex(M.gr,M.snow);groundMat.map.repeat.set(60,60);groundMat.needsUpdate=true;
  roadMat.map=raid?carpetTex():roadTex(M.rd);roadMat.map.repeat.set(1,46);roadMat.needsUpdate=true;
@@ -957,7 +966,7 @@ function bossTick(e,dt){const tr=e.tr||[];e.trT+=dt;
 function enemyAttack(){const e=enemy;const dur=play(e.ch,e.defn.atk||'attack',{once:true,speed:1.2});e.atkT=dur;e.dmgAt=dur*(e.defn.magic?.55:.42);e.dealt=false}
 function enemyDeal(){const s=S(),e=enemy;if(e&&e.tr&&e.tr.includes('poison'))pPois=3;if(Math.random()*100<s.dodge){num('หลบ!','miss',{x:view.clientWidth/2,y:view.clientHeight*.72});return}
  const red=s.armor/(s.armor+18*Math.pow(1.079,gIdx()));let d=e.atk*rnd(.85,1.15)*(1-Math.min(.75,red))*(1-s.tough/100)*elMul(e.el,myEl());d=Math.max(1,Math.round(d));if(myPx().includes('guard')&&Math.random()<.15){d=Math.round(d*.4);num('🛡 กายาเหล็ก','miss',{x:view.clientWidth*.6,y:view.clientHeight*.7})}if(petShield>0){const ab=Math.min(petShield,d);petShield-=ab;d=Math.max(0,Math.round(d-ab));if(ab>0)num('ดูดซับ '+fmt(ab),'miss',{x:view.clientWidth*.35,y:view.clientHeight*.7})}
- php-=d;if(e.tr&&e.tr.includes('combo')&&++e.cmb%3===0&&!e.comboing){e.comboing=1;setTimeout(()=>{if(enemy===e&&phase==='fight'&&php>0){num('👊 คอมโบ!','tag',enemyScreen(-60));enemyDeal()}e.comboing=0},260)}sfx('hurt');shake=.25;$('vign').style.opacity=.55;setTimeout(()=>$('vign').style.opacity=0,180);num('-'+fmt(d),'bad',{x:view.clientWidth*rnd(.35,.65),y:view.clientHeight*.78});if(php<=0){php=0;defeat()}}
+ d=Math.max(1,Math.round(d*teamGuard()));php-=d;if(e.tr&&e.tr.includes('combo')&&++e.cmb%3===0&&!e.comboing){e.comboing=1;setTimeout(()=>{if(enemy===e&&phase==='fight'&&php>0){num('👊 คอมโบ!','tag',enemyScreen(-60));enemyDeal()}e.comboing=0},260)}sfx('hurt');shake=.25;$('vign').style.opacity=.55;setTimeout(()=>$('vign').style.opacity=0,180);num('-'+fmt(d),'bad',{x:view.clientWidth*rnd(.35,.65),y:view.clientHeight*.78});if(php<=0){php=0;defeat()}}
 function killEnemy(){
  const e=enemy,s=S(),g=gIdx();e.state='dead';e.hp=0;sfx('death');play(e.ch,'death',{once:true,fade:.08});
  const dm=e.danger?1.7:1;if(myPx().includes('reaper'))heal(s.hp*.1);const gold=Math.round(6*Math.pow(1.075,g)*(e.boss?10:1)*(1+s.gold/100)*dm);if(e.boss||(e.danger&&Math.random()<.06)){const gg=addGem(e.boss?Math.min(3,1+Math.floor(st.maxMap/3)):1);setTimeout(()=>num(`+${GEMS[gg.g].i} ${GEMS[gg.g].n} ขั้น ${gg.t}`,'tag',enemyScreen(90)),700)}st.gold+=gold;sfx('coin');num('+'+fmt(gold)+' 🪙','gold',enemyScreen(40));addPass(e.boss?40:3);if(Math.random()<(e.boss?1:.08)){const fd=e.boss?5:1;st.food+=fd;setTimeout(()=>num('+'+fd+' 🍖','gold',enemyScreen(70)),400)}
@@ -1154,7 +1163,7 @@ function makeUnit(side,o,i,n){
 function teamRef(list){const n=list.length;return{hp:list.reduce((a,u)=>a+u.hp,0)/n,dps:list.reduce((a,u)=>a+u.dmg*u.aps,0)/n,n}}
 function myTeamDefs(){
  const s=S(),m=raid.mods,mh=heroOf(st.main)||{f:'knight',keep:[]},list=[{key:'me',name:pname(),el:myEl(),f:mh.f,keep:(mh.keep||[]).filter(x=>/Cape|Spellbook/.test(x)),tint:mh.tint,w:(st.eq.weapon||{}).wt||'sword_1handed',role:'str',hp:s.hp*(1+m.hp)*1.4,dmg:s.dmg*(1+m.dmg),aps:s.aps*(1+m.aps),crit:s.crit+m.crit,critd:s.critd,ls:s.ls+m.ls,red:m.red,dodge:s.dodge,port:PORT.me}];
- for(const k of st.team){const h=HEROES.find(x=>x.k===k);if(!st.heroes[k].lvl||k===st.main)continue;if(raid&&raid.wk&&wkRule().ban===h.role)continue;const hs=heroStats(k);
+ for(const k of (teamOn()?st.team:[])){const h=HEROES.find(x=>x.k===k);if(!st.heroes[k].lvl||k===st.main)continue;if(raid&&raid.wk&&wkRule().ban===h.role)continue;const hs=heroStats(k);
   list.push({key:k,name:h.n,el:h.el,f:h.f,keep:h.keep,w:h.w,wl:h.wl,tint:h.tint,role:h.role,hp:hs.hp*1.3*(1+m.hp),dmg:hs.dmg*(1+m.dmg),aps:hs.aps*(1+m.aps),crit:hs.crit+m.crit,critd:hs.critd,ls:hs.ls+m.ls,red:m.red,dodge:hs.dodge,atk:h.atk,port:PORT[k]})}
  {const hd=helperDef();if(hd)list.push(hd)}
  return list}
@@ -1505,12 +1514,12 @@ const NAV={
   const draw=b=>{const tb=teamBonus(),mh=heroOf(st.main),list=HEROES.slice().sort((a,c)=>(st.heroes[c.k].lvl?1:0)-(st.heroes[a.k].lvl?1:0)||c.r-a.r);
    b.innerHTML=`<div class="row" style="background:linear-gradient(#ffe9b0,#f2c66b);border:3px solid #b07a1a"><div class="ri" style="font-size:34px">🎫</div><div class="rt"><b style="font-size:17px">ตั๋วอัญเชิญ ${st.sumT} ใบ</b><br><small>💎 ${fmt(st.gems)} · 🪙 ${fmt(st.gold)} · อีก ${PITY-st.pity} ครั้งการันตีตำนาน${st.freeSum!==new Date().toDateString()?' · 🎁 อัญเชิญฟรีวันนี้ 1 ครั้ง!':''}</small></div></div><button class="btn" style="width:100%;padding:12px;margin-bottom:8px;font-size:16px" id="sumB">🔮 อัญเชิญฮีโร่ <small>(🎫 ${st.sumT}${st.freeSum!==new Date().toDateString()?' · ฟรีวันนี้ 1 ครั้ง!':''})</small></button>
    ${mh?`<div class="row"><div class="rp" style="background-image:url(${PORT[mh.k]||''})">${PORT[mh.k]?'':mh.ic}</div><div class="rt"><b>👑 ตัวหลัก: ${mh.n}</b> ${elTag(mh.el)}<br><small>โบนัสให้ ${pname()}: ${mainTxt(mh)} · ทุกค่า +${Math.round((mainBonus().dmg-(mh.role==='str'?.15:0))*100)}% (จากเลเวล ดาว และระดับ)</small></div></div>`:''}
-   <div class="row"><div class="ri">🛡️</div><div class="rt"><b>ทีม ${st.team.length}/3</b> · โบนัสตอนผจญภัย: ⚔ +${tb.dmg}% · ❤ +${tb.hp}% · ฟื้น +${tb.heal}%<br><small>🧩 ชิ้นส่วน = ปลดล็อก + เลื่อนดาว · 🪙 ทอง = อัปเลเวล (เพดาน ★×10) · แตะการ์ดเพื่อพัฒนา</small></div></div>`+
+   ${teamOn()?`<button class="btn gold" style="width:100%;padding:9px;margin-bottom:6px" id="recT">✨ จัดทีมแนะนำ (แท็งก์ + ซัพพอร์ต + พลังสูงสุด)</button>`:`<div class="row" style="background:#e0e0e0"><div class="ri">🔒</div><div class="rt"><b>ระบบทีมปลดล็อกเมื่อผ่านแมป 2</b><br><small>ฮีโร่ในทีมจะเดินและสู้เคียงข้างท่านในทุกด่าน รวมถึงบุกปราสาท/ดันเจี้ยน/หอคอย</small></div></div>`}<div class="row"><div class="ri">🛡️</div><div class="rt"><b>ทีม ${st.team.length}/3</b> · โบนัสตอนผจญภัย: ⚔ +${tb.dmg}% · ❤ +${tb.hp}% · ฟื้น +${tb.heal}%<br><small>🧩 ชิ้นส่วน = ปลดล็อก + เลื่อนดาว · 🪙 ทอง = อัปเลเวล (เพดาน ★×10) · แตะการ์ดเพื่อพัฒนา</small></div></div>`+
    list.map(h=>{const H=st.heroes[h.k],own=H.lvl>0,inT=st.team.includes(h.k),isM=h.k===st.main,need=own?STAR_COST[H.star]||0:RT[h.r].unlock;
     return `<div class="row hrow" style="border-left:6px solid ${RT[h.r].c}"><div class="rp" data-d="${h.k}" style="cursor:pointer;background-image:url(${PORT[h.k]||''});${own?'':'filter:grayscale(1) brightness(.6)'}">${PORT[h.k]?'':h.ic}</div><div class="rt" data-d="${h.k}" style="cursor:pointer"><b>${h.n}</b> ${rTag(h.r)} ${elTag(h.el)}<br><span class="tag ${h.role}">${h.cls}</span> ${own?`Lv ${H.lvl}/${capHero(H)} <span style="color:#d89a00">${'★'.repeat(H.star)}</span>${'☆'.repeat(5-H.star)}`:'🔒'}
      <div class="shard"><b style="width:${need?Math.min(100,H.sh/need*100):100}%"></b></div><small>🧩 ${H.sh}${need?'/'+need:''} ${own?(H.star<5?'สู่ดาวถัดไป':'ดาวเต็ม'):'เพื่อปลดล็อก'}${own?' · ⚔ '+fmt(heroPower(h.k)):''}</small></div>
-    <div class="bc">${isM?'<button class="btn gold off">👑 ตัวหลัก</button>':own?`<button class="btn ${inT?'gold':'blue'} ${!inT&&st.team.length>=3?'off':''}" data-t="${h.k}">${inT?'ในทีม ✓':'เข้าทีม'}</button>`:`<button class="btn ${H.sh>=need?'':'off'}" data-u="${h.k}">ปลดล็อก</button>`}</div></div>`}).join('');
-   b.querySelector('#sumB').onclick=openSummon;
+    <div class="bc">${isM?'<button class="btn gold off">👑 ตัวหลัก</button>':own?(teamOn()?`<button class="btn ${inT?'gold':'blue'} ${!inT&&st.team.length>=3?'off':''}" data-t="${h.k}">${inT?'ในทีม ✓':'เข้าทีม'}</button>`:'<button class="btn off" style="font-size:11px">🔒 ทีม<br>ผ่านแมป 2</button>'):`<button class="btn ${H.sh>=need?'':'off'}" data-u="${h.k}">ปลดล็อก</button>`}</div></div>`}).join('');
+   b.querySelector('#sumB').onclick=openSummon;{const rt=b.querySelector('#recT');if(rt)rt.onclick=()=>{const t=recommendTeam();if(!t.length){say('ยังไม่มีฮีโร่ — ไปอัญเชิญก่อนนะ');return}st.team=t;save();renderAll();sfx('level');say('จัดทีมแนะนำแล้ว: '+t.map(k=>heroOf(k).n).join(', '));draw(b)}}
    b.querySelectorAll('[data-t]').forEach(e=>e.onclick=()=>{const k=e.dataset.t;st.team=st.team.includes(k)?st.team.filter(x=>x!==k):[...st.team,k].slice(0,3);save();renderAll();draw(b)});
    b.querySelectorAll('[data-d]').forEach(e=>e.onclick=()=>heroDetail(e.dataset.d));
    b.querySelectorAll('[data-u]').forEach(e=>e.onclick=()=>{const h=heroOf(e.dataset.u),H=st.heroes[h.k];if(H.sh<RT[h.r].unlock)return;H.sh-=RT[h.r].unlock;H.lvl=1;H.star=1;if(st.team.length<3)st.team.push(h.k);sfx('level');save();renderAll();draw(b);banner('ได้ฮีโร่ใหม่! '+h.n)})};
@@ -1666,7 +1675,7 @@ function campChestMesh(){const g=new THREE.Group(),wood=new THREE.MeshLambertMat
  const b=new THREE.Mesh(new THREE.BoxGeometry(1,.55,.65),wood);b.position.y=.28;g.add(b);const lid=new THREE.Mesh(new THREE.CylinderGeometry(.33,.33,1,12,1,false,0,Math.PI),wood);lid.rotation.z=Math.PI/2;lid.rotation.y=Math.PI/2;lid.position.y=.56;g.add(lid);
  for(const x of[-.35,.35]){const band=new THREE.Mesh(new THREE.BoxGeometry(.08,.6,.68),gold);band.position.set(x,.3,0);g.add(band)}const lock=new THREE.Mesh(new THREE.BoxGeometry(.16,.2,.06),gold);lock.position.set(0,.45,.34);g.add(lock);
  const glow=new THREE.PointLight(0xffd060,0,3);glow.position.set(0,1,.4);g.add(glow);g.userData.glow=glow;return g}
-function campOn(){if(inCamp)return;inCamp=true;clearScenery();if(pickup){scene.remove(pickup.sp);pickup=null}
+function campOn(){if(inCamp)return;inCamp=true;advTeamClear();clearScenery();if(pickup){scene.remove(pickup.sp);pickup=null}
  campG=new THREE.Group();scene.add(campG);road.visible=false;edges.forEach(e=>e.visible=false);
  scene.background=new THREE.Color(0x141c38);scene.fog=new THREE.Fog(0x141c38,10,42);hemi.intensity=.55;sun.intensity=.35;sun.color.set(0x8aa0ff);amb.intensity=.25;
  groundMat.map=grassTex(0x3a5a2a);groundMat.map.repeat.set(60,60);groundMat.map.offset.set(0,0);groundMat.needsUpdate=true;
@@ -1704,7 +1713,7 @@ function enterCamp(){if(inCamp){openCamp();return}if(mode!=='adv'){say('จบ�
 function leaveCamp(){if(!inCamp)return;closeSheet();campOff();buildScenery();php=S().hp;renderAll();say('ออกเดินทางต่อ! แมป '+(st.map+1)+' · '+mapDef().n);startWalk()}
 $('chMenu').onclick=()=>openCamp();$('chAfk').onclick=()=>openCamp();$('chGo').onclick=()=>leaveCamp();
 /* ================= DIFFICULTY GATE ================= */
-function mapHard(i){return i<2?{hp:1,atk:1}:{hp:1+.24*(i-1),atk:1+.15*(i-1)}}
+function mapHard(i){return i<1?{hp:1.15,atk:1.1}:i<2?{hp:1.3,atk:1.2}:{hp:1.5+.32*(i-2),atk:1.3+.2*(i-2)}}
 function recPow(i){const g=i*STEPS+15,H=mapHard(i),eh=42*.85*eCurve(g,ECH)*H.hp,ea=7*eCurve(g,ECA)*H.atk;return Math.round((eh/3+ea*4.2)*.9)}
 function stuckPrompt(){if(phase==='title'||mode!=='adv'||inCamp)return;const rp=recPow(st.map),mp=power(S());
  openSheet('💀 แพ้ซ้ำหลายครั้ง',`<div class="row"><div class="ri">⚠️</div><div class="rt"><b>แมปนี้ยังยากเกินไป (แพ้ ${st.deathStreak} ครั้ง)</b><br><small>พลังท่าน ${fmt(mp)} · พลังแนะนำ ${fmt(rp)}</small></div></div>
@@ -1864,6 +1873,56 @@ setInterval(()=>{if(phase==='title'||!st)return;if(afkMs()>=AFK_MAX)notify('afk'
 const bldMin=L=>Math.max(1,Math.round(1.5*L*L));
 function bldTick(){const q=st.bldQ;if(q&&Date.now()>=q.end){st.bld=st.bld||{};st.bld[q.k]=q.lv;st.bldQ=null;const B=BLD.find(x=>x.k===q.k);banner(`🏗️ ${B.n} Lv ${q.lv} เสร็จแล้ว!`);sfx('level');php=Math.min(php,S().hp);save();renderAll();if(inCamp){campOff();campOn()}}}
 setInterval(()=>{if(st&&phase!=='title')bldTick()},3000);
+/* ================= TEAM IN ADVENTURE ================= */
+const teamOn=()=>st.maxMap>=2;
+let advT=[],advSig='';
+const teamSig=()=>teamOn()&&mode==='adv'&&!inCamp?st.team.filter(k=>st.heroes[k]&&st.heroes[k].lvl&&k!==st.main).join(','):'';
+const ADVPOS=[[-1.35,-2.9],[1.35,-2.9],[-2.3,-4.1]];
+function advTeamClear(){for(const u of advT)scene.remove(u.ch.holder);advT=[];advSig=''}
+function advTeamBuild(){advTeamClear();const sig=teamSig();if(!sig)return;advSig=sig;
+ sig.split(',').slice(0,3).forEach((k,i)=>{const h=heroOf(k);if(!h)return;const ch=makeChar({f:h.f,keep:h.keep,w:h.w,wl:h.wl,tint:h.tint,h:1.55});ch.holder.position.set(ADVPOS[i][0],0,ADVPOS[i][1]);ch.holder.rotation.y=Math.PI;scene.add(ch.holder);play(ch,'walk');
+  advT.push({k,h,ch,cd:rnd(.3,1),atkT:0,role:h.role,skT:h.sk?h.sk.cd*.6:1e9})})}
+function advTeamUpdate(dt){if(teamSig()!==advSig){if(allLoaded)advTeamBuild();else return}if(!advT.length)return;
+ for(const u of advT){u.ch.mixer.update(dt);const fighting=phase==='fight'&&enemy&&enemy.state==='fight';
+  if(phase==='walk'){if(u.st!=='walk'){u.st='walk';play(u.ch,'walk')}}else if(!fighting&&u.st!=='idle'&&!(u.atkT>0)){u.st='idle';play(u.ch,'idle')}
+  if(u.atkT>0){u.atkT-=dt;continue}
+  if(fighting){u.cd-=dt;u.skT-=dt;if(u.cd<=0){const hs=heroStats(u.k);u.cd=1/Math.max(.4,hs.aps);u.st='atk';u.atkT=play(u.ch,u.h.atk||'attack',{once:true,speed:1.3})*.9;
+    const sk=u.skT<=0&&u.h.sk;if(sk)u.skT=u.h.sk.cd;
+    setTimeout(()=>{if(!enemy||enemy.state!=='fight')return;if(u.role==='sup'&&!sk){heal(hs.dmg*.6,true);return}let d=hs.dmg*.45*(sk?2.5:1)*rnd(.9,1.1)*elMul(u.h.el,enemy.el);if(Math.random()*100<hs.crit)d*=hs.critd/100;teamHit(Math.round(d),sk?'✨'+u.h.sk.n:'',u)},260)}}}}
+function teamHit(d,tag,u){const e=enemy;if(!e||e.state!=='fight')return;const tr=e.tr||[];if(tr.includes('dodge')&&Math.random()<.12){num('💨','miss',enemyScreen(-30));return}if(tr.includes('block')&&Math.random()<.15)d=Math.round(d*.3);
+ if(e.sh>0){const a=Math.min(e.sh,d);e.sh-=a;d-=a}if(d<=0)return;e.hp-=d;const p=new THREE.Vector3();u.ch.holder.getWorldPosition(p);
+ num(fmt(d),'team',enemyScreen(-20),tag||u.h.ic||'');if(e.hp<=0)killEnemy()}
+function teamGuard(){if(!advT.length)return 1;const t=advT.find(u=>u.role==='def');if(t&&Math.random()<.22){num('🛡 '+t.h.n+' ป้องกัน!','miss',{x:view.clientWidth*.5,y:view.clientHeight*.66});play(t.ch,'block',{once:true});return .45}return 1}
+function recommendTeam(){const own=HEROES.filter(h=>st.heroes[h.k].lvl&&h.k!==st.main).map(h=>({h,p:heroPower(h.k)})).sort((a,b)=>b.p-a.p);const pick3=[];
+ const tank=own.find(x=>x.h.role==='def'),sup=own.find(x=>x.h.role==='sup');if(tank)pick3.push(tank);if(sup&&pick3.length<3)pick3.push(sup);for(const x of own){if(pick3.length>=3)break;if(!pick3.includes(x))pick3.push(x)}
+ return pick3.map(x=>x.h.k)}
+/* ================= TIPS (ระบบแนะนำ) ================= */
+const TIPS=[
+ {id:'start',c:()=>st.kills>=2,i:'⚔️',t:'ยินดีต้อนรับ!',b:'ฮีโร่เดินและสู้เองอัตโนมัติ หน้าที่ของท่านคือเลือกอุปกรณ์ ตัดสินใจอีเวนต์ และพัฒนาตัวละคร'},
+ {id:'gear',c:()=>st.kills>=4,i:'🎒',t:'อุปกรณ์',b:'ทุกครั้งที่ได้ของใหม่ ดูลูกศร ▲▼ เทียบกับของเดิม ปัดขวา = สวมใส่ · ปัดซ้าย = ขายเป็นทอง+เศษเหล็ก · เปิด 🤖 AUTO ให้ตัดสินใจแทนได้'},
+ {id:'camp',c:()=>st.kills>=15,i:'🏕️',t:'แคมป์',b:'กด 🏕️ แคมป์ด้านล่างเพื่อพักรอบกองไฟ รับหีบ AFK และพัฒนาตัวละคร (ระหว่างพักจะไม่ออกผจญภัย)',go:()=>enterCamp(),n:'camp'},
+ {id:'bld',c:()=>st.lvl>=4,i:'🏗️',t:'สิ่งปลูกสร้าง',b:'แคมป์ → 🏗️ สิ่งปลูกสร้าง: สร้างลานฝึก กองไฟใหญ่ ฯลฯ เพิ่มสถานะถาวร ใช้ทองและเศษเหล็ก',go:()=>openBld(),n:'camp'},
+ {id:'craft',c:()=>st.lvl>=4&&st.scrap>=20,i:'🔨',t:'ตีบวกอุปกรณ์',b:'ใช้ 🔩 เศษเหล็กตีบวกอุปกรณ์ที่โรงคราฟ ทำให้แข็งแกร่งขึ้นมาก',go:()=>openCraft()},
+ {id:'tav',c:()=>unlocked(),i:'🍺',t:'โรงเตี๊ยม & อัญเชิญ',b:'ปลดล็อกโรงเตี๊ยมแล้ว! ใช้ 🎫 ตั๋วอัญเชิญสุ่มฮีโร่ เก็บชิ้นส่วนเพื่อปลดล็อกและเลื่อนดาว',go:()=>NAV.tavern(),n:'camp'},
+ {id:'dung',c:()=>unlocked(),i:'⚔️',t:'ดันเจี้ยนรายวัน',b:'ผจญภัย → ดันเจี้ยนรายวัน: ได้ทอง เศษเหล็ก ชิ้นส่วน XP และศิลาก่อสร้าง วันละ 2 รอบต่อดันเจี้ยน',go:()=>openDung(),n:'adv'},
+ {id:'team',c:()=>teamOn(),i:'🛡️',t:'ปลดล็อกระบบทีม!',b:'ผ่านแมป 2 แล้ว! จัดทีมฮีโร่ได้ 3 คน — ฮีโร่ในทีมจะเดินและสู้เคียงข้างท่านในทุกด่าน (แท็งก์ช่วยป้องกัน · สายซัพพอร์ตช่วยรักษา) กด "✨ จัดทีมแนะนำ" ที่โรงเตี๊ยมได้เลย',go:()=>NAV.tavern(),n:'camp'},
+ {id:'hard',c:()=>st.maxMap>=2,i:'💀',t:'มอนสเตอร์โหดขึ้น',b:'ตั้งแต่แมป 3 ศัตรูแข็งแกร่งขึ้นทุกแมป ดู "พลังแนะนำ" ที่แผนที่ ถ้าพลังไม่ถึง ให้ไปล่าบอส ดันเจี้ยน หอคอย ตีบวก หรือสร้างอาคารก่อน',go:()=>openMap(),n:'adv'},
+ {id:'tower',c:()=>unlocked()&&st.lvl>=6,i:'🗼',t:'หอคอย & พลังงาน',b:'เข้าหอคอยใช้ ⚡ 6 พลังงาน/ครั้ง (ฟื้น 1 ทุก 5 นาที) ไต่ชั้นเพื่อปลดเพดานตีบวกและรับเพชร',go:()=>openAdv(),n:'adv'},
+ {id:'bm',c:()=>st.lvl>=UNLOCK_LV+1,i:'🌑',t:'ตลาดมืด',b:'แคมป์ → ตลาดมืด: ของหายากลดราคา เปลี่ยนทุก 6 ชั่วโมง มีพลังงานและศิลาขายด้วย',go:()=>openBM(),n:'camp'},
+ {id:'elite',c:()=>(st.stat.elite||0)>=1||(enemy&&enemy.elite),i:'⭐',t:'มอนสเตอร์ชั้นยอด',b:'ตัวเรืองแสงมีสกิลพิเศษ (บล็อก หลบ คอมโบ คลั่ง…) แข็งกว่าปกติ แต่ดรอปของดีกว่าและอาจได้อัญมณี'},
+ {id:'social',c:()=>online()&&st.lvl>=6,i:'🤝',t:'เพื่อน & กิลด์',b:'แลกรหัสเพื่อน ส่งของขวัญทุกวัน ยืมฮีโร่เพื่อนช่วยรบ และรวมกิลด์ตีบอสกิลด์ประจำสัปดาห์',go:()=>openSocial(),n:'camp'}];
+function tipNext(){st.tips=st.tips||[];return TIPS.find(t=>!st.tips.includes(t.id)&&(()=>{try{return t.c()}catch(e){return false}})())}
+let tipShown=null;
+function tipTick(){if(phase==='title'||tipShown||$('sheet').classList.contains('on'))return;const t=tipNext();if(!t)return;tipShown=t;const el=$('tipCard');
+ el.innerHTML=`<div class="tpI">${t.i}</div><div class="tpB"><b>📘 แนะนำ: ${t.t}</b><br>${t.b}</div><div class="tpA">${t.go?'<button id="tpGo">ไปเลย</button>':''}<button id="tpOk">${t.go?'ภายหลัง':'เข้าใจแล้ว'}</button></div>`;el.classList.add('on');
+ document.querySelectorAll('.nb.tipHi').forEach(e=>e.classList.remove('tipHi'));if(t.n){const nb=document.querySelector(`[data-n=${t.n}]`);if(nb)nb.classList.add('tipHi')}
+ const done=()=>{st.tips.push(t.id);save();el.classList.remove('on');document.querySelectorAll('.nb.tipHi').forEach(e=>e.classList.remove('tipHi'));tipShown=null};
+ const g=$('tpGo');if(g)g.onclick=()=>{done();t.go()};$('tpOk').onclick=done;
+ if(st.auto.on)setTimeout(()=>{if(tipShown===t)done()},12000)}
+setInterval(tipTick,4000);if(location.hash==='#dbg7731')window.__g={get st(){return st},advT:()=>advT,teamOn,renderAll,save};
+function openTips(){st.tips=st.tips||[];openSheet('📘 คำแนะนำ',TIPS.filter(t=>st.tips.includes(t.id)).map(t=>`<div class="row"><div class="ri">${t.i}</div><div class="rt"><b>${t.t}</b><br><small>${t.b}</small></div>${t.go?`<button class="btn blue" data-tp="${t.id}">ไป</button>`:''}</div>`).join('')+`<button class="btn" style="width:100%;padding:9px;margin-top:6px" id="tpRe">🔄 แสดงคำแนะนำทั้งหมดอีกครั้ง</button>`,
+ b=>{b.querySelectorAll('[data-tp]').forEach(e=>e.onclick=()=>{closeSheet();TIPS.find(t=>t.id===e.dataset.tp).go()});b.querySelector('#tpRe').onclick=()=>{st.tips=[];save();closeSheet()}})}
+CAMP.push(['tips','📘','คำแนะนำ','ทบทวนวิธีเล่น',()=>openTips()]);
 NAV.camp=enterCamp;NAV.adv=openAdv;const RANK_LOCAL=NAV.rank;NAV.rank=()=>openRankOnline();
 
 function heroDetail(k){const h=heroOf(k),H=st.heroes[k],s=heroStats(k),own=H.lvl>0,isM=k===st.main,lc=heroCost(H.lvl,h),cap=capHero(H),sc=STAR_COST[H.star]||0;
@@ -2165,7 +2224,7 @@ addEventListener('keydown',e=>{
 /* ================= LOOP ================= */
 const clock=new THREE.Clock();
 function update(dt){
- T+=dt;if(inCamp)campUpdate(dt);const s=S();
+ T+=dt;if(inCamp)campUpdate(dt);if(mode==='adv'&&!inCamp)advTeamUpdate(dt);else if(advT.length)advTeamClear();const s=S();
  if(phase==='walk'){const d=WALK_SPEED*dt;scrollWorld(d);if(mode==='adv')pickupUpdate(d);walkLeft-=d;
   const bob=Math.sin(T*10);R.g.position.y=-.66+bob*.018;L.g.position.y=-.62-bob*.018;CAM_FP.p.y=1.55+Math.abs(bob)*.03;
   if(mode==='raid')raidProg();
