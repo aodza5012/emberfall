@@ -1966,7 +1966,7 @@ function tipTick(){if(phase==='title'||tipShown||$('sheet').classList.contains('
 setInterval(tipTick,4000);if(location.hash==='#dbg7731')window.__g={get st(){return st},advT:()=>advT,teamOn,renderAll,save};
 function openTips(){st.tips=st.tips||[];openSheet('📘 คำแนะนำ',TIPS.filter(t=>st.tips.includes(t.id)).map(t=>`<div class="row"><div class="ri">${t.i}</div><div class="rt"><b>${t.t}</b><br><small>${t.b}</small></div>${t.go?`<button class="btn blue" data-tp="${t.id}">ไป</button>`:''}</div>`).join('')+`<button class="btn" style="width:100%;padding:9px;margin-top:6px" id="tpRe">🔄 แสดงคำแนะนำทั้งหมดอีกครั้ง</button>`,
  b=>{b.querySelectorAll('[data-tp]').forEach(e=>e.onclick=()=>{closeSheet();TIPS.find(t=>t.id===e.dataset.tp).go()});b.querySelector('#tpRe').onclick=()=>{st.tips=[];save();closeSheet()}})}
-CAMP.push(['tips','📘','คำแนะนำ','ทบทวนวิธีเล่น',()=>openTips()]);
+CAMP.push(['tips','📘','คำแนะนำ','ทบทวนวิธีเล่น',()=>openTips()]);CAMP.splice(5,0,['sets','◆','สวมทั้งเซ็ต','ใช้ชิ้นเซ็ตในกระเป๋า',()=>{bagWho='me';openBag('sets')}]);
 NAV.camp=enterCamp;NAV.adv=openAdv;const RANK_LOCAL=NAV.rank;NAV.rank=()=>openRankOnline();
 
 function heroDetail(k){const h=heroOf(k),H=st.heroes[k],s=heroStats(k),own=H.lvl>0,isM=k===st.main,lc=heroCost(H.lvl,h),cap=capHero(H),sc=STAR_COST[H.star]||0;
@@ -1980,7 +1980,7 @@ function heroDetail(k){const h=heroOf(k),H=st.heroes[k],s=heroStats(k),own=H.lvl
  <div class="hgrid">${SLOTS.map(sl=>{const it=H.eq[sl.k];if(!it)return `<div class="slot empty"><div class="ic">${sl.ic}</div></div>`;const R=RAR[it.r];return `<div class="slot" data-hs="${sl.k}" style="cursor:pointer;background:${R.bg};border-color:${R.c}">${itemIcon(it)}<div class="lv">Lv ${it.ilvl}</div></div>`}).join('')}</div>
 ${setsHTML(H.eq)}
  <div class="statg">${['dmg','hp','armor','crit','critd','dodge','ls','spd'].map(x=>`<div><span>${STN[x]}</span><span>${fmt(s[x])}</span></div>`).join('')}<div><span>โจมตี/วินาที</span><span>${s.aps.toFixed(2)}</span></div></div>
- <button class="btn blue" style="width:100%;margin-top:10px;padding:10px" id="backT">⬅ กลับโรงเตี๊ยม</button>`,b=>{b.querySelector('#backT').onclick=()=>NAV.tavern();b.querySelectorAll('[data-hs]').forEach(e=>e.onclick=()=>itemPop(H.eq[e.dataset.hs],'🔍 อุปกรณ์ของ '+h.n));
+ ${own?`<button class="btn gold" style="width:100%;margin-top:8px;padding:9px" id="hSet">◆ สวมทั้งเซ็ตจากกระเป๋าให้ ${h.n}</button>`:''}<button class="btn blue" style="width:100%;margin-top:10px;padding:10px" id="backT">⬅ กลับโรงเตี๊ยม</button>`,b=>{b.querySelector('#backT').onclick=()=>NAV.tavern();{const hs=b.querySelector('#hSet');if(hs)hs.onclick=()=>{bagWho=k;openBag('sets')}}b.querySelectorAll('[data-hs]').forEach(e=>e.onclick=()=>itemPop(H.eq[e.dataset.hs],'🔍 อุปกรณ์ของ '+h.n));
   const lv=b.querySelector('#hLv');if(lv)lv.onclick=()=>{if(H.lvl>=cap||st.gold<lc.g)return;st.gold-=lc.g;H.lvl++;qp&&0;sfx('level');php=Math.min(S().hp,php);save();renderAll();heroDetail(k)};
   const sb=b.querySelector('#hSt');if(sb)sb.onclick=()=>{if(H.star>=5||H.sh<sc)return;H.sh-=sc;H.star++;sfx('level');banner(h.n+' ★'+H.star);save();renderAll();heroDetail(k)};
   const aw=b.querySelector('#hAwk');if(aw)aw.onclick=()=>{const c=Math.round(500*P(gIdx()));if(H.awk||H.lvl<50||H.star<5||H.sh<100||st.ess<150||st.gold<c)return;H.sh-=100;st.ess-=150;st.gold-=c;H.awk=1;sfx('level');banner('⚡ '+h.n+' ตื่นรู้!');save();renderAll();heroDetail(k)};
@@ -2025,6 +2025,7 @@ let bagF='all',bagSel=null,bagWho='me';
 const whoEq=k=>k==='me'?st.eq:st.heroes[k].eq;
 const whoName=k=>k==='me'?pname():heroOf(k).n;
 const whoList=()=>['me',...st.team.filter(k=>st.heroes[k].lvl)];
+function setPreview(sk,who){const eq=whoEq(who),pw=()=>who==='me'?power(S()):heroPower(who),p0=pw(),saved={};for(const sl of SLOTS){if(eq[sl.k]&&eq[sl.k].set===sk)continue;const bg=st.bag.filter(x=>x.set===sk&&x.slot===sl.k).sort((a,c)=>c.r-a.r||c.ilvl-a.ilvl)[0];if(bg){saved[sl.k]=eq[sl.k];eq[sl.k]=bg}}const p1=pw();for(const k in saved)eq[k]=saved[k];return{p0,p1}}
 function whoPow(k,it){return k==='me'?powerWith(it)-power(S()):heroPowerWith(k,it)-heroPower(k)}
 function equipFromBag(it,k){const eq=whoEq(k),old=eq[it.slot];const m0=S().hp;eq[it.slot]=it;st.bag=st.bag.filter(x=>x!==it);if(old)st.bag.push(old);if(k==='me'){php=clamp(php+S().hp-m0,1,S().hp);setHandWeapon();setHandPet()}if(it.slot==='pet'&&it.pt)petOf(it.pt);qp('equip');sfx('equip')}
 function salvage(list){let sc=0,es=0;for(const it of list){sc+=scrapVal(it);es+=essVal(it)}st.scrap+=sc;st.ess+=es;st.bag=st.bag.filter(x=>!list.includes(x));return{sc,es}}
@@ -2032,7 +2033,7 @@ function cellHTML(it,sel){const R=RAR[it.r];return `<div class="bc2 ${sel?'sel':
 function openBag(tab='items'){const draw=b=>{
  const items=st.bag.filter(it=>bagF==='all'||(bagF==='none'?!it.set:it.set===bagF)).sort((a,c)=>c.r-a.r||c.ilvl-a.ilvl||SLOTS.findIndex(x=>x.k===a.slot)-SLOTS.findIndex(x=>x.k===c.slot));
  const sel=st.bag.find(x=>x.id===bagSel);
- b.innerHTML=`<div class="tabs"><button class="${tab==='items'?'on':''}" data-tab="items">🎒 ไอเทม ${st.bag.length}/${BAG_MAX}</button><button class="${tab==='sets'?'on':''}" data-tab="sets">◆ ครบเซ็ต</button><button data-go="craft">⚒️ โรงคราฟ</button></div>
+ b.innerHTML=`<div class="tabs"><button class="${tab==='items'?'on':''}" data-tab="items">🎒 ไอเทม ${st.bag.length}/${BAG_MAX}</button><button class="${tab==='sets'?'on':''}" data-tab="sets">◆ สวมทั้งเซ็ต</button><button data-go="craft">⚒️ โรงคราฟ</button></div>
  <div class="mats">🔩 ${fmt(st.scrap)} · 💠 ${fmt(st.ess)} · 🪙 ${fmt(st.gold)}</div>`+(tab==='items'?`
  <div class="chips">${[['all','ทั้งหมด'],...Object.entries(SETS).map(([k,S0])=>[k,S0.i+' '+S0.n.replace('ชุด','')]),['none','ไม่มีเซ็ต']].map(([k,n])=>`<button class="${bagF===k?'on':''}" data-f="${k}">${n}</button>`).join('')}</div>
  ${sel?`<div class="bsel"><div class="gcard mini" style="border-color:${RAR[sel.r].c}">${cardHTML(sel,whoEq(bagWho)[sel.slot])}</div>
@@ -2045,7 +2046,7 @@ function openBag(tab='items'){const draw=b=>{
  Object.entries(SETS).map(([k,S0])=>{const eq=whoEq(bagWho),own=SLOTS.map(sl=>{const e=eq[sl.k]&&eq[sl.k].set===k?eq[sl.k]:null,bg=st.bag.filter(x=>x.set===k&&x.slot===sl.k).sort((a,c)=>c.r-a.r||c.ilvl-a.ilvl)[0];return{sl,e,bg}});const n=own.filter(o=>o.e).length,can=own.filter(o=>o.e||o.bg).length;
   return `<div class="setRow" style="border-color:${S0.c}"><div class="setH" style="background:${S0.c}">${S0.i} ${S0.n} <small>${S0.st}</small><span>ใส่ ${n}/10 · มีครบได้ ${can}/10</span></div>
   <div class="srow">${own.map(o=>`<div class="sc ${o.e?'eq':o.bg?'has':''}" title="${o.sl.n}">${o.e?itemIcon(o.e):o.bg?itemIcon(o.bg):o.sl.ic}</div>`).join('')}</div>
-  <div style="padding:2px 6px 5px"><button class="btn ${can>n?'':'off'}" style="padding:3px 10px;font-size:12px" data-full="${k}">สวมทั้งเซ็ตให้ ${whoName(bagWho)} (${can} ชิ้น)</button> <small>โบนัสถ้าใส่ ${can} ชิ้น: ${can>=2?setTxt(setSum(k,can)):'-'}</small></div></div>`}).join(''));
+  <div style="padding:2px 6px 5px"><button class="btn ${can>n?'':'off'}" style="padding:3px 10px;font-size:12px" data-full="${k}">สวมทั้งเซ็ตให้ ${whoName(bagWho)} (${can} ชิ้น)</button> <small>โบนัสถ้าใส่ ${can} ชิ้น: ${can>=2?setTxt(setSum(k,can)):'-'}</small>${can>n?(()=>{const pv=setPreview(k,bagWho),d=pv.p1-pv.p0;return `<br><small>⚔️ พลัง ${whoName(bagWho)}: ${fmt(pv.p0)} → <b style="color:${d>=0?'#1d7a2a':'#c4251a'}">${fmt(pv.p1)}</b> (${d>=0?'+':''}${fmt(d)})${d<0?' ⚠️ เซ็ตนี้ทำให้อ่อนลง':''}</small>`})():''}</div></div>`}).join(''));
  b.querySelectorAll('[data-tab]').forEach(e=>e.onclick=()=>openBag(e.dataset.tab));b.querySelector('[data-go]').onclick=()=>openCraft();
  b.querySelectorAll('[data-f]').forEach(e=>e.onclick=()=>{bagF=e.dataset.f;draw(b)});
  b.querySelectorAll('[data-b]').forEach(e=>e.onclick=()=>{bagSel=+e.dataset.b===bagSel?null:+e.dataset.b;draw(b)});
@@ -2057,7 +2058,7 @@ function openBag(tab='items'){const draw=b=>{
   if(a==='salv'){const r=salvage([it]);bagSel=null;num(`♻️ +${r.sc}🔩 +${r.es}💠`,'gold',{x:view.clientWidth/2,y:view.clientHeight*.3})}
   if(a==='lock')it.lock=!it.lock;renderAll();save();draw(b)});
  b.querySelectorAll('[data-bulk]').forEach(e=>e.onclick=()=>{const m=+e.dataset.bulk,list=st.bag.filter(x=>!x.lock&&x.r<=m);if(!list.length)return;const r=salvage(list);say(`ย่อย ${list.length} ชิ้น ได้ 🔩${r.sc} 💠${r.es}`);renderAll();save();draw(b)});
- b.querySelectorAll('[data-full]').forEach(e=>e.onclick=()=>{const k=e.dataset.full,eq=whoEq(bagWho);let c=0;for(const sl of SLOTS){if(eq[sl.k]&&eq[sl.k].set===k)continue;const bg=st.bag.filter(x=>x.set===k&&x.slot===sl.k).sort((a,c)=>c.r-a.r||c.ilvl-a.ilvl)[0];if(bg){equipFromBag(bg,bagWho);c++}}if(c){banner(`สวม ${SETS[k].n} +${c} ชิ้น`)}renderAll();save();draw(b)})};
+ b.querySelectorAll('[data-full]').forEach(e=>e.onclick=()=>{const k=e.dataset.full,eq=whoEq(bagWho);let c=0;const p0=bagWho==='me'?power(S()):heroPower(bagWho);for(const sl of SLOTS){if(eq[sl.k]&&eq[sl.k].set===k)continue;const bg=st.bag.filter(x=>x.set===k&&x.slot===sl.k).sort((a,c)=>c.r-a.r||c.ilvl-a.ilvl)[0];if(bg){equipFromBag(bg,bagWho);c++}}if(c){const p1=bagWho==='me'?power(S()):heroPower(bagWho);banner(`◆ สวม ${SETS[k].n} +${c} ชิ้น`);say(`สวม ${SETS[k].n} ให้ ${whoName(bagWho)} ${c} ชิ้น · พลัง ${fmt(p0)} → ${fmt(p1)} · ชิ้นเดิมเข้ากระเป๋าแล้ว`)}renderAll();save();draw(b)})};
  openSheet('🎒 กระเป๋า','',draw)}
 
 /* ---------- CRAFT ---------- */
