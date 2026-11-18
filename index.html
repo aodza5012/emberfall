@@ -756,8 +756,8 @@ function grassTex(col,snow){const c=new THREE.Color(col);return texCanvas(64,64,
 const groundMat=new THREE.MeshLambertMaterial(),roadMat=new THREE.MeshLambertMaterial();
 const ground=new THREE.Mesh(new THREE.PlaneGeometry(200,200),groundMat);ground.rotation.x=-Math.PI/2;scene.add(ground);
 const road=new THREE.Mesh(new THREE.PlaneGeometry(3.2,140),roadMat);road.rotation.x=-Math.PI/2;road.position.set(0,.01,-60);scene.add(road);
-const edgeMat=new THREE.MeshLambertMaterial({color:0x000000,transparent:true,opacity:.18});
-for(const sx of[-1,1]){const e=new THREE.Mesh(new THREE.PlaneGeometry(.25,140),edgeMat);e.rotation.x=-Math.PI/2;e.position.set(sx*1.72,.012,-60);scene.add(e)}
+const edgeMat=new THREE.MeshLambertMaterial({color:0x000000,transparent:true,opacity:.18});const edges=[];
+for(const sx of[-1,1]){const e=new THREE.Mesh(new THREE.PlaneGeometry(.25,140),edgeMat);e.rotation.x=-Math.PI/2;e.position.set(sx*1.72,.012,-60);scene.add(e);edges.push(e)}
 
 /* ================= ASSETS ================= */
 const loader=new GLTFLoader();const A={};
@@ -1648,7 +1648,7 @@ function campChestMesh(){const g=new THREE.Group(),wood=new THREE.MeshLambertMat
  for(const x of[-.35,.35]){const band=new THREE.Mesh(new THREE.BoxGeometry(.08,.6,.68),gold);band.position.set(x,.3,0);g.add(band)}const lock=new THREE.Mesh(new THREE.BoxGeometry(.16,.2,.06),gold);lock.position.set(0,.45,.34);g.add(lock);
  const glow=new THREE.PointLight(0xffd060,0,3);glow.position.set(0,1,.4);g.add(glow);g.userData.glow=glow;return g}
 function campOn(){if(inCamp)return;inCamp=true;clearScenery();if(pickup){scene.remove(pickup.sp);pickup=null}
- campG=new THREE.Group();scene.add(campG);road.visible=false;
+ campG=new THREE.Group();scene.add(campG);road.visible=false;edges.forEach(e=>e.visible=false);
  scene.background=new THREE.Color(0x141c38);scene.fog=new THREE.Fog(0x141c38,10,42);hemi.intensity=.55;sun.intensity=.35;sun.color.set(0x8aa0ff);amb.intensity=.25;
  groundMat.map=grassTex(0x3a5a2a);groundMat.map.repeat.set(60,60);groundMat.map.offset.set(0,0);groundMat.needsUpdate=true;
  const M=mapDef();
@@ -1669,14 +1669,14 @@ function campOn(){if(inCamp)return;inCamp=true;clearScenery();if(pickup){scene.r
   const c=makeChar({...d,h:1.8});c.holder.position.set(x,0,z);c.holder.rotation.y=Math.atan2(-x,-z);campG.add(c.holder);play(c,'idle',{speed:.7});c.mixer.update(Math.random()*2);
   c.bones={ul:c.root.getObjectByName('upperleg.l'),ur:c.root.getObjectByName('upperleg.r'),ll:c.root.getObjectByName('lowerleg.l'),lr:c.root.getObjectByName('lowerleg.r')};campChars.push(c)});
  $('campHud').classList.add('on');$('raidBtn').style.display='none';$('skillBtn').style.display='none';campHud();mode='adv';phase='camp'}
-function campOff(){if(!inCamp)return;inCamp=false;if(campG)scene.remove(campG);campG=null;campChars=[];campFire=null;campEmbers=[];campChest=null;road.visible=true;$('campHud').classList.remove('on')}
+function campOff(){if(!inCamp)return;inCamp=false;if(campG)scene.remove(campG);campG=null;campChars=[];campFire=null;campEmbers=[];campChest=null;road.visible=true;edges.forEach(e=>e.visible=true);$('campHud').classList.remove('on')}
 const CSIT={ul:-1.45,ll:1.5,y:-.62};
 function campUpdate(dt){const t=T;
  for(const c of campChars){c.mixer.update(dt*.6);const B=c.bones;if(B.ul&&B.ur){B.ul.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ul));B.ur.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ul))}if(B.ll&&B.lr){B.ll.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ll));B.lr.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ll))}c.holder.position.y=CSIT.y*c.height/1.8}
  if(campFire){campFire.flames.forEach((m,i)=>{const k=1+Math.sin(t*(9+i*3))*.08+Math.sin(t*(23+i*5))*.05;m.scale.set(1/k,k,1/k);m.rotation.y+=dt*(1+i)});campFire.light.intensity=11+Math.sin(t*13)*1.5+Math.sin(t*31)*1}
  for(const e of campEmbers){const u=e.userData;u.t+=dt*.7;if(u.t>2){u.t=0;u.vx=rnd(-.25,.25);u.vz=rnd(-.25,.25)}e.position.set(u.vx*u.t,.4+u.t*1.2,u.vz*u.t);e.material.opacity=1-u.t/2}
  if(campChest){const full=afkMs()>=3600e3;campChest.userData.glow.intensity=full?2+Math.sin(t*4)*1.2:0;campChest.position.y=full?Math.abs(Math.sin(t*3))*.04:0}}
-function campCam(rdt){const t=T;camera.position.set(Math.sin(t*.12)*.5,2.9+Math.sin(t*.2)*.08,6.4);camera.lookAt(0,.75,-1.2);arms.visible=false}
+function campCam(rdt){const t=T;camera.position.set(Math.sin(t*.12)*.35,2.05+Math.sin(t*.2)*.05,3.9);camera.lookAt(0,.7,-1.1);arms.visible=false}
 function campHud(){const ms=afkMs(),b=$('chAfk');b.textContent='🧰 หีบ AFK · '+(ms>=AFK_MAX?'เต็ม!':Math.floor(ms/3600e3)+' ชม. '+Math.floor(ms%3600e3/60e3)+' น.');b.classList.toggle('full',ms>=3600e3)}
 setInterval(()=>{if(inCamp)campHud()},20e3);
 function enterCamp(){if(inCamp){openCamp();return}if(mode!=='adv'){say('จบภารกิจนี้ก่อน แล้วค่อยกลับแคมป์นะ');return}
