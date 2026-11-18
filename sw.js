@@ -1,5 +1,5 @@
 // Emberfall service worker: network-first (always newest version), cache only as offline fallback
-const C='emberfall-v2';
+const C='emberfall-v3';
 self.addEventListener('install',e=>self.skipWaiting());
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>clients.claim())));
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;

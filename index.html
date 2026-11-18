@@ -830,10 +830,12 @@ async function loadAll(){
 function loadRest(){return Promise.all([...CH,...ENVALL].map(loadOne)).then(()=>{allLoaded=true;buildHeroPorts();renderAll()})}
 const cloneStatic=n=>A[n]?A[n].scene.clone(true):new THREE.Group();
 const HIDE=/Shield|Sword|Axe|Mug|Spellbook|Wand|Staff|Crossbow|Knife|Throwable/;
+function disposeObj(o){if(!o)return;try{o.traverse(x=>{if(x.isSkinnedMesh&&x.skeleton)x.skeleton.dispose();const ms=x.material?(Array.isArray(x.material)?x.material:[x.material]):[];for(const m of ms)if(m.userData&&m.userData.cl)m.dispose()})}catch(e){}}
+function rmChar(h){if(!h)return;scene.remove(h);disposeObj(h)}
 function makeChar(defn){
  if(!A[defn.f])defn={...defn,f:'knight',keep:['1H_Sword']};const g=A[defn.f];const root=SkeletonUtils.clone(g.scene);
  root.traverse(o=>{if(o.isMesh){o.frustumCulled=false;if(HIDE.test(o.name))o.visible=(defn.keep||[]).includes(o.name);
-  if(defn.tint||defn.glow){o.material=o.material.clone();if(defn.tint)o.material.color.multiply(new THREE.Color(defn.tint));if(defn.glow){o.material.emissive=new THREE.Color(defn.glow);o.material.emissiveIntensity=.35}}}});
+  if(defn.tint||defn.glow){o.material=o.material.clone();o.material.userData.cl=1;if(defn.tint)o.material.color.multiply(new THREE.Color(defn.tint));if(defn.glow){o.material.emissive=new THREE.Color(defn.glow);o.material.emissiveIntensity=.35}}}});
  if(defn.w){const hs=root.getObjectByName('handslot.r');if(hs)hs.add(cloneStatic(defn.w))}
  if(defn.wl){const hs=root.getObjectByName('handslot.l');if(hs)hs.add(cloneStatic(defn.wl))}
  const box=new THREE.Box3().setFromObject(root);const h=box.max.y-box.min.y||2;root.scale.setScalar((defn.h||1.8)/h*(defn.s||1));
@@ -893,7 +895,7 @@ function setHandPet(){const pt=st.eq.pet?st.eq.pet.pt:null;if(pt===curPT)return;
 
 /* ---------- projectiles ---------- */
 const projs=[];
-function shoot(col,from,toObj,onHit){const m=new THREE.Mesh(new THREE.SphereGeometry(.12,12,10),new THREE.MeshBasicMaterial({color:col}));m.position.copy(from);scene.add(m);m.add(new THREE.PointLight(col,3,4));projs.push({m,t:0,from:from.clone(),toObj,onHit})}
+function shoot(col,from,toObj,onHit){const m=new THREE.Mesh(GEO_P,new THREE.MeshBasicMaterial({color:col}));m.position.copy(from);scene.add(m);projs.push({m,t:0,from:from.clone(),toObj,onHit})}
 
 /* ---------- icons & portraits ---------- */
 let snapR=null;const getSnapR=()=>{if(!snapR){snapR=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});snapR.outputColorSpace=THREE.SRGBColorSpace}return snapR};
@@ -1017,7 +1019,7 @@ function killEnemy(){
  {const lo=st.lvl-3-monLv(g);addXp(Math.round(Math.max(9*Math.pow(1.06,g),xpNeed(monLv(g))*.012)*(e.boss?6:1)*dm*(lo>0?Math.max(.1,1-.15*lo):1)))}st.kills++;qp('kill');st.codex[e.mk]=(st.codex[e.mk]||0)+1;if(CODEX_T.includes(st.codex[e.mk])||(e.boss&&BOSS_T.includes(st.codex[e.mk])))setTimeout(()=>num('📖 สมุดมอนสเตอร์ +โบนัส!','tag',{x:view.clientWidth/2,y:view.clientHeight*.3}),600);if(e.boss)qp('boss');
  if(e.boss){st.troph+=10;st.gems+=5;const h=addShards(null,2);if(!e.fromBossTab)st.bossCd[st.map]=0;banner('ปราบบอส! +10 🏆');setTimeout(()=>num(`+2 ชิ้นส่วน ${h.n}`,'tag',enemyScreen(60)),300)}
  heal(s.hp*(.15+s.heal/100),true);
- setTimeout(()=>{scene.remove(e.ch.holder);if(enemy===e)enemy=null;$('bossBar').style.display='none';
+ setTimeout(()=>{rmChar(e.ch.holder);if(enemy===e)enemy=null;$('bossBar').style.display='none';
   if(e.elite){st.stat.elite=(st.stat.elite||0)+1;if(Math.random()<.35){const gg=addGem(Math.min(3,1+Math.floor(st.maxMap/4)));setTimeout(()=>num(`+${GEMS[gg.g].i} ${GEMS[gg.g].n} ขั้น ${gg.t}`,'tag',enemyScreen(90)),700)}if(Math.random()<.3)addShards(null,1)}
   const drop=e.boss?genItem(2,1.5):e.elite?genItem(1,1.4):e.fromBossTab?genItem(2,1):e.danger?genItem(1,1.2):genItem();
   const after=e.fromBossTab?()=>{phase=inCamp?'camp':'walk'}:(e.boss?mapClear:nextStep);showGear(drop,after)},1100/SPD());
@@ -1026,7 +1028,7 @@ function defeat(){
  const fromTab=!!(enemy&&enemy.fromBossTab);if(!fromTab)setTimeout(()=>say(`💀 พ่ายแพ้! กลับไปเริ่มที่มอนสเตอร์ตัวแรกของแมป ${st.map+1} — เก็บเลเวลและของใหม่ เตรียมตัวให้พร้อมแล้วลุยอีกครั้ง`),2100);
  st.deathStreak++;const retreat=false;if(st.deathStreak>=3&&st.deathStreak%3===0)setTimeout(stuckPrompt,2300);
  phase='dead';if(enemy)play(enemy.ch,'cheer');banner('พ่ายแพ้…');say(pick(['ไม่เป็นไร! ถอยไปตั้งหลักก่อน แล้วค่อยกลับมาเอาคืน','ล้มได้ก็ลุกได้ … แต่รอบหน้าลองใส่เกราะดูนะ','ลองอัปเกรดที่ร้านค้า หรือชวนเพื่อนจากโรงเตี๊ยมมาช่วยสิ']));
- setTimeout(()=>{if(enemy){scene.remove(enemy.ch.holder);enemy=null}$('bossBar').style.display='none';if(!fromTab){st.step=1;st.dgUntil=0}st.buff={dmg:0,mul:0};php=S().hp;renderAll();save();
+ setTimeout(()=>{if(enemy){rmChar(enemy.ch.holder);enemy=null}$('bossBar').style.display='none';if(!fromTab){st.step=1;st.dgUntil=0}st.buff={dmg:0,mul:0};php=S().hp;renderAll();save();
   if(retreat){st.deathStreak=0;st.pushLeft=2;phase='walk';say('ออโต้: แมปนี้ยากไป ถอยไปฟาร์มแมปก่อนหน้า 2 รอบ แล้วจะกลับมาลุยใหม่!');goMap(st.map-1);return}startWalk()},2000)}
 function heal(v,show=false){const m=S().hp,b=php;php=Math.min(m,php+v);if(show&&php-b>1)num('+'+fmt(php-b),'heal',{x:view.clientWidth*.5,y:view.clientHeight*.86})}
 function addXp(x){x=Math.round(x*(1+bldB().xp));st.xp+=x;let up=0;while(st.xp>=xpNeed(st.lvl)){st.xp-=xpNeed(st.lvl);st.lvl++;up=1;php=S().hp;banner('เลเวลอัป! Lv '+st.lvl);sfx('level')}if(up)checkClassQ()}
@@ -1060,8 +1062,9 @@ function petUpdate(dt){const pt=st.eq.pet&&st.eq.pet.pt;if(!pt||pt==='chick')ret
 
 /* ---------- leader skill & vfx ---------- */
 let skCd=0;const vfx=[];
-function burstAt(obj,col=0xff8a1a,size=2.2){const p=new THREE.Vector3();obj.getWorldPosition(p);p.y+=1;const m=new THREE.Mesh(new THREE.SphereGeometry(.4,16,12),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.85}));m.position.copy(p);scene.add(m);const l=new THREE.PointLight(col,6,8);m.add(l);vfx.push({m,t:0,size})}
-function vfxUpdate(dt){for(let i=vfx.length-1;i>=0;i--){const v=vfx[i];v.t+=dt*2.2;v.m.scale.setScalar(1+v.t*v.size*2);v.m.material.opacity=.85*(1-v.t);if(v.t>=1){scene.remove(v.m);vfx.splice(i,1)}}}
+const GEO_B=new THREE.SphereGeometry(.4,16,12),GEO_P=new THREE.SphereGeometry(.12,12,10);
+function burstAt(obj,col=0xff8a1a,size=2.2){if(!obj)return;if(vfx.length>24){const o=vfx.shift();scene.remove(o.m);o.m.material.dispose()}const p=new THREE.Vector3();obj.getWorldPosition(p);p.y+=1;const m=new THREE.Mesh(GEO_B,new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.85,depthWrite:false}));m.position.copy(p);scene.add(m);vfx.push({m,t:0,size})}
+function vfxUpdate(dt){for(let i=vfx.length-1;i>=0;i--){const v=vfx[i];v.t+=dt*2.2;v.m.scale.setScalar(1+v.t*v.size*2);v.m.material.opacity=.85*(1-v.t);if(v.t>=1){scene.remove(v.m);v.m.material.dispose();vfx.splice(i,1)}}}
 function castSkill(){
  if(skCd>0)return;
  if(false&&mode==='adv'&&phase==='fight'&&enemy&&enemy.state==='fight'){skCd=LEADER_SK.cd;sfx('skill');playerSwing();burstAt(enemy.ch.holder);hitEnemy(3,'🔥');qp('skill');return}
@@ -1113,7 +1116,7 @@ function autoPathDanger(){const h=php/S().hp;return st.deathStreak===0&&!st.push
 function startEvent(type){if(type==='path'){showPath();return}const E=type==='chest'?CHEST_EV:pick(EVENTS);showEvent(E,E.char?{...MON[E.char],keep:[]}:null,null)}
 function chooseEvent(right){
  if(phase!=='event')return;const E=curEvent;if(E.id!=='raidspare')qp('event');evDrop=null;evMimic=false;const msg=(right?E.onR:E.onL)();$('evOv').classList.remove('on');
- if(evChar){if(right&&(E.id==='spare'||E.id==='raidspare'))play(evChar,'death',{once:true});else{play(evChar,'walk');evChar.flee=true}const c=evChar;setTimeout(()=>scene.remove(c.holder),1400);evChar=null}
+ if(evChar){if(right&&(E.id==='spare'||E.id==='raidspare'))play(evChar,'death',{once:true});else{play(evChar,'walk');evChar.flee=true}const c=evChar;setTimeout(()=>rmChar(c.holder),1400);evChar=null}
  say(msg);renderAll();phase='busy';
  if(evAfter){const a=evAfter;evAfter=null;setTimeout(a,900/SPD());return}
  setTimeout(()=>{if(evMimic){spawnEnemy(false,'minion');enemy.name='มิมิคหีบ 👊🛡';enemy.tr=['combo','block'];enemy.elite=true;enemy.hp=enemy.max*=1.6;return}if(evDrop)showGear(evDrop,nextStep);else nextStep()},900/SPD())}
@@ -1304,7 +1307,7 @@ function battleUpdate(dt){
  if(!meAlive||!foeAlive){phase='busy';const win=meAlive;units.filter(u=>!u.dead).forEach(u=>play(u.ch,'cheer'));
   setTimeout(()=>endBattle(win),1400/SPD())}}
 let tTO=0;function renderTeamHP(){tTO++;if(tTO%6)return;const cards=$('team').querySelectorAll('.tc b');units.filter(u=>u.side==='me').forEach((u,i)=>{if(cards[i])cards[i].style.width=(u.hp/u.max*100)+'%'})}
-function clearUnits(){$('wbTimer').style.display='none';for(const u of units){scene.remove(u.ch.holder);u.bar.remove()}units=[];$('team').classList.remove('on');if(raid&&!raid.tower&&!raid.dung&&!raid.wb)$('raidBar').style.display='block'}
+function clearUnits(){$('wbTimer').style.display='none';for(const u of units){rmChar(u.ch.holder);u.bar.remove()}units=[];$('team').classList.remove('on');if(raid&&!raid.tower&&!raid.dung&&!raid.wb)$('raidBar').style.display='block'}
 function endBattle(win){
  raid.hpCarry={};units.filter(u=>u.side==='me').forEach(u=>raid.hpCarry[u.name]=u.dead?.25:u.hp/u.max);
  const throne=raid.throne;let rivalDef=null;if(throne&&win){const u=units.find(x=>x.side==='foe'&&x.name.startsWith('👑'));rivalDef={f:'knight',keep:['Knight_Cape'],tint:0xffd890,h:1.95}}
@@ -1509,7 +1512,17 @@ $('sideT').onclick=()=>{st.sideMin=!st.sideMin;$('side').classList.toggle('min',
 function legendFlash(c){const f=$('legFx');f.style.background=`radial-gradient(circle at 50% 45%,${c}cc,${c}33 40%,transparent 70%)`;f.classList.remove('on');void f.offsetWidth;f.classList.add('on');banner('✨ ของระดับสูง!')}
 function bossWarn(){const w=$('bossWarn');w.classList.remove('on');void w.offsetWidth;w.classList.add('on');clearTimeout(w._t);w._t=setTimeout(()=>w.classList.remove('on'),2600)}
 let autoT=0;
-function autoTick(){if(!st.auto.on||phase==='title')return;const A0=st.auto;if(A0.gear&&gearItem&&$('gearOv').classList.contains('on')){phase='gear';autoGear();return}
+let lastInput=Date.now(),wdSig='',wdT=Date.now();addEventListener('pointerdown',()=>lastInput=Date.now(),true);
+function watchdog(){const sg=[phase,mode,st.step,st.map,st.kills,inCamp,enemy?Math.round(enemy.hp):-1,units.length?units.reduce((a,u)=>a+Math.round(u.hp),0):0].join('|');
+ if(sg!==wdSig){wdSig=sg;wdT=Date.now();return}if(Date.now()-wdT<40000||Date.now()-lastInput<60000)return;wdT=Date.now();
+ if(inCamp||phase==='camp'||phase==='title')return;
+ console.warn('watchdog: stuck at',sg);say('🛠️ ออโต้ค้าง — กู้คืนให้อัตโนมัติแล้ว');
+ try{if($('sheet').classList.contains('on')){onSheetClose=null;closeSheet()}}catch(e){}
+ ['gearOv','evOv','powOv'].forEach(x=>{const el=$(x);if(el)el.classList.remove('on')});gearItem=null;gearAfter=null;
+ if(mode==='raid'){try{dgAuto=null;exitTower()}catch(e){}return}
+ if(enemy&&enemy.state!=='fight'){rmChar(enemy.ch.holder);enemy=null}
+ if(!enemy){phase='busy';startWalk()}}
+function autoTick(){if(!st.auto.on||phase==='title')return;try{watchdog()}catch(e){console.error(e)}const A0=st.auto;if(A0.gear&&gearItem&&$('gearOv').classList.contains('on')){phase='gear';autoGear();return}
  if(A0.quest){const D=daily();for(const q of D.q)if(!q.c&&q.p>=q.g){q.c=true;addPass(100);st.gems+=8;st.gold+=Math.round(30*P(gIdx()));addShards(null,2);addXp(Math.round(xpNeed(st.lvl)*.15));num('📜 รับรางวัลภารกิจ','gold',{x:view.clientWidth/2,y:view.clientHeight*.3})}}
  if(A0.hero&&unlocked()){if(st.freeSum!==new Date().toDateString())doSummon('king',1,true,true);for(const h of HEROES){const H=st.heroes[h.k];if(H.lvl&&H.star<5&&H.sh>=STAR_COST[H.star]&&H.lvl>=lvCap(H)){H.sh-=STAR_COST[H.star];H.star++;num(`${h.n} ★${H.star}!`,'tag',{x:view.clientWidth/2,y:view.clientHeight*.38});break}}for(const h of HEROES){const H=st.heroes[h.k],c=heroCost(H.lvl,h);if(H.lvl<capHero(H)&&H.sh>=c.sh&&st.gold>=c.g){H.sh-=c.sh;st.gold-=c.g;H.lvl++;if(H.lvl===1&&st.team.length<3&&h.k!==st.main)st.team.push(h.k);num(`${h.n} ${H.lvl===1?'เข้าร่วม!':'Lv '+H.lvl}`,'tag',{x:view.clientWidth/2,y:view.clientHeight*.35});break}}}
  if(A0.upgrade){const u=UPG.filter(x=>!x.max||st.up[x.k]<x.max).sort((a,b)=>upCost(a)-upCost(b))[0];if(u&&st.gold>=upCost(u)){st.gold-=upCost(u);st.up[u.k]++;qp('upgrade')}}
@@ -1622,7 +1635,7 @@ $('prof').onclick=()=>openSheet('⚙️ ตั้งค่า',`<div class="row"
    try{await fs.setDoc(fs.doc(D,'users',uid),{acct:'{}',cur:0,t:Date.now()},{merge:true})}catch(_){}try{await fs.deleteDoc(fs.doc(D,'lb',uid))}catch(_){}}}catch(_){}
   try{Object.keys(localStorage).filter(k=>k.startsWith('emberfall3d')&&k!=='emberfall3d_uid'&&k!=='emberfall3d_eco').forEach(k=>localStorage.removeItem(k))}catch(_){}
   location.reload()};
- b.querySelector('#rsBtn').onclick=e=>{if(e.target.dataset.c){try{localStorage.removeItem(slotKey(curSlot));if(!curSlot)localStorage.removeItem('emberfall3d_v1')}catch(_){}if(enemy){scene.remove(enemy.ch.holder);enemy=null}['gearOv','evOv','powOv','mapScr'].forEach(i=>$(i).classList.remove('on'));gearItem=null;gearAfter=null;queued=null;if(mode==='raid'){clearUnits();mode='adv';raid=null;camTarget=0;$('raidBar').style.display='none';$('dots').style.display=''}$('bossBar').style.display='none';st=loadSlot(-1);curWT=curPT=undefined;setHandWeapon();setHandPet();php=S().hp;closeSheet();buildScenery();renderAll();save();phase='busy';showCreate(()=>{renderAll();startWalk();say('เริ่มต้นใหม่แล้ว! ขอให้โชคดีนะ '+pname())})}else{e.target.dataset.c=1;e.target.textContent='ยืนยันลบ?'}}});
+ b.querySelector('#rsBtn').onclick=e=>{if(e.target.dataset.c){try{localStorage.removeItem(slotKey(curSlot));if(!curSlot)localStorage.removeItem('emberfall3d_v1')}catch(_){}if(enemy){rmChar(enemy.ch.holder);enemy=null}['gearOv','evOv','powOv','mapScr'].forEach(i=>$(i).classList.remove('on'));gearItem=null;gearAfter=null;queued=null;if(mode==='raid'){clearUnits();mode='adv';raid=null;camTarget=0;$('raidBar').style.display='none';$('dots').style.display=''}$('bossBar').style.display='none';st=loadSlot(-1);curWT=curPT=undefined;setHandWeapon();setHandPet();php=S().hp;closeSheet();buildScenery();renderAll();save();phase='busy';showCreate(()=>{renderAll();startWalk();say('เริ่มต้นใหม่แล้ว! ขอให้โชคดีนะ '+pname())})}else{e.target.dataset.c=1;e.target.textContent='ยืนยันลบ?'}}});
 document.querySelectorAll('nav .nb').forEach(b=>b.onclick=()=>NAV[b.dataset.n]());
 const NAV={
  map:()=>openMap(),
@@ -1810,7 +1823,7 @@ function campOn(){if(inCamp)return;inCamp=true;advTeamClear();clearScenery();if(
   const c=makeChar({...d,h:1.8});c.holder.position.set(x,0,z);c.holder.rotation.y=Math.atan2(-Math.cos(a),-Math.sin(a));campG.add(c.holder);play(c,'idle',{speed:.7});c.mixer.update(Math.random()*2);
   const gb=n=>c.root.getObjectByName(n)||c.root.getObjectByName(n.replace('.',''));c.bones={ul:gb('upperleg.l'),ur:gb('upperleg.r'),ll:gb('lowerleg.l'),lr:gb('lowerleg.r')};window.__CB=c.bones;campChars.push(c)});
  $('campHud').classList.add('on');$('raidBtn').style.display='none';$('skillBtn').style.display='none';campHud();mode='adv';phase='camp'}
-function campOff(){if(!inCamp)return;inCamp=false;if(campG)scene.remove(campG);campG=null;campChars=[];campFire=null;campEmbers=[];campChest=null;road.visible=true;edges.forEach(e=>e.visible=true);$('campHud').classList.remove('on')}
+function campOff(){if(!inCamp)return;inCamp=false;if(campG)rmChar(campG);campG=null;campChars=[];campFire=null;campEmbers=[];campChest=null;road.visible=true;edges.forEach(e=>e.visible=true);$('campHud').classList.remove('on')}
 const CSIT={ul:-1.5,ll:1.5,y:-.4};window.__CSIT=CSIT;const CCAM=[0,2.9,2.7,0,.45,-1.6];window.__CCAM=CCAM;
 function campUpdate(dt){const t=T;
  for(const c of campChars){c.mixer.update(dt*.6);const B=c.bones;if(B.ul&&B.ur){B.ul.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ul));B.ur.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ul))}if(B.ll&&B.lr){B.ll.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ll));B.lr.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ll))}c.holder.position.y=CSIT.y*c.height/1.8}
@@ -2011,7 +2024,7 @@ const teamOn=()=>st.maxMap>=2;
 let advT=[],advSig='';
 const teamSig=()=>teamOn()&&mode==='adv'&&!inCamp?st.team.filter(k=>st.heroes[k]&&st.heroes[k].lvl&&k!==st.main).join(','):'';
 const ADVPOS=[[-1.2,-4.6],[1.2,-4.6],[1.9,-6.3]];
-function advTeamClear(){for(const u of advT)scene.remove(u.ch.holder);advT=[];advSig=''}
+function advTeamClear(){for(const u of advT)rmChar(u.ch.holder);advT=[];advSig=''}
 function advTeamBuild(){advTeamClear();const sig=teamSig();if(!sig)return;advSig=sig;
  sig.split(',').slice(0,3).forEach((k,i)=>{const h=heroOf(k);if(!h)return;const ch=makeChar({f:h.f,keep:h.keep,w:h.w,wl:h.wl,tint:h.tint,h:1.5});ch.holder.position.set(ADVPOS[i][0],0,ADVPOS[i][1]);ch.holder.rotation.y=Math.PI+(ADVPOS[i][0]<0?-.35:.35);scene.add(ch.holder);play(ch,'walk');
   advT.push({k,h,ch,cd:rnd(.3,1),atkT:0,role:h.role,skT:h.sk?h.sk.cd*.6:1e9})})}
@@ -2306,10 +2319,10 @@ function openAccount(){openSheet('👤 บัญชี',`<div class="row"><div c
  const Sv=b.querySelector('#acSave');if(Sv)Sv.onclick=async()=>{Sv.textContent='กำลังบันทึก...';await cloudPush(true);Sv.textContent='✅ บันทึกแล้ว'};
  const O=b.querySelector('#acOut');if(O)O.onclick=async()=>{if(!O.dataset.c){O.dataset.c=1;O.textContent=authUser.isAnonymous?'Guest จะหายถ้าไม่ผูกบัญชี! ยืนยัน?':'ยืนยันออก?';return}await cloudPush(true);await FB.auth.signOut(FB.A);authUser=null;closeSheet();clearScene();phase='title';$('title').classList.add('on');setAcctLine();openLogin()}})}
 /* ---------- CHARACTER SLOTS ---------- */
-function clearScene(){if(enemy){scene.remove(enemy.ch.holder);enemy=null}['gearOv','evOv','powOv','mapScr'].forEach(x=>$(x).classList.remove('on'));gearItem=null;gearAfter=null;queued=null;
+function clearScene(){if(enemy){rmChar(enemy.ch.holder);enemy=null}['gearOv','evOv','powOv','mapScr'].forEach(x=>$(x).classList.remove('on'));gearItem=null;gearAfter=null;queued=null;
  if(mode==='raid'){clearUnits();mode='adv';raid=null;camTarget=0;$('raidBar').style.display='none';$('dots').style.display='';$('raidBtn').style.display=''}$('bossBar').style.display='none';closeSheet()}
 async function switchSlot(i){if(i===curSlot&&st)return;save();curSlot=i;try{localStorage.setItem('emberfall3d_cur',i)}catch(e){}
- if(enemy){scene.remove(enemy.ch.holder);enemy=null}['gearOv','evOv','powOv','mapScr'].forEach(x=>$(x).classList.remove('on'));gearItem=null;gearAfter=null;queued=null;
+ if(enemy){rmChar(enemy.ch.holder);enemy=null}['gearOv','evOv','powOv','mapScr'].forEach(x=>$(x).classList.remove('on'));gearItem=null;gearAfter=null;queued=null;
  if(mode==='raid'){clearUnits();mode='adv';raid=null;camTarget=0;$('raidBar').style.display='none';$('dots').style.display=''}$('bossBar').style.display='none';
  st=loadSlot(i);if(!allLoaded)await loadAll();curWT=curPT=undefined;setHandWeapon();setHandPet();php=S().hp;closeSheet();buildScenery();renderAll()}
 function questTable(){const cls=[...new Set(UNLQ.map(q=>q.c))];return `<div class="cqt"><b>🏆 ภารกิจตัวละคร</b> <small>(ใช้ร่วมกันทุกตัวละคร · นับตามสายที่เลือกตอนสร้าง)</small>`+cls.map(c=>{const h0=heroOf(c),best=Math.max(0,...[...Array(NSLOT)].map((_,i)=>{const d=i===curSlot?st:readSlot(i);return d&&(d.cls||d.main)===c?d.lvl:0}));
@@ -2406,7 +2419,7 @@ function update(dt){
  if(evChar){evChar.mixer.update(dt);if(evChar.flee){evChar.holder.position.x+=dt*3;evChar.holder.rotation.y=Math.PI/2}}
  swingUpdate(dt);vfxUpdate(dt);petUpdate(dt);
  if(skCd>0)skCd-=dt;if((st.autoSkill||(st.auto.on&&st.auto.skill))&&mode==='adv'&&skCd<=0&&phase==='fight'&&enemy&&enemy.state==='fight'&&enemy.hp>0)castSkill();
- for(let i=projs.length-1;i>=0;i--){const p=projs[i];p.t+=dt*3;const to=new THREE.Vector3();p.toObj.getWorldPosition(to);to.y+=1.1;p.m.position.lerpVectors(p.from,to,Math.min(1,p.t));if(p.t>=1){scene.remove(p.m);projs.splice(i,1);p.onHit()}}
+ for(let i=projs.length-1;i>=0;i--){const p=projs[i];p.t+=dt*3;const to=new THREE.Vector3();p.toObj.getWorldPosition(to);to.y+=1.1;p.m.position.lerpVectors(p.from,to,Math.min(1,p.t));if(p.t>=1){scene.remove(p.m);p.m.material.dispose();projs.splice(i,1);try{p.onHit()}catch(e){console.error(e)}}}
  if(petMesh)petMesh.position.y=.05+Math.abs(Math.sin(T*(phase==='walk'?10:3)))*.03;
  for(const c of clouds){c.position.x+=dt*.4;if(c.position.x>40)c.position.x=-40}}
 function updateCamera(rdt){if(inCamp){campCam(rdt);return}camT=lerp(camT,camTarget,Math.min(1,rdt*3.5));
@@ -2414,10 +2427,12 @@ function updateCamera(rdt){if(inCamp){campCam(rdt);return}camT=lerp(camT,camTarg
  if(shake>0){shake-=rdt;camera.rotateZ(rnd(-.02,.02)*shake*4);camera.rotateX(rnd(-.02,.02)*shake*4)}}
 function setHB0(){const m=S().hp;$('hpBar').querySelector('b').style.width=clamp(php/m*100,0,100)+'%';$('hpBar').querySelector('span').textContent=fmt(php)+'/'+fmt(m)}
 let saveT=0,uiT=0;
-function frame(){const eco=ECO,rdt=Math.min(eco?1.1:.05,clock.getDelta()),next=()=>eco?setTimeout(frame,eco===2?250:66):requestAnimationFrame(frame);
- if(paused){if(eco!==2){updateCamera(0);renderer.render(scene,camera)}next();return}
+let frameErr=0;
+function frame(){const eco=ECO,next=()=>eco?setTimeout(frame,eco===2?250:66):requestAnimationFrame(frame);try{frameBody(eco)}catch(e){console.error(e);frameErr++;if(frameErr<5||frameErr%50===0)console.warn('frame recovered',frameErr)}next()}
+function frameBody(eco){const rdt=Math.min(eco?1.1:.05,clock.getDelta());
+ if(paused){if(eco!==2){updateCamera(0);renderer.render(scene,camera)}return}
  if(phase!=='title'){{let r=rdt*SPD();while(r>1e-4){const d=Math.min(.05*SPD(),r);update(d);r-=d}}saveT+=rdt;if(saveT>6){saveT=0;save()}uiT+=rdt;if(uiT>.15){uiT=0;setHB0();skillBtnUpdate()}autoT+=rdt;if(autoT>1){autoT=0;autoTick()}}else{scrollWorld(rdt*1.5);T+=rdt}
- if(eco!==2){updateCamera(rdt);renderer.render(scene,camera)}else if((ecoT+=rdt)>1){ecoT=0;ecoHud()}next()}
+ if(eco!==2){updateCamera(rdt);renderer.render(scene,camera)}else if((ecoT+=rdt)>1){ecoT=0;ecoHud()}}
 let ecoT=0;
 
 /* ================= BOOT ================= */
