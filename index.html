@@ -1667,10 +1667,10 @@ function campOn(){if(inCamp)return;inCamp=true;clearScenery();if(pickup){scene.r
  const angs=window.__CA||[-2.25,-.9,-2.95,-.2];
  team.forEach((d,i)=>{const a=angs[i],r=window.__CR||1.55,x=Math.cos(a)*r,z=Math.sin(a)*r-1.5;const lg=campLog(1.3);lg.position.set(x+Math.cos(a)*.12,.17,z+Math.sin(a)*.12);lg.rotation.y=Math.atan2(-Math.cos(a),-Math.sin(a))+Math.PI/2;campG.add(lg);
   const c=makeChar({...d,h:1.8});c.holder.position.set(x,0,z);c.holder.rotation.y=Math.atan2(-Math.cos(a),-Math.sin(a));campG.add(c.holder);play(c,'idle',{speed:.7});c.mixer.update(Math.random()*2);
-  c.bones={ul:c.root.getObjectByName('upperleg.l'),ur:c.root.getObjectByName('upperleg.r'),ll:c.root.getObjectByName('lowerleg.l'),lr:c.root.getObjectByName('lowerleg.r')};campChars.push(c)});
+  const gb=n=>c.root.getObjectByName(n)||c.root.getObjectByName(n.replace('.',''));c.bones={ul:gb('upperleg.l'),ur:gb('upperleg.r'),ll:gb('lowerleg.l'),lr:gb('lowerleg.r')};window.__CB=c.bones;campChars.push(c)});
  $('campHud').classList.add('on');$('raidBtn').style.display='none';$('skillBtn').style.display='none';campHud();mode='adv';phase='camp'}
 function campOff(){if(!inCamp)return;inCamp=false;if(campG)scene.remove(campG);campG=null;campChars=[];campFire=null;campEmbers=[];campChest=null;road.visible=true;edges.forEach(e=>e.visible=true);$('campHud').classList.remove('on')}
-const CSIT={ul:-1.45,ll:1.5,y:-.62};window.__CSIT=CSIT;const CCAM=[0,2.9,2.7,0,.45,-1.6];window.__CCAM=CCAM;
+const CSIT={ul:-1.45,ll:1.5,y:-.42};window.__CSIT=CSIT;const CCAM=[0,2.9,2.7,0,.45,-1.6];window.__CCAM=CCAM;
 function campUpdate(dt){const t=T;
  for(const c of campChars){c.mixer.update(dt*.6);const B=c.bones;if(B.ul&&B.ur){B.ul.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ul));B.ur.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ul))}if(B.ll&&B.lr){B.ll.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ll));B.lr.quaternion.multiply(_q.setFromAxisAngle(_ax,CSIT.ll))}c.holder.position.y=CSIT.y*c.height/1.8}
  if(campFire){campFire.flames.forEach((m,i)=>{const k=1+Math.sin(t*(9+i*3))*.08+Math.sin(t*(23+i*5))*.05;m.scale.set(1/k,k,1/k);m.rotation.y+=dt*(1+i)});campFire.light.intensity=11+Math.sin(t*13)*1.5+Math.sin(t*31)*1}
