@@ -1081,7 +1081,7 @@ function candOf(k){return k==='me'?{eq:st.eq,pow:()=>power(S()),powWith:it=>powe
 function showGear(it,after){
  gearCands=['me',...st.team.filter(k=>st.heroes[k].lvl)];
  const diffs=gearCands.map(k=>{const c=candOf(k);return c.powWith(it)-c.pow()});const best=Math.max(...diffs);
- if((st.autoDisc||(st.auto.on&&st.auto.gear))&&best<=0){if(!(st.auto.on&&st.auto.gear)&&it.set&&it.r>=2&&stash(it)){num('🎒 เก็บชิ้นเซ็ตเข้ากระเป๋า','tag',{x:view.clientWidth/2,y:view.clientHeight*.5});renderTop();phase='busy';setTimeout(()=>after&&after(),150);return}const v=sellVal(it);st.gold+=v;st.scrap+=scrapVal(it);num('ทิ้งอัตโนมัติ +'+fmt(v)+' 🪙','gold',{x:view.clientWidth/2,y:view.clientHeight*.5});renderTop();phase='busy';setTimeout(()=>after&&after(),150);return}
+ if((st.autoDisc||(st.auto.on&&st.auto.gear))&&best<=0){if(it.set&&it.r>=2&&stash(it)){num('🎒 เก็บชิ้นเซ็ตเข้ากระเป๋า','tag',{x:view.clientWidth/2,y:view.clientHeight*.5});renderTop();phase='busy';setTimeout(()=>after&&after(),150);return}const v=sellVal(it);st.gold+=v;st.scrap+=scrapVal(it);num('ทิ้งอัตโนมัติ +'+fmt(v)+' 🪙','gold',{x:view.clientWidth/2,y:view.clientHeight*.5});renderTop();phase='busy';setTimeout(()=>after&&after(),150);return}
  if(it.r>=4){st.stat.leg=(st.stat.leg||0)+1;legendFlash(RAR[it.r].c);sfx('level')}
  gearItem=it;gearAfter=after;phase='gear';gearSel=best>0?gearCands[diffs.indexOf(best)]:'me';gearDiffs=diffs;renderGearCard();$('gearOv').classList.add('on');
  if(!st.seen.gear){st.seen.gear=1;say('ใส่อาวุธมันช่วยได้จริง ๆ นะ … ใครจะไปรู้ว่ามือเปล่ามันเจ็บ')}
@@ -1099,7 +1099,7 @@ function renderGearCard(){const it=gearItem;if(!it)return;const c=candOf(gearSel
  hp.querySelectorAll('.hp').forEach(e=>e.onclick=()=>{gearSel=e.dataset.k;renderGearCard()})}
 function stash(it){if(!it)return false;if(st.bag.length<BAG_MAX){st.bag.push(it);st.stat.bagged=(st.stat.bagged||0)+1;return true}return false}
 function autoGear(){if(phase!=='gear'||!gearItem)return;const it=gearItem;const d=gearCands.map(k=>{const c=candOf(k);return c.powWith(it)-c.pow()}),b=Math.max(...d);if(b>0){gearSel=gearCands[d.indexOf(b)];decideGear(true)}else decideGear(false)}
-function dropOld(old){if(!old)return;if(!(st.auto.on&&st.auto.gear)&&old.set&&stash(old)){num('🎒 เก็บชิ้นเก่าเข้ากระเป๋า','tag',{x:view.clientWidth/2,y:view.clientHeight*.42});return}st.gold+=sellVal(old);st.scrap+=scrapVal(old)}
+function dropOld(old){if(!old)return;if(old.set&&stash(old)){num('🎒 เก็บชิ้นเก่าเข้ากระเป๋า','tag',{x:view.clientWidth/2,y:view.clientHeight*.42});return}st.gold+=sellVal(old);st.scrap+=scrapVal(old)}
 function decideGear(eq){
  if(phase!=='gear')return;const it=gearItem;
  if(eq==='bag'){if(!stash(it)){say('กระเป๋าเต็ม! ('+BAG_MAX+' ช่อง) ไปขายหรือย่อยของก่อนนะ');return}gearItem=null;$('gearOv').classList.remove('on');num('🎒 เก็บเข้ากระเป๋า','tag',{x:view.clientWidth/2,y:view.clientHeight*.5});renderAll();save();const a=gearAfter;gearAfter=null;phase='busy';setTimeout(()=>a&&a(),200);return}
@@ -1389,7 +1389,7 @@ function welcomeFlow(){const off=null;if(afkMs()>=600e3)setTimeout(()=>say(`🧰
  let i=0;function next(){const f=steps[i++];if(f)setTimeout(f,250)}next()}
 
 /* ---------- AUTO ---------- */
-const AUTO_OPTS=[['path','เลือกทางแยกเอง (ปลอดภัย/อันตราย)','ไปทางอันตรายเมื่อเลเวลถึง เลือดเต็ม และไม่ได้เพิ่งแพ้'],['gear','สวมใส่/ทิ้งอุปกรณ์อัตโนมัติ','ให้คนที่ได้พลังเพิ่มมากที่สุด ถ้าไม่มีใครดีขึ้นจะทิ้ง (ขายเป็นทอง+เศษเหล็ก) — ออโต้จะไม่เก็บของเข้ากระเป๋า'],['events','ตัดสินใจอีเวนต์ทั้งหมดเอง','ศาลแสง/เงา บ่อน้ำ พ่อค้ายา ห่าน กวี โจร หีบสมบัติ — ดูจากเลือด ทอง เพชร และว่าบอสใกล้หรือยัง'],['skill','ปล่อยสกิลตัวหลักเองตอนบุก/ดันเจี้ยน',''],
+const AUTO_OPTS=[['path','เลือกทางแยกเอง (ปลอดภัย/อันตราย)','ไปทางอันตรายเมื่อเลเวลถึง เลือดเต็ม และไม่ได้เพิ่งแพ้'],['gear','สวมใส่/ทิ้งอุปกรณ์อัตโนมัติ','ให้คนที่ได้พลังเพิ่มมากที่สุด ถ้าไม่มีใครดีขึ้นจะทิ้ง (ขายเป็นทอง+เศษเหล็ก) — ชิ้นเซ็ตที่ยังไม่ใช้จะเก็บเข้ากระเป๋าให้ (ถ้ามีที่ว่าง)'],['events','ตัดสินใจอีเวนต์ทั้งหมดเอง','ศาลแสง/เงา บ่อน้ำ พ่อค้ายา ห่าน กวี โจร หีบสมบัติ — ดูจากเลือด ทอง เพชร และว่าบอสใกล้หรือยัง'],['skill','ปล่อยสกิลตัวหลักเองตอนบุก/ดันเจี้ยน',''],
  ['chest','เปิดหีบที่พร้อมแล้ว',''],['quest','รับรางวัลภารกิจที่ทำเสร็จ',''],['hero','รับสมัคร/อัปเลเวลฮีโร่','เมื่อชิ้นส่วนและทองพอ'],['upgrade','อัปเกรดที่ช่างตีเหล็ก','ใช้ทองซื้ออัปเกรดที่ถูกที่สุด (ทองจะหมดเร็ว)'],
  ['raid','บุกปราสาทเมื่อมีตั๋ว','รวมถึงเลือกพลังทีมให้เอง'],['tower','ไต่หอคอยต่อเนื่อง','ชนะแล้วขึ้นชั้นถัดไปทันทีจนกว่าจะแพ้ (ต้องเข้าหอคอยเอง)'],['dung','ลงดันเจี้ยนรายวันให้ครบ','เลือกระดับยากที่สุดที่น่าจะชนะ'],['wb','ตีบอสโลกเมื่อมีสิทธิ์',''],['pass','รับรางวัล Season Pass',''],['pet','วิวัฒนาการสัตว์คู่ใจที่ใส่อยู่',''],['retreat','ถอยไปฟาร์มเมื่อแพ้ซ้ำ ๆ','แพ้ 3 ครั้งติด ถอยไปแมปก่อนหน้า 2 รอบ แล้วกลับมาลุยใหม่']];
 function openAuto(){const draw=b=>{b.innerHTML=`<label class="tog" style="background:${st.auto.on?'#c8f5cc':'#f2e3c0'}"><input type="checkbox" data-o="on" ${st.auto.on?'checked':''}><div><b>🤖 เปิดโหมดออโต้</b><br>ปล่อยให้เกมเล่นเอง เหมาะกับฟาร์มยาว ๆ (ใช้คู่กับ x4 ได้)</div></label>
@@ -1540,7 +1540,7 @@ function afkClaim(){const r=afkCalc();if(r.min<1)return null;
  for(let n=0;n<r.items;n++){const it=genItem(0,.3);const cands=['me',...st.team.filter(k=>st.heroes[k].lvl)];const d=cands.map(k=>{const c=candOf(k);return c.powWith(it)-c.pow()}),b=Math.max(...d);
   if(!best||it.r>best.r)best=it;
   if(b>0){const k=cands[d.indexOf(b)];if(k==='me'){const old=st.eq[it.slot];st.eq[it.slot]=it;dropOld(old)}else{const H=st.heroes[k],old=H.eq[it.slot];H.eq[it.slot]=it;dropOld(old)}eq++}
-  else if(it.set&&it.r>=2&&!st.auto.on&&stash(it))bag++;else{st.gold+=sellVal(it);st.scrap+=scrapVal(it);sold++}}
+  else if(it.set&&it.r>=2&&stash(it))bag++;else{st.gold+=sellVal(it);st.scrap+=scrapVal(it);sold++}}
  st.afkT=Date.now();try{setHandWeapon();setHandPet()}catch(e){}php=Math.min(php,S().hp);sfx('level');save();renderAll();return{...r,eq,sold,bag,best}}
 function afkBox(){const r=afkCalc(),pct=r.ms/AFK_MAX*100,full=r.ms>=AFK_MAX;
  return `<div class="row afkb" style="flex-direction:column;align-items:stretch;background:linear-gradient(#ffe9b0,#f2c66b);border:3px solid #b07a1a">
