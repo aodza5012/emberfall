@@ -1987,7 +1987,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ACCT.wake
 function openEco(){const draw=b=>{b.innerHTML=`<p class="hint">สำหรับเปิดออโต้ยาว ๆ บนคอมหรือมือถือ — เกมยังเล่นต่อตามปกติ แต่ใช้แบตเตอรี่/ไฟ/ความร้อนน้อยลงมาก</p>`+
  [[0,'⚡','ปกติ','กราฟิกเต็ม 60 เฟรม/วินาที'],[1,'🔋','ประหยัด','ลดเหลือ ~15 เฟรม/วินาที และลดความละเอียดภาพ (ใช้พลังงานลด ~70%)'],[2,'🌙','จอดำ','ไม่วาดภาพ 3D เลย แสดงแค่ข้อมูลสำคัญบนจอดำ (ประหยัดสุด ~90% · จอ OLED ใช้ไฟน้อยมาก)']].map(([v,i,n,d])=>`<div class="row" style="${ECO===v?'background:#c8f5cc;border-color:#3a9a45':''}"><div class="ri">${i}</div><div class="rt"><b>${n}</b>${ECO===v?' ✓':''}<br><small>${d}</small></div><button class="btn ${ECO===v?'gold off':'blue'}" data-e="${v}">${ECO===v?'ใช้อยู่':'เลือก'}</button></div>`).join('')+
  `<div class="row"><div class="ri">☀️</div><div class="rt"><b>กันหน้าจอดับ</b><br><small>มือถือ: ถ้าจอดับ เบราว์เซอร์จะหยุดเกม — เปิดตัวนี้คู่กับโหมดจอดำเพื่อให้ออโต้เล่นต่อ (เสียบชาร์จไว้จะดีที่สุด)</small></div><button class="btn ${ACCT.wake?'gold':''}" id="wkB">${ACCT.wake?'เปิดอยู่':'เปิด'}</button></div>
- <p class="hint">💡 แท็บที่ถูกย่อ/สลับไปแอปอื่น เบราว์เซอร์จะหยุดเกมเอง — แต่หีบ AFK ที่แคมป์สะสมรางวัลให้ตลอด 24 ชม. ถึงจะปิดเกม · คีย์ลัดคอม: B สลับโหมด</p>`;
+ <p class="hint">💡 บนคอม: โหมดประหยัด/จอดำ เกมยังเล่นต่อได้แม้สลับไปแท็บอื่น (โหมดปกติจะหยุด) · มือถือ: ถ้าสลับแอป เบราว์เซอร์จะหยุดเกม — แต่หีบ AFK ที่แคมป์สะสมรางวัลให้ตลอด 24 ชม. ถึงจะปิดเกม · คีย์ลัดคอม: B สลับโหมด</p>`;
  b.querySelectorAll('[data-e]').forEach(e=>e.onclick=()=>{setEco(+e.dataset.e);if(+e.dataset.e===2)closeSheet();else draw(b)});
  b.querySelector('#wkB').onclick=async()=>{ACCT.wake=ACCT.wake?0:1;saveAcct();await wakeToggle(!!ACCT.wake);draw(b)}};openSheet('🔋 โหมดประหยัดพลังงาน','',draw)}
 $('ecoBtn').onclick=e=>{e.stopPropagation();openEco()};$('ecoOv').onclick=()=>{setEco(1);say('ออกจากโหมดจอดำ (ยังอยู่โหมดประหยัด 🔋 — กด 🔋 เพื่อเปลี่ยน)')};
@@ -2335,7 +2335,7 @@ function updateCamera(rdt){if(inCamp){campCam(rdt);return}camT=lerp(camT,camTarg
  if(shake>0){shake-=rdt;camera.rotateZ(rnd(-.02,.02)*shake*4);camera.rotateX(rnd(-.02,.02)*shake*4)}}
 function setHB0(){const m=S().hp;$('hpBar').querySelector('b').style.width=clamp(php/m*100,0,100)+'%';$('hpBar').querySelector('span').textContent=fmt(php)+'/'+fmt(m)}
 let saveT=0,uiT=0;
-function frame(){const eco=ECO,rdt=Math.min(eco?.35:.05,clock.getDelta()),next=()=>eco?setTimeout(frame,eco===2?250:66):requestAnimationFrame(frame);
+function frame(){const eco=ECO,rdt=Math.min(eco?1.1:.05,clock.getDelta()),next=()=>eco?setTimeout(frame,eco===2?250:66):requestAnimationFrame(frame);
  if(paused){if(eco!==2){updateCamera(0);renderer.render(scene,camera)}next();return}
  if(phase!=='title'){{let r=rdt*SPD();while(r>1e-4){const d=Math.min(.05*SPD(),r);update(d);r-=d}}saveT+=rdt;if(saveT>6){saveT=0;save()}uiT+=rdt;if(uiT>.15){uiT=0;setHB0();skillBtnUpdate()}autoT+=rdt;if(autoT>1){autoT=0;autoTick()}}else{scrollWorld(rdt*1.5);T+=rdt}
  if(eco!==2){updateCamera(rdt);renderer.render(scene,camera)}else if((ecoT+=rdt)>1){ecoT=0;ecoHud()}next()}
