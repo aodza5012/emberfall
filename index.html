@@ -1883,10 +1883,10 @@ function leadAura(k=st.main){const h=heroOf(k),H=k&&st.heroes[k];if(!h||!H)retur
 const teamOn=()=>st.maxMap>=2;
 let advT=[],advSig='';
 const teamSig=()=>teamOn()&&mode==='adv'&&!inCamp?st.team.filter(k=>st.heroes[k]&&st.heroes[k].lvl&&k!==st.main).join(','):'';
-const ADVPOS=[[-1.35,-2.9],[1.35,-2.9],[-2.3,-4.1]];
+const ADVPOS=[[-1.7,-3.9],[1.7,-3.9],[-2.6,-5.6]];
 function advTeamClear(){for(const u of advT)scene.remove(u.ch.holder);advT=[];advSig=''}
 function advTeamBuild(){advTeamClear();const sig=teamSig();if(!sig)return;advSig=sig;
- sig.split(',').slice(0,3).forEach((k,i)=>{const h=heroOf(k);if(!h)return;const ch=makeChar({f:h.f,keep:h.keep,w:h.w,wl:h.wl,tint:h.tint,h:1.55});ch.holder.position.set(ADVPOS[i][0],0,ADVPOS[i][1]);ch.holder.rotation.y=Math.PI;scene.add(ch.holder);play(ch,'walk');
+ sig.split(',').slice(0,3).forEach((k,i)=>{const h=heroOf(k);if(!h)return;const ch=makeChar({f:h.f,keep:h.keep,w:h.w,wl:h.wl,tint:h.tint,h:1.5});ch.holder.position.set(ADVPOS[i][0],0,ADVPOS[i][1]);ch.holder.rotation.y=Math.PI+(ADVPOS[i][0]<0?-.35:.35);scene.add(ch.holder);play(ch,'walk');
   advT.push({k,h,ch,cd:rnd(.3,1),atkT:0,role:h.role,skT:h.sk?h.sk.cd*.6:1e9})})}
 function advTeamUpdate(dt){if(teamSig()!==advSig){if(allLoaded)advTeamBuild();else return}if(!advT.length)return;
  for(const u of advT){u.ch.mixer.update(dt);const fighting=phase==='fight'&&enemy&&enemy.state==='fight';
