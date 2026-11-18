@@ -617,7 +617,7 @@ function gemApply(eq,s){for(const k in eq){const it=eq[k];if(it&&it.so)for(const
 function applySets(eq,s){s.dmgP=0;s.hpP=0;s.armorP=0;const c=setCounts(eq);for(const k in c)for(const[a,v]of Object.entries(setSum(k,c[k])))s[a]=(s[a]||0)+v}
 const PETAB={frog:{n:'น้ำลายรักษา',cd:8,d:'ฟื้น HP ให้ท่าน 5%'},owl:{n:'ลูกไฟนกฮูก',cd:5,d:'ยิงเวท 80% ดาเมจ'},chick:{n:'นับเหรียญ',cd:0,d:'ทองเพิ่ม 15% (ติดตัว)'},slime:{n:'โล่เยลลี่',cd:10,d:'สร้างโล่ดูดซับ 10% HP'},fox:{n:'งับไฟ',cd:6,d:'กัด 120% + ไฟลวก'}};
 const PET_FOOD=[0,10,25,60,150];
-const DUNG={gold:{n:'ดันเจี้ยนขุมทอง',i:'🪙',d:'ได้ทองจำนวนมาก'},scrap:{n:'เหมืองเศษเหล็ก',i:'🔩',d:'ได้เศษเหล็กสำหรับตีบวก'},shard:{n:'ศาลวีรชน',i:'🧩',d:'ได้ชิ้นส่วนฮีโร่ + อาหารสัตว์'},xp:{n:'หอฝึกวีรชน',i:'📘',d:'ได้ XP จำนวนมาก (ช่วยให้ใส่อุปกรณ์เลเวลสูงขึ้นได้)'}};
+const DUNG={mat:{n:'เหมืองศิลาโบราณ',i:'🧱',d:'ได้ 🧱 ศิลาก่อสร้าง สำหรับสร้างอาคารในแคมป์ระดับสูง'},gold:{n:'ดันเจี้ยนขุมทอง',i:'🪙',d:'ได้ทองจำนวนมาก'},scrap:{n:'เหมืองเศษเหล็ก',i:'🔩',d:'ได้เศษเหล็กสำหรับตีบวก'},shard:{n:'ศาลวีรชน',i:'🧩',d:'ได้ชิ้นส่วนฮีโร่ + อาหารสัตว์'},xp:{n:'หอฝึกวีรชน',i:'📘',d:'ได้ XP จำนวนมาก (ช่วยให้ใส่อุปกรณ์เลเวลสูงขึ้นได้)'}};
 const DTIER=[{n:'ง่าย',m:.55,r:1},{n:'ปกติ',m:.85,r:2},{n:'ยาก',m:1.2,r:3.5}];
 const WB_PERIOD=30*60e3,WB_TRIES=2,WB_TIME=30;
 const SEASON_LEN=14*864e5,PASS_PT=300,PASS_TIERS=30;
@@ -718,7 +718,7 @@ const petMul=k=>1+.5*(petOf(k).star-1);
 function seasonNow(){return Math.floor(Date.now()/SEASON_LEN)}
 function passObj(){const se=seasonNow();if(!st.pass||st.pass.se!==se)st.pass={se,pts:0,cl:[]};return st.pass}
 function addPass(n,why){const P0=passObj(),before=Math.floor(P0.pts/PASS_PT);P0.pts+=n;const after=Math.floor(P0.pts/PASS_PT);if(after>before&&after<=PASS_TIERS){num(`🎖 Pass ขั้น ${after}!`,'tag',{x:view.clientWidth/2,y:view.clientHeight*.22});sfx('level')}}
-function dgObj(){const d=new Date().toDateString();if(!st.dg||st.dg.d!==d)st.dg={d,u:{gold:0,scrap:0,shard:0,xp:0}};st.dg.u.xp=st.dg.u.xp||0;return st.dg}
+function dgObj(){const d=new Date().toDateString();if(!st.dg||st.dg.d!==d)st.dg={d,u:{gold:0,scrap:0,shard:0,xp:0,mat:0}};st.dg.u.xp=st.dg.u.xp||0;st.dg.u.mat=st.dg.u.mat||0;return st.dg}
 function wbObj(){const per=Math.floor(Date.now()/WB_PERIOD);if(!st.wb||st.wb.per!==per){const pw=Math.max(power(S()),100);st.wb={per,max:Math.round(pw*80),dmg:0,tries:WB_TRIES,best:0,killed:false,claimed:false}}
  const w=st.wb,el=(Date.now()%WB_PERIOD)/WB_PERIOD;w.others=Math.round(w.max*.82*el);return w}
 const wbLeft=w=>Math.max(0,w.max-w.dmg-w.others);
@@ -916,10 +916,10 @@ const WALK_SPEED=5.6,APPROACH=4.8,STEP_LEN=12;
 const mapDef=()=>MAPS[st.map%MAPS.length];
 function encounterType(){if(st.step===STEPS)return 'boss';if(mode==='adv'&&(st.step===10||st.step===20))return 'path';if(st.step%5===0)return pick(['event','event','chest']);return 'mob'}
 let queued=null;function queueAct(fn,msg){queued=fn;say(msg||'รับทราบ! จะทำให้ทันทีที่จบการต่อสู้นี้')}
-function startWalk(len=STEP_LEN){if(inCamp){phase='camp';return}phase='walk';walkLeft=len;if(mode==='adv'&&queued){const f=queued;queued=null;setTimeout(f,50);}if(mode==='adv'&&Math.random()<.22&&st.step%5!==0)spawnPickup()}
+function startWalk(len=STEP_LEN){if(inCamp){phase='camp';return}if(mode==='adv'&&st.map===0&&st.step===1&&(!st.story||st.story.a<0)){st.story={a:0,b:-1};setTimeout(()=>{if(!$('sheet').classList.contains('on'))storyShow(0,'a')},1500)}phase='walk';walkLeft=len;if(mode==='adv'&&queued){const f=queued;queued=null;setTimeout(f,50);}if(mode==='adv'&&Math.random()<.22&&st.step%5!==0)spawnPickup()}
 function nextStep(){st.step++;if(st.step>STEPS){mapClear();return}renderTop();save();startWalk()}
 function mapClear(){const first=st.map>=st.maxMap;st.deathStreak=0;if(st.auto.on&&st.pushLeft>0&&!first){st.pushLeft--;if(!st.pushLeft){st.farm=false;st.map=st.maxMap-1;say('ออโต้: ฟาร์มพอแล้ว กลับไปลุยแมปล่าสุดกัน!')}}if(first){st.troph+=15;st.gems+=10}else{st.gems+=3}if(!st.farm||first)st.map++;st.maxMap=Math.max(st.maxMap,st.map);st.step=1;st.buff={dmg:0,mul:0};
- banner(first?'ผ่านแมปแล้ว! +15 🏆':st.farm?'ฟาร์มรอบใหม่!':'ผ่านแมปแล้ว!');say(`เยี่ยมมาก! ต่อไปคือ "${mapDef().n}" ระวังตัวด้วยล่ะ`);buildScenery();php=S().hp;renderAll();save();setTimeout(()=>startWalk(),1200)}
+ banner(first?'ผ่านแมปแล้ว! +15 🏆':st.farm?'ฟาร์มรอบใหม่!':'ผ่านแมปแล้ว!');if(first){const pm=st.map-1;st.story=st.story||{a:-1,b:-1};if(pm>st.story.b){st.story.b=pm;setTimeout(()=>storyShow(pm,'b'),1300)}}say(`เยี่ยมมาก! ต่อไปคือ "${mapDef().n}" ระวังตัวด้วยล่ะ`);buildScenery();php=S().hp;renderAll();save();setTimeout(()=>startWalk(),1200)}
 function spawnEnemy(boss=false,defOverride=null){if(inCamp){campOff();buildScenery()}
  const M=mapDef(),g=gIdx(),HM=mapHard(st.map);let defn,name,hp=42*.85*eCurve(g,ECH)*HM.hp,atk=7*eCurve(g,ECA)*HM.atk;
  if(boss){const b=M.boss;defn={...MON[b.m],s:b.s,tint:b.tint,glow:MON[b.m].glow||0x330000};if(b.w)defn.w=b.w;if(b.keep)defn.keep=b.keep;name='👑 '+b.n;hp*=7;atk*=1.5}
@@ -1145,7 +1145,7 @@ function showPow(){phase='pow';const ch=POWS.slice().sort(()=>Math.random()-.5).
 function pickPow(p){if(phase!=='pow')return;p.f(raid.mods);$('powOv').classList.remove('on');num(p.i+' '+p.n,'gold',{x:view.clientWidth/2,y:view.clientHeight*.45});phase='busy';setTimeout(raidNext,400)}
 function unitPos(side,i,n){return new THREE.Vector3((i-(n-1)/2)*1.3,0,side==='me'?-1.2:-6.2)}
 function makeUnit(side,o,i,n){
- const el=o.el||(side==='me'?null:raid&&raid.tower?ELK[raid.floor%6]:raid&&raid.wb?wbEl():raid&&raid.dung?{gold:'light',scrap:'earth',shard:'dark',xp:'water'}[raid.dung]:pick(ELK));
+ const el=o.el||(side==='me'?null:raid&&raid.tower?ELK[raid.floor%6]:raid&&raid.wb?wbEl():raid&&raid.dung?{gold:'light',scrap:'earth',shard:'dark',xp:'water',mat:'earth'}[raid.dung]:pick(ELK));
  const ch=makeChar({f:o.f,keep:o.keep||[],w:o.w,wl:o.wl,tint:o.tint,h:o.h||1.8});ch.holder.position.copy(unitPos(side,i,n));if(side==='me')ch.holder.rotation.y=Math.PI;scene.add(ch.holder);play(ch,'idle');
  const bar=document.createElement('div');bar.className='ubar';bar.innerHTML=`<div class="nmT stroke" style="font-size:10px">${el?EL[el].i:''}${o.name}</div><div class="hb ${side==='me'?'g':''}"><b></b><span class="stroke"></span></div>`;$('ubars').appendChild(bar);
  const sk=o.key==='me'?(side==='me'&&heroOf(st.main)?heroOf(st.main).sk:LEADER_SK):(HEROES.find(h=>h.k===o.key)||{}).sk;
@@ -1156,6 +1156,7 @@ function myTeamDefs(){
  const s=S(),m=raid.mods,mh=heroOf(st.main)||{f:'knight',keep:[]},list=[{key:'me',name:pname(),el:myEl(),f:mh.f,keep:(mh.keep||[]).filter(x=>/Cape|Spellbook/.test(x)),tint:mh.tint,w:(st.eq.weapon||{}).wt||'sword_1handed',role:'str',hp:s.hp*(1+m.hp)*1.4,dmg:s.dmg*(1+m.dmg),aps:s.aps*(1+m.aps),crit:s.crit+m.crit,critd:s.critd,ls:s.ls+m.ls,red:m.red,dodge:s.dodge,port:PORT.me}];
  for(const k of st.team){const h=HEROES.find(x=>x.k===k);if(!st.heroes[k].lvl||k===st.main)continue;if(raid&&raid.wk&&wkRule().ban===h.role)continue;const hs=heroStats(k);
   list.push({key:k,name:h.n,el:h.el,f:h.f,keep:h.keep,w:h.w,wl:h.wl,tint:h.tint,role:h.role,hp:hs.hp*1.3*(1+m.hp),dmg:hs.dmg*(1+m.dmg),aps:hs.aps*(1+m.aps),crit:hs.crit+m.crit,critd:hs.critd,ls:hs.ls+m.ls,red:m.red,dodge:hs.dodge,atk:h.atk,port:PORT[k]})}
+ {const hd=helperDef();if(hd)list.push(hd)}
  return list}
 function enemyDefs(n,throne,ref){
  if(raid.tower)return towerDefs(raid.floor);
@@ -1279,7 +1280,7 @@ function exitTower(){mode='adv';raid=null;$('raidBar').style.display='none';buil
 
 /* ---------- DAILY DUNGEONS ---------- */
 function dungDefs(ref){const T=DTIER[raid.tier],list=[],pool=[{n:'ผู้เฝ้าคลัง',f:'skeleton_warrior',w:'sword_1handed',wl:'shield_round',role:'def',hp:1.4,dmg:.6},{n:'โจรขุมทรัพย์',f:'rogue_hooded',keep:['Knife'],role:'str',hp:.9,dmg:1},{n:'ช่างเหล็กคลั่ง',f:'barbarian',keep:['1H_Axe'],role:'str',hp:1.1,dmg:.9},{n:'หมอผีเฝ้าศาล',f:'skeleton_mage',w:'staff',role:'str',atk:'cast',hp:.8,dmg:1.1}];
- const n=Math.min(5,ref.n+1);for(let i=0;i<n;i++){const g=pool[(i+(raid.dung==='scrap'?1:raid.dung==='shard'?2:raid.dung==='xp'?3:0))%pool.length];list.push({key:'guard',name:g.n,f:g.f,w:g.w,wl:g.wl,keep:g.keep,role:g.role,hp:ref.hp*g.hp*T.m*.75,dmg:ref.dps*g.dmg*T.m*.7/.85,aps:.85,atk:g.atk,tint:raid.dung==='gold'?0xffe08a:raid.dung==='scrap'?0xb0c0d0:0xd0a0ff})}return list}
+ const n=Math.min(5,ref.n+1);for(let i=0;i<n;i++){const g=pool[(i+(raid.dung==='scrap'?1:raid.dung==='shard'?2:raid.dung==='xp'?3:0))%pool.length];list.push({key:'guard',name:g.n,f:g.f,w:g.w,wl:g.wl,keep:g.keep,role:g.role,hp:ref.hp*g.hp*T.m*.75,dmg:ref.dps*g.dmg*T.m*.7/.85,aps:.85,atk:g.atk,tint:raid.dung==='gold'?0xffe08a:raid.dung==='scrap'||raid.dung==='mat'?0xb0c0d0:0xd0a0ff})}return list}
 function startDung(type,tier){const D0=dgObj();if(D0.u[type]>=2){say('วันนี้เข้าดันเจี้ยนนี้ครบ 2 รอบแล้ว พรุ่งนี้มาใหม่นะ');return}
  if(!unlocked()||!allLoaded){say('ดันเจี้ยนปลดล็อกที่ Lv '+UNLOCK_LV);return}
  if(!canAct()){if(mode==='adv'){closeSheet();queueAct(()=>startDung(type,tier),'จะเข้าดันเจี้ยนทันทีที่จบการต่อสู้นี้')}return}
@@ -1290,6 +1291,7 @@ function dungResult(win){const type=raid.dung,T=DTIER[raid.tier];phase='busy';le
  st.dgFail=st.dgFail||{};if(!win)st.dgFail[type]=Math.min(2,(st.dgFail[type]||0)+1);
  if(win){dgObj().u[type]++;addPass(50);const g=gIdx();{const gg=addGem(raid.tier+1);setTimeout(()=>num(`+${GEMS[gg.g].i} ${GEMS[gg.g].n} ขั้น ${gg.t}`,'tag',{x:view.clientWidth/2,y:view.clientHeight*.3}),500)}
   if(type==='gold'){const v=Math.round(120*P(g)*T.r);st.gold+=v;txt=`+${fmt(v)} 🪙`}
+  if(type==='mat'){const v=Math.round(5*T.r);st.stone=(st.stone||0)+v;txt=`+${v} 🧱 ศิลาก่อสร้าง`}
   if(type==='scrap'){const v=Math.round(25*T.r);st.scrap+=v;txt=`+${v} 🔩`}
   if(type==='xp'){const v=Math.round(xpNeed(st.lvl)*.4*T.r);addXp(v);txt=`+${fmt(v)} XP (Lv ${st.lvl})`}
   if(type==='shard'){const n=Math.round(3*T.r),h=addShards(null,n),f=Math.round(4*T.r);st.food+=f;txt=`🧩 ${h.n} +${n} · 🍖 +${f}`}save();renderAll()}
@@ -1307,7 +1309,7 @@ function startWB(){const w=wbObj();if(w.tries<1){say('ใช้สิทธิ�
  closeSheet();$('mapScr').classList.remove('on');if(pickup){scene.remove(pickup.sp);pickup=null}w.tries--;
  raid={wb:true,wbDmg:0,opp:'บอสโลก',ratio:1,i:0,mods:{dmg:0,hp:.3,crit:0,aps:0,red:0,ls:0}};mode='raid';buildScenery(true);scene.background=new THREE.Color(0x3a0808);scene.fog=new THREE.Fog(0x5a1010,15,70);
  $('dots').style.display='none';$('raidBtn').style.display='none';$('mapLbl').textContent='👹 WAR ACTIVE! บอสโลก';phase='busy';setTimeout(()=>startBattle(0,false),600)}
-function wbResult(){const w=wbObj(),d=Math.round(raid.wbDmg);w.dmg+=d;w.best=Math.max(w.best,d);addPass(60);const pct=d/w.max;
+function wbResult(){const w=wbObj(),d=Math.round(raid.wbDmg);gContrib(d);w.dmg+=d;w.best=Math.max(w.best,d);addPass(60);const pct=d/w.max;
  const g=Math.round(60*P(gIdx())*(1+pct*20)),gem=Math.min(30,4+Math.round(pct*200));st.gold+=g;st.gems+=gem;const h=addShards(null,1+Math.round(pct*20));st.sumT++;addGem(pct>.08?2:1);const wx=Math.round(xpNeed(st.lvl)*Math.min(.3,.08+pct));addXp(wx);let extra='';
  if(wbLeft(w)<=0&&!w.killed){w.killed=true;if(st.chests.length<5){st.chests.push({t:2,ready:Date.now()});extra='<br><b>👑 บอสโลกถูกปราบ! ได้หีบทอง</b>'}else{st.gems+=30;extra='<br><b>👑 บอสโลกถูกปราบ! +30 💎</b>'}}
  save();renderAll();phase='busy';
@@ -1558,8 +1560,8 @@ const CAMP=[['char','🧍','ตัวละคร','ค่าสถานะ & �
  ['tav','🍺','ฮีโร่ & ทีม','อัปเลเวล เลื่อนดาว จัดทีม',()=>NAV.tavern(),1],['sum','🔮','อัญเชิญฮีโร่','สุ่มฮีโร่',()=>openSummon(),1],['pet','🐾','บ้านสัตว์เลี้ยง','วิวัฒนาการ',()=>openPets()],['quest','📜','ภารกิจ','ประจำวัน',()=>openQuests()],
  ['pass','🎖','Season Pass','รางวัล 30 ขั้น',()=>openPass()],['login','📅','เช็คอิน','รางวัล 7 วัน',()=>{if(!st.login)loginCheck();showLogin()}],['ach','🏅','ความสำเร็จ','ฉายา & สกิน',()=>openAch()],['codex','📖','สมุดมอนสเตอร์','โบนัสสะสม',()=>openCodex()],
  ['auto','🤖','ออโต้','ตั้งค่า',()=>openAuto()],['manual','📘','คู่มือ','วิธีเล่น',()=>openManual()]];
-function openCamp(){const c=hubCounts();const cnt={bm:st.lvl>=UNLOCK_LV&&(!st.bm||st.bm.seen!==Math.floor(Date.now()/BM_WIN))?1:0,sum:st.freeSum!==new Date().toDateString()&&unlocked()?1:0,pet:c.pet,pass:c.pass,login:c.login,ach:achReady()};
- const draw=b=>{b.innerHTML=afkBox()+`<p style="font-weight:800;margin:10px 0 6px">🏕️ พัฒนาตัวละคร</p><div class="hub">`+CAMP.map(([k,i,n,sub,f,lk])=>{if(k==='sum')sub=`🎫 ตั๋ว ${st.sumT} ใบ`;if(k==='tav')sub=`🎫 ${st.sumT} · ทีม ${st.team.length}/3`;const L=lk&&!unlocked();return `<div class="hc ${cnt[k]?'hot':''}" data-c="${k}" style="${L?'filter:grayscale(.8);opacity:.7':''}"><i>${L?'🔒':i}</i>${n}<small>${L?'ปลดล็อก Lv '+UNLOCK_LV:sub}</small>${cnt[k]?`<div class="badge">${cnt[k]}</div>`:''}</div>`}).join('')+'</div>';
+function openCamp(){const c=hubCounts();const cnt={social:mailUnread(),bm:st.lvl>=UNLOCK_LV&&(!st.bm||st.bm.seen!==Math.floor(Date.now()/BM_WIN))?1:0,sum:st.freeSum!==new Date().toDateString()&&unlocked()?1:0,pet:c.pet,pass:c.pass,login:c.login,ach:achReady()};
+ const draw=b=>{b.innerHTML=afkBox()+`<p style="font-weight:800;margin:10px 0 6px">🏕️ พัฒนาตัวละคร</p><div class="hub">`+CAMP.map(([k,i,n,sub,f,lk])=>{if(k==='sum')sub=`🎫 ตั๋ว ${st.sumT} ใบ`;if(k==='notif')sub=ACCT.notif?'🔔 เปิดอยู่':'🔕 ปิดอยู่';if(k==='bld'&&st.bldQ)sub='🏗️ กำลังสร้าง…';if(k==='tav')sub=`🎫 ${st.sumT} · ทีม ${st.team.length}/3`;const L=lk&&!unlocked();return `<div class="hc ${cnt[k]?'hot':''}" data-c="${k}" style="${L?'filter:grayscale(.8);opacity:.7':''}"><i>${L?'🔒':i}</i>${n}<small>${L?'ปลดล็อก Lv '+UNLOCK_LV:sub}</small>${cnt[k]?`<div class="badge">${cnt[k]}</div>`:''}</div>`}).join('')+'</div>';
   b.querySelector('#afkC').onclick=()=>{const r=afkClaim();if(!r)return;draw(b);
    const box=document.createElement('div');box.className='row';box.style.cssText='background:#c8f5cc;border:2px solid #3a9a45;margin-top:6px';
    box.innerHTML=`<div class="ri">🎉</div><div class="rt"><b>ได้รับ!</b> ${fmt(r.gold)} 🪙 · ${fmt(r.xp)} XP · ${r.scrap} 🔩${r.sh?' · '+r.sh+' 🧩':''}${r.gems?' · '+r.gems+' 💎':''}${r.food?' · '+r.food+' 🍖':''}${r.tix?' · '+r.tix+' 🎫':''}<br><small>อุปกรณ์ ${r.items} ชิ้น: สวมใส่ ${r.eq} · ขาย ${r.sold}${r.bag?' · เก็บ '+r.bag:''}${r.best?' · ดีสุด: '+RAR[r.best.r].n+' '+r.best.name:''}</small></div>`;
@@ -1592,9 +1594,10 @@ function bmOffer(){const g=bmG(),Pg=P(g),r=Math.random(),off=pick([0,0,0,10,10,2
  else if(r<.86)o={k:'ess',n:ri(20,60),cur:'gold',base:0};
  else if(r<.9)o={k:'food',n:ri(8,20),cur:'gold',base:0};
  else if(r<.93)o={k:'xp',cur:'gold',base:Math.round(55*Pg)};
+ else if(r<.95)o={k:'stone',n:ri(4,10),cur:'gold',base:0};
  else if(r<.97)o=Math.random()<.5?{k:'en',n:12,cur:'gems',base:20}:{k:'en',n:6,cur:'gold',base:Math.round(45*Pg)};
  else o={k:'box',cur:'gems',base:30};
- if(o.k==='scrap')o.base=Math.round(o.n*.35*Pg);if(o.k==='ess')o.base=Math.round(o.n*1.2*Pg);if(o.k==='food')o.base=Math.round(o.n*1.5*Pg);
+ if(o.k==='scrap')o.base=Math.round(o.n*.35*Pg);if(o.k==='stone')o.base=Math.round(o.n*8*Pg);if(o.k==='ess')o.base=Math.round(o.n*1.2*Pg);if(o.k==='food')o.base=Math.round(o.n*1.5*Pg);
  o.off=off;o.price=Math.max(1,Math.round(o.base*(1-off/100)));o.id=Math.random().toString(36).slice(2,8);return o}
 function bmObj(){const w=Math.floor(Date.now()/BM_WIN);if(!st.bm||st.bm.w!==w)st.bm={w,rf:0,o:Array.from({length:BM_N},bmOffer)};return st.bm}
 const bmRfCost=()=>10+bmObj().rf*10;
@@ -1608,6 +1611,7 @@ function bmInfo(o){const S0=o.it&&o.it.set?SETS[o.it.set]:null;switch(o.k){
  case 'ess':return{ic:'💠',n:`แก่นสาร ×${o.n}`,d:'วัตถุดิบคราฟชั้นสูง',c:'#7a8af0'};
  case 'food':return{ic:'🍖',n:`อาหารสัตว์ ×${o.n}`,d:'วิวัฒนาการสัตว์คู่ใจ',c:'#c07a3a'};
  case 'xp':return{ic:'📜',n:'คัมภีร์ประสบการณ์',d:`XP +${fmt(Math.round(xpNeed(st.lvl)*.6))} (60% เลเวล)`,c:'#4ac06a'};
+ case 'stone':return{ic:'🧱',n:`ศิลาก่อสร้าง ×${o.n}`,d:'สร้างอาคารในแคมป์',c:'#b08a5a'};
  case 'en':return{ic:'⚡',n:`พลังงานหอคอย ×${o.n}`,d:'เข้าหอคอยได้เพิ่ม (เกินเพดานได้)',c:'#f0d030'};
  case 'box':return{ic:'🎁',n:'หีบปริศนา',d:'อาจได้ของตำนาน ชิ้นส่วน หรือเพชรคืน!',c:'#e04ab0'}}}
 function bmBuy(o){if(o.sold)return;const have=o.cur==='gold'?st.gold:st.gems;if(have<o.price){say(o.cur==='gold'?'"ทองไม่พอนะสหาย … กลับมาใหม่เมื่อกระเป๋าตุง"':'"เพชรไม่พอ … ข้าไม่รับเชื่อ"');return false}
@@ -1620,6 +1624,7 @@ function bmBuy(o){if(o.sold)return;const have=o.cur==='gold'?st.gold:st.gems;if(
   case 'scrap':st.scrap+=o.n;msg='🔩 +'+o.n;break;case 'ess':st.ess+=o.n;msg='💠 +'+o.n;break;case 'food':st.food=(st.food||0)+o.n;msg='🍖 +'+o.n;break;
   case 'xp':addXp(Math.round(xpNeed(st.lvl)*.6));msg='📜 XP +60%';break;
   case 'en':enObj().v+=o.n;msg='⚡ พลังงาน +'+o.n;break;
+  case 'stone':st.stone=(st.stone||0)+o.n;msg='🧱 +'+o.n;break;
   case 'box':{const x=Math.random();if(x<.25){const it=genItem(4,.5);if(st.bag.length<BAG_MAX){stash(it);msg='🎁 '+RAR[it.r].n+'! '+it.name}else{st.gems+=40;msg='🎁 💎 +40'}}else if(x<.6){const h=addShards(null,12);msg='🎁 ชิ้นส่วน '+h.n+' +12'}else if(x<.85){st.sumT+=2;msg='🎁 🎫 +2'}else{st.gems+=60;msg='🎁 💎 +60 แจ็กพอต!'}break}}
  o.sold=1;st.stat.bm=(st.stat.bm||0)+1;sfx('coin');num(msg,'gold',{x:view.clientWidth/2,y:view.clientHeight*.3});save();renderAll();return true}
 function openBM(){if(st.lvl<UNLOCK_LV){say('ตลาดมืดเปิดให้ผู้กล้า Lv '+UNLOCK_LV+' ขึ้นไป … "เด็กน้อยกลับบ้านไป"');return}const B=bmObj();st.bm.seen=B.w;save();renderAll();
@@ -1720,12 +1725,14 @@ const bLv=k=>(st.bld&&st.bld[k])||0;
 function bldB(){const b={dmg:0,hp:0,armor:0,crit:0,critd:0,dodge:0,gold:0,xp:0,afk:0};for(const B of BLD){const L=bLv(B.k);if(!L)continue;
  if(B.st==='crit'){b.crit+=L*.8;b.critd+=L*4}else if(B.st==='gold'){b.gold+=L*6;b.afk+=L*.08}else if(B.st in b)b[B.st]+=L*B.per}return b}
 const bldReq=L=>Math.max(3,L*4);
-function bldCost(L){const g=Math.max(0,(bldReq(L)-1)/.4);return{gold:Math.round(6*P(g)*120*L),scrap:15*L*L,ess:L>=5?10*(L-4):0}}
-function openBld(){if(!st.bld)st.bld={};const draw=b=>{b.innerHTML=`<div class="row" style="background:linear-gradient(#e8d2a0,#d8b878)"><div class="ri">🏗️</div><div class="rt"><b>สิ่งปลูกสร้างในแคมป์</b><br><small>เพิ่มสถานะถาวรให้ตัวละคร · อัปได้สูงสุด Lv ${BLD_MAX} · เลเวลอาคารต้องไม่เกินเลเวลท่าน ÷ 4 · 🪙 ${fmt(st.gold)} · 🔩 ${st.scrap} · 💠 ${st.ess}</small></div></div>`+
-  BLD.map(B=>{const L=bLv(B.k),mx=L>=BLD_MAX,c=bldCost(L+1),req=bldReq(L+1),ok=!mx&&st.lvl>=req&&st.gold>=c.gold&&st.scrap>=c.scrap&&st.ess>=c.ess;
-   return `<div class="row"><div class="ri" style="font-size:30px">${B.i}</div><div class="rt"><b>${B.n}</b> Lv ${L}/${BLD_MAX}<br><small>${B.d}: <b>${L?B.fmt(L*(B.st==='en'?1:B.per)):'—'}</b>${mx?'':` → ${B.fmt((L+1)*(B.st==='en'?1:B.per))}`}</small><br>${mx?'<small>✔ เลเวลสูงสุด</small>':`<small style="color:${st.lvl>=req?'inherit':'#c4251a'}">ต้องการ Lv ${req}</small> · <small>🪙 ${fmt(c.gold)} · 🔩 ${c.scrap}${c.ess?' · 💠 '+c.ess:''}</small>`}</div><button class="btn ${ok?'':'off'}" data-u="${B.k}">${mx?'MAX':L?'อัป':'สร้าง'}</button></div>`}).join('');
-  b.querySelectorAll('[data-u]').forEach(e=>e.onclick=()=>{const k=e.dataset.u,L=bLv(k);if(L>=BLD_MAX)return;const c=bldCost(L+1);if(st.lvl<bldReq(L+1)){say('ต้องการเลเวล '+bldReq(L+1));return}if(st.gold<c.gold||st.scrap<c.scrap||st.ess<c.ess){say('วัตถุดิบไม่พอ — ทองจากผจญภัย/ดันเจี้ยน เศษเหล็กจากย่อยของ แก่นสารจากย่อยของหายาก');return}
-   st.gold-=c.gold;st.scrap-=c.scrap;st.ess-=c.ess;st.bld[k]=L+1;sfx('level');const B=BLD.find(x=>x.k===k);num(`${B.i} ${B.n} Lv ${L+1}!`,'gold',{x:view.clientWidth/2,y:view.clientHeight*.3});save();renderAll();if(inCamp){campOff();campOn()}draw(b)})};
+function bldCost(L){const g=Math.max(0,(bldReq(L)-1)/.4);return{gold:Math.round(6*P(g)*120*L),scrap:15*L*L,ess:L>=5?10*(L-4):0,stone:L>=3?4*(L-2):0}}
+function openBld(){if(!st.bld)st.bld={};const draw=b=>{b.innerHTML=`<div class="row" style="background:linear-gradient(#e8d2a0,#d8b878)"><div class="ri">🏗️</div><div class="rt"><b>สิ่งปลูกสร้างในแคมป์</b><br><small>เพิ่มสถานะถาวรให้ตัวละคร · อัปได้สูงสุด Lv ${BLD_MAX} · เลเวลอาคารต้องไม่เกินเลเวลท่าน ÷ 4 · 🪙 ${fmt(st.gold)} · 🔩 ${st.scrap} · 💠 ${st.ess} · 🧱 ${st.stone||0}<br>⏳ สร้างได้ทีละ 1 หลัง ใช้เวลา ${bldMin(1)}–${bldMin(10)} นาทีตามเลเวล · 🧱 ศิลาได้จากดันเจี้ยน "เหมืองศิลาโบราณ"</small></div></div>`+(st.bldQ?(()=>{const q=st.bldQ,B=BLD.find(x=>x.k===q.k),rem=Math.max(0,q.end-Date.now()),gc=Math.max(1,Math.ceil(rem/180e3));return `<div class="row" style="background:#fff0b0"><div class="ri">🏗️</div><div class="rt"><b>กำลังสร้าง ${B.i} ${B.n} Lv ${q.lv}</b><div class="shard"><b style="width:${100-rem/(bldMin(q.lv)*60e3)*100}%"></b></div><small>เหลือ ${Math.floor(rem/60e3)} นาที ${Math.floor(rem%60e3/1e3)} วิ</small></div><button class="btn blue" id="bSp">⚡ เสร็จทันที 💎${gc}</button></div>`})():'')+
+  BLD.map(B=>{const L=bLv(B.k),mx=L>=BLD_MAX,c=bldCost(L+1),req=bldReq(L+1),busy=st.bldQ&&st.bldQ.k===B.k,ok=!mx&&!st.bldQ&&st.lvl>=req&&st.gold>=c.gold&&st.scrap>=c.scrap&&st.ess>=c.ess&&(st.stone||0)>=c.stone;
+   return `<div class="row"><div class="ri" style="font-size:30px">${B.i}</div><div class="rt"><b>${B.n}</b> Lv ${L}/${BLD_MAX}<br><small>${B.d}: <b>${L?B.fmt(L*(B.st==='en'?1:B.per)):'—'}</b>${mx?'':` → ${B.fmt((L+1)*(B.st==='en'?1:B.per))}`}</small><br>${mx?'<small>✔ เลเวลสูงสุด</small>':`<small style="color:${st.lvl>=req?'inherit':'#c4251a'}">ต้องการ Lv ${req}</small> · <small>🪙 ${fmt(c.gold)} · 🔩 ${c.scrap}${c.ess?' · 💠 '+c.ess:''}${c.stone?' · 🧱 '+c.stone:''} · ⏳ ${bldMin(L+1)} น.</small>`}</div><button class="btn ${ok?'':'off'}" data-u="${B.k}">${mx?'MAX':busy?'🏗️…':L?'อัป':'สร้าง'}</button></div>`}).join('');
+  bldTick();b.querySelectorAll('[data-u]').forEach(e=>e.onclick=()=>{const k=e.dataset.u,L=bLv(k);if(L>=BLD_MAX)return;if(st.bldQ){say('ช่างกำลังสร้างอาคารอื่นอยู่ — รอให้เสร็จ หรือกด ⚡ เสร็จทันที');return}const c=bldCost(L+1);if((st.stone||0)<c.stone){say('🧱 ศิลาก่อสร้างไม่พอ — ได้จากดันเจี้ยน "เหมืองศิลาโบราณ" และตลาดมืด');return}if(st.lvl<bldReq(L+1)){say('ต้องการเลเวล '+bldReq(L+1));return}if(st.gold<c.gold||st.scrap<c.scrap||st.ess<c.ess){say('วัตถุดิบไม่พอ — ทองจากผจญภัย/ดันเจี้ยน เศษเหล็กจากย่อยของ แก่นสารจากย่อยของหายาก');return}
+   st.gold-=c.gold;st.scrap-=c.scrap;st.ess-=c.ess;st.stone=(st.stone||0)-c.stone;st.bldQ={k,lv:L+1,end:Date.now()+bldMin(L+1)*60e3};sfx('coin');const B=BLD.find(x=>x.k===k);num(`🏗️ เริ่มสร้าง ${B.n} Lv ${L+1} (${bldMin(L+1)} นาที)`,'gold',{x:view.clientWidth/2,y:view.clientHeight*.3});save();renderAll();draw(b)});
+  const sp=b.querySelector('#bSp');if(sp)sp.onclick=()=>{const q=st.bldQ;if(!q)return;const gc=Math.max(1,Math.ceil(Math.max(0,q.end-Date.now())/180e3));if(st.gems<gc){say('เพชรไม่พอ');return}st.gems-=gc;q.end=Date.now();bldTick();draw(b)};
+  if(st.bldQ){clearTimeout(window.__bT);window.__bT=setTimeout(()=>{if($('sheet').classList.contains('on')&&b.isConnected)draw(b)},1000)}};
  openSheet('🏗️ สิ่งปลูกสร้าง','',draw)}
 function campBuildings(){const add=(o,x,z,ry=0,sc=1)=>{o.position.set(x,0,z);o.rotation.y=ry;o.scale.multiplyScalar(sc);campG.add(o);return o},wood=new THREE.MeshLambertMaterial({color:0x7a4a22});
  if(bLv('train')){const g=new THREE.Group();const post=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,1.3),wood);post.position.y=.65;g.add(post);const bar=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.9),wood);bar.rotation.z=Math.PI/2;bar.position.y=1;g.add(bar);
@@ -1745,12 +1752,119 @@ function openMainPick(){const own=HEROES.filter(h=>st.heroes[h.k].lvl);
  own.map(h=>{const H=st.heroes[h.k],isM=h.k===st.main;return `<div class="row" style="border-left:6px solid ${RT[h.r].c};${isM?'background:#fff0b0':''}"><div class="rp" style="background-image:url(${PORT[h.k]||''})">${PORT[h.k]?'':h.ic}</div><div class="rt"><b>${h.n}</b> ${rTag(h.r)} ${elTag(h.el)}<br><small>${h.cls} · Lv ${H.lvl} ${'★'.repeat(H.star)} · 👑 ${mainTxt(h)}</small></div>${isM?'<button class="btn gold off">ตัวหลัก</button>':`<button class="btn blue" data-m="${h.k}">เลือก</button>`}</div>`}).join('')+
  `<p style="font-size:12px;margin:8px 0 4px">ได้ฮีโร่เพิ่มจาก 🔮 อัญเชิญ · 🧩 ชิ้นส่วน · ภารกิจตัวละคร</p><button class="btn" style="width:100%;padding:10px" id="toSl">🔄 สลับไปตัวละครอื่น (ช่องเซฟ 1–4)</button>`,
  b=>{b.querySelectorAll('[data-m]').forEach(e=>e.onclick=()=>{setMain(e.dataset.m);openMainPick()});b.querySelector('#toSl').onclick=()=>{closeSheet();if(inCamp)campOff();toSlots()}})}
-CAMP.unshift(['main','👑','เปลี่ยนตัวหลัก','สลับฮีโร่/ตัวละคร',()=>openMainPick()]);
+CAMP.unshift(['main','👑','เปลี่ยนตัวหลัก','สลับฮีโร่/ตัวละคร',()=>openMainPick()]);CAMP.splice(2,0,['social','🤝','เพื่อน & กิลด์','อันดับ · จดหมาย',()=>openSocial()]);CAMP.push(['story','📖','เนื้อเรื่อง','บันทึกการเดินทาง',()=>openStory()],['notif','🔔','แจ้งเตือน','หีบเต็ม/พลังงานเต็ม',()=>{notifToggle().then(()=>{})}]);
 
 function takeItem(it){const cands=['me',...st.team.filter(k=>st.heroes[k].lvl)];const d=cands.map(k=>{const c=candOf(k);return c.powWith(it)-c.pow()}),b=Math.max(...d);
  if(b>0){const k=cands[d.indexOf(b)];if(k==='me'){const old=st.eq[it.slot];st.eq[it.slot]=it;dropOld(old)}else{const H=st.heroes[k],old=H.eq[it.slot];H.eq[it.slot]=it;dropOld(old)}try{setHandWeapon();setHandPet()}catch(e){}return 'eq'}
  if(stash(it))return 'bag';st.gold+=sellVal(it);st.scrap+=scrapVal(it);return 'sold'}
-NAV.camp=enterCamp;NAV.adv=openAdv;
+/* ================= ONLINE: LEADERBOARD / MAIL / FRIENDS / GUILD ================= */
+const online=()=>!!(authUser&&FB);
+const myUid=()=>authUser?authUser.uid:'';
+const weekId=()=>Math.floor((Date.now()+3*864e5)/(7*864e5));
+const offMsg='<div class="row"><div class="ri">🔐</div><div class="rt"><b>ต้องล็อกอินก่อน</b><br><small>ระบบออนไลน์ใช้ได้เมื่อเล่นบนเว็บ aodza5012.github.io/emberfall และล็อกอิน (Guest / Google / อีเมล)</small></div></div>';
+let lbLast=0;
+async function lbPush(force){if(!online())return;if(!force&&Date.now()-lbLast<180e3)return;lbLast=Date.now();const{fs,D}=FB;
+ try{await fs.setDoc(fs.doc(D,'lb',myUid()),{name:pname(),pow:power(S()),tower:st.tower.best||0,troph:st.troph||0,lvl:st.lvl,map:st.maxMap+1,main:st.main||'',mlv:(st.heroes[st.main]||{}).lvl||1,guild:ACCT.gname||'',t:Date.now()},{merge:true})}catch(e){console.warn('lb',e)}}
+setInterval(()=>lbPush(),60e3);
+const LBC=[['pow','⚔️ พลัง'],['map','🗺️ แมป'],['tower','🗼 หอคอย'],['troph','🏆 ถ้วย']];
+async function openRankOnline(cat='pow'){if(!online()){openSheet('🏆 อันดับออนไลน์',offMsg+'<button class="btn" style="width:100%;padding:10px" id="rkL">ดูลีก (จำลอง)</button>',b=>b.querySelector('#rkL').onclick=()=>RANK_LOCAL());return}
+ await lbPush(true);openSheet('🏆 อันดับออนไลน์','<p class="hint">กำลังโหลด...</p>');const{fs,D}=FB;let rows=[];
+ try{const q=await fs.getDocs(fs.query(fs.collection(D,'lb'),fs.orderBy(cat,'desc'),fs.limit(50)));q.forEach(d=>rows.push({id:d.id,...d.data()}))}catch(e){console.warn(e)}
+ const me=rows.findIndex(r=>r.id===myUid());
+ openSheet('🏆 อันดับออนไลน์',`<div class="tabs">${LBC.map(([k,n])=>`<button class="${k===cat?'on':''}" data-c="${k}">${n}</button>`).join('')}</div>`+
+  `<div class="row"><div class="ri">👤</div><div class="rt"><b>อันดับของท่าน: ${me>=0?'#'+(me+1):'นอก 50 อันดับแรก'}</b><br><small>อัปเดตทุก 3 นาทีขณะเล่น · ผู้เล่นจริงทุกคนที่ล็อกอิน</small></div></div>`+
+  (rows.length?rows.map((r,i)=>`<div class="lead ${r.id===myUid()?'me':''}"><div class="rk">${i<3?['🥇','🥈','🥉'][i]:i+1}</div><div class="nm">${(r.name||'?').replace(/</g,'')}${r.guild?` <small>[${String(r.guild).replace(/</g,'')}]</small>`:''}<br><small>Lv ${r.lvl||1} · ${(heroOf(r.main)||{n:''}).n}</small></div><div>${fmt(r[cat]||0)}</div></div>`).join(''):'<p class="hint">ยังไม่มีข้อมูล</p>')+
+  `<button class="btn blue" style="width:100%;padding:10px;margin-top:8px" id="rkL">🏅 ลีกประจำฤดูกาล</button>`,
+  b=>{b.querySelectorAll('[data-c]').forEach(e=>e.onclick=()=>openRankOnline(e.dataset.c));b.querySelector('#rkL').onclick=()=>RANK_LOCAL()})}
+/* ---- MAIL ---- */
+const MAIL_LOCAL=[{id:'w1',t:'🎉 ยินดีต้อนรับสู่ Emberfall!',b:'ขอบคุณที่ร่วมทดสอบเกม! รับของขวัญเริ่มต้นไปใช้ได้เลย',r:{gems:50,sumT:3}},
+ {id:'u16',t:'🏕️ อัปเดตใหญ่: แคมป์ สิ่งปลูกสร้าง ตลาดมืด',b:'ระบบใหม่มาแล้ว! สร้างอาคารในแคมป์ ลุยหอคอยด้วยพลังงาน และระวังมอนสเตอร์ชั้นยอด ⭐',r:{gems:30,en:12,stone:10}},
+ {id:'u17',t:'🤝 ระบบเพื่อน · กิลด์ · อันดับออนไลน์',b:'ชวนเพื่อนมาเล่น ส่งของขวัญทุกวัน ยืมฮีโร่เพื่อนไปช่วยรบ และร่วมกิลด์ตีบอสกิลด์ประจำสัปดาห์!',r:{gems:20,sumT:2}}];
+let mailRemote=[];
+async function mailFetch(){if(!online())return;try{const q=await FB.fs.getDocs(FB.fs.collection(FB.D,'mail'));mailRemote=[];q.forEach(d=>{const m=d.data();if(!m.exp||m.exp>Date.now())mailRemote.push({id:'r_'+d.id,t:m.t||m.title||'จดหมาย',b:m.b||m.body||'',r:m.r||m.rewards||{}})})}catch(e){console.warn('mail',e)}}
+const mailAll=()=>[...mailRemote,...MAIL_LOCAL];
+const mailUnread=()=>mailAll().filter(m=>!(ACCT.mail||[]).includes(m.id)).length;
+const RWN={gems:'💎',gold:'🪙',sumT:'🎫',tix:'🎟️',scrap:'🔩',ess:'💠',en:'⚡',stone:'🧱',sh:'🧩',food:'🍖'};
+function giveR(r){const out=[];for(const k in r){const v=+r[k]||0;if(!v)continue;if(k==='gold'){const g=Math.round(v*6*P(Math.max(gIdx(),st.maxMap*STEPS)));st.gold+=g;out.push(fmt(g)+' 🪙');continue}
+ if(k==='sh'){addShards(null,v)}else if(k==='en'){enObj().v+=v}else if(k==='food'){st.food=(st.food||0)+v}else st[k]=(st[k]||0)+v;out.push(v+' '+(RWN[k]||k))}return out.join(' · ')}
+function mailClaim(m){ACCT.mail=ACCT.mail||[];if(ACCT.mail.includes(m.id))return '';ACCT.mail.push(m.id);saveAcct();const t=giveR(m.r||{});save();renderAll();return t}
+async function openMail(){await mailFetch();const draw=b=>{const L=mailAll(),un=L.filter(m=>!(ACCT.mail||[]).includes(m.id));
+ b.innerHTML=(un.length>1?`<button class="btn gold" style="width:100%;padding:10px;margin-bottom:8px" id="mlAll">🎁 รับทั้งหมด (${un.length})</button>`:'')+(L.length?L.map(m=>{const got=(ACCT.mail||[]).includes(m.id);return `<div class="row" style="${got?'opacity:.6':''}"><div class="ri">${got?'📭':'📬'}</div><div class="rt"><b>${String(m.t).replace(/</g,'')}</b><br><small>${String(m.b).replace(/</g,'')}</small><br><small>🎁 ${Object.entries(m.r||{}).map(([k,v])=>(RWN[k]||k)+' '+(k==='gold'?'ถุงใหญ่':v)).join(' · ')||'-'}</small></div><button class="btn ${got?'off':'gold'}" data-m="${m.id}">${got?'รับแล้ว':'รับ'}</button></div>`}).join(''):'<p class="hint">ไม่มีจดหมาย</p>')+(online()?'':'<p class="hint">ล็อกอินเพื่อรับจดหมายจากผู้พัฒนา</p>');
+ b.querySelectorAll('[data-m]').forEach(e=>e.onclick=()=>{const m=mailAll().find(x=>x.id===e.dataset.m);const t=mailClaim(m);if(t){sfx('coin');say('ได้รับ: '+t)}draw(b)});
+ const a=b.querySelector('#mlAll');if(a)a.onclick=()=>{const t=mailAll().filter(m=>!(ACCT.mail||[]).includes(m.id)).map(mailClaim).filter(Boolean);sfx('level');say('รับจดหมายทั้งหมด '+t.length+' ฉบับ!');draw(b)}};
+ openSheet('📬 จดหมาย','',draw)}
+/* ---- FRIENDS ---- */
+const FR_MAX=30;
+async function frProfiles(){const L=ACCT.friends||[];if(!online()||!L.length)return[];const out=[];await Promise.all(L.map(async f=>{try{const d=await FB.fs.getDoc(FB.fs.doc(FB.D,'lb',f.uid));out.push({uid:f.uid,...(d.exists()?d.data():{name:f.name})})}catch(e){out.push({uid:f.uid,name:f.name})}}));return out.sort((a,b)=>(b.pow||0)-(a.pow||0))}
+async function giftsIn(){if(!online())return[];const r=[];try{const q=await FB.fs.getDocs(FB.fs.collection(FB.D,'gifts',myUid(),'in'));q.forEach(d=>r.push({id:d.id,...d.data()}))}catch(e){}return r}
+const today=()=>new Date().toDateString();
+async function openFriends(){if(!online()){openSheet('🤝 เพื่อน',offMsg);return}openSheet('🤝 เพื่อน','<p class="hint">กำลังโหลด...</p>');await lbPush(true);
+ const [pf,gi]=await Promise.all([frProfiles(),giftsIn()]);const sent=st.gSent&&st.gSent.d===today()?st.gSent.to:[];const gr=st.gRecv&&st.gRecv.d===today()?st.gRecv.n:0;const H=st.helper&&st.helper.d===today()?st.helper:null;
+ openSheet('🤝 เพื่อน',`<div class="row" style="background:#e8f4ff"><div class="ri">🆔</div><div class="rt"><b>รหัสเพื่อนของท่าน</b><br><input id="myCode" readonly value="${myUid()}" style="width:100%;font-size:11px;padding:4px;border-radius:6px;border:1px solid #999;box-sizing:border-box"><br><small>ส่งรหัสนี้ให้เพื่อน · เพิ่มเพื่อนคนใหม่ได้ 💎20 (สูงสุด 5 คนแรก)</small></div><button class="btn blue" id="cpC">คัดลอก</button></div>
+ <div class="row"><div class="rt"><input id="frIn" placeholder="วางรหัสเพื่อน" style="width:100%;padding:8px;border-radius:8px;border:2px solid #b99b6b;box-sizing:border-box;font-family:inherit"></div><button class="btn" id="frAdd">➕ เพิ่ม</button></div>
+ ${gi.length?`<div class="row" style="background:#fff0b0"><div class="ri">🎁</div><div class="rt"><b>ของขวัญจากเพื่อน ${gi.length} ชิ้น</b><br><small>ชิ้นละ 💎3 + ⚡1 · รับได้วันละ 10 (วันนี้ ${gr}/10)</small></div><button class="btn gold ${gr>=10?'off':''}" id="gfAll">รับ</button></div>`:''}
+ <p style="font-weight:800;margin:8px 0 4px">เพื่อน ${pf.length}/${FR_MAX} ${H?`· 🛡️ ผู้ช่วยวันนี้: ${H.name}`:''}</p>`+
+ (pf.length?pf.map(f=>`<div class="row"><div class="rp" style="background-image:url(${PORT[f.main]||''})">${PORT[f.main]?'':'🧑'}</div><div class="rt"><b>${String(f.name||'?').replace(/</g,'')}</b>${f.guild?` <small>[${String(f.guild).replace(/</g,'')}]</small>`:''}<br><small>Lv ${f.lvl||'?'} · ⚔️ ${fmt(f.pow||0)} · แมป ${f.map||'?'} · 🗼 ${f.tower||0}</small></div><div class="bc" style="flex-direction:column;gap:4px"><button class="btn gold ${sent.includes(f.uid)?'off':''}" data-g="${f.uid}" style="padding:4px 8px">${sent.includes(f.uid)?'ส่งแล้ว':'🎁 ส่ง'}</button><button class="btn blue ${H&&H.uid===f.uid?'off':''}" data-h="${f.uid}" style="padding:4px 8px">${H&&H.uid===f.uid?'ผู้ช่วย ✓':'🛡️ ยืม'}</button></div></div>`).join(''):'<p class="hint">ยังไม่มีเพื่อน — แลกรหัสกับเพื่อน ๆ เลย!</p>')+
+ `<p class="hint">🛡️ ยืมฮีโร่: เลือกเพื่อน 1 คน/วัน มาช่วยรบในบุกปราสาท ดันเจี้ยน หอคอย และบอสโลก (พลังตามเพื่อนจริง)</p>`,
+ b=>{b.querySelector('#cpC').onclick=()=>{const i=b.querySelector('#myCode');i.select();try{navigator.clipboard.writeText(i.value)}catch(e){document.execCommand('copy')}say('คัดลอกรหัสเพื่อนแล้ว!')};
+  b.querySelector('#frAdd').onclick=async()=>{const c=b.querySelector('#frIn').value.trim();ACCT.friends=ACCT.friends||[];if(!c||c===myUid()){say('รหัสไม่ถูกต้อง');return}if(ACCT.friends.some(f=>f.uid===c)){say('เป็นเพื่อนกันอยู่แล้ว');return}if(ACCT.friends.length>=FR_MAX){say('เพื่อนเต็มแล้ว');return}
+   try{const d=await FB.fs.getDoc(FB.fs.doc(FB.D,'lb',c));if(!d.exists()){say('ไม่พบผู้เล่นรหัสนี้ (เพื่อนต้องล็อกอินเล่นอย่างน้อย 1 ครั้ง)');return}ACCT.friends.push({uid:c,name:d.data().name});ACCT.frRew=ACCT.frRew||[];let x='';if(ACCT.frRew.length<5&&!ACCT.frRew.includes(c)){ACCT.frRew.push(c);st.gems+=20;x=' +💎20'}saveAcct();save();renderAll();say('เพิ่มเพื่อน '+d.data().name+' แล้ว!'+x);openFriends()}catch(e){say('เพิ่มเพื่อนไม่สำเร็จ')}};
+  const ga=b.querySelector('#gfAll');if(ga)ga.onclick=async()=>{let n=st.gRecv&&st.gRecv.d===today()?st.gRecv.n:0,got=0;for(const g of gi){if(n>=10)break;try{await FB.fs.deleteDoc(FB.fs.doc(FB.D,'gifts',myUid(),'in',g.id))}catch(e){continue}n++;got++;st.gems+=3;enObj().v+=1}st.gRecv={d:today(),n};save();renderAll();sfx('coin');say(`รับของขวัญ ${got} ชิ้น: 💎${got*3} ⚡${got}`);openFriends()};
+  b.querySelectorAll('[data-g]').forEach(e=>e.onclick=async()=>{const to=e.dataset.g;if(!st.gSent||st.gSent.d!==today())st.gSent={d:today(),to:[]};if(st.gSent.to.includes(to))return;try{await FB.fs.setDoc(FB.fs.doc(FB.D,'gifts',to,'in',myUid()),{from:pname(),t:Date.now()});st.gSent.to.push(to);addPass(10);save();e.textContent='ส่งแล้ว';e.classList.add('off');sfx('coin')}catch(err){say('ส่งไม่สำเร็จ')}});
+  b.querySelectorAll('[data-h]').forEach(e=>e.onclick=()=>{const f=pf.find(x=>x.uid===e.dataset.h);if(!f)return;if(st.helper&&st.helper.d===today()&&st.helper.uid!==f.uid){say('เปลี่ยนผู้ช่วยได้วันละครั้ง — พรุ่งนี้เลือกใหม่นะ');return}st.helper={d:today(),uid:f.uid,name:f.name,main:f.main||'knight',pow:f.pow||power(S())};save();say('🛡️ '+f.name+' จะมาช่วยรบวันนี้!');openFriends()})})}
+function helperDef(){const H=st.helper;if(!H||H.d!==today()||!raid||raid.wk)return null;const h=heroOf(H.main)||HEROES[0],s=S(),r=Math.min(1.3,Math.max(.4,(H.pow||1)/Math.max(1,power(s))))*.75,m=raid.mods;
+ return{key:'friend',kit:h.k,name:'🤝 '+H.name,el:h.el,f:h.f,keep:h.keep,w:h.w,wl:h.wl,tint:h.tint,role:h.role==='sup'?'sup':h.role,hp:s.hp*r*1.2*(1+m.hp),dmg:s.dmg*r*(1+m.dmg),aps:1*(1+m.aps),crit:15+m.crit,critd:160,ls:m.ls,red:m.red,dodge:5,atk:h.atk,port:PORT[h.k]}}
+/* ---- GUILD ---- */
+const GB_MS=[[.25,{gems:20}],[.5,{gems:30,scrap:40}],[.75,{gems:40,stone:12}],[1,{gems:60,sumT:2,ess:30}]];
+async function gGet(){if(!ACCT.guild||!online())return null;try{const d=await FB.fs.getDoc(FB.fs.doc(FB.D,'guilds',ACCT.guild));if(!d.exists()){ACCT.guild='';ACCT.gname='';saveAcct();return null}const g=d.data();if(g.wk!==weekId()){g.wk=weekId();g.dmg=0;g.hp=gbHp(g);await FB.fs.updateDoc(FB.fs.doc(FB.D,'guilds',ACCT.guild),{wk:g.wk,dmg:0,hp:g.hp})}return g}catch(e){console.warn(e);return null}}
+function gbHp(g){const ms=Object.values(g.members||{});return Math.round(Math.max(1,ms.reduce((a,m)=>a+(m.pow||1000),0))*600)}
+async function gContrib(d){if(!ACCT.guild||!online()||!d)return;try{const g=await gGet();if(!g)return;const u={dmg:FB.fs.increment(Math.round(d))};u['members.'+myUid()+'.d']=FB.fs.increment(Math.round(d));u['members.'+myUid()+'.pow']=power(S());u['members.'+myUid()+'.n']=pname();await FB.fs.updateDoc(FB.fs.doc(FB.D,'guilds',ACCT.guild),u)}catch(e){console.warn(e)}}
+async function openGuild(){if(!online()){openSheet('🏰 กิลด์',offMsg);return}openSheet('🏰 กิลด์','<p class="hint">กำลังโหลด...</p>');const g=await gGet();
+ if(!g){openSheet('🏰 กิลด์',`<div class="row"><div class="ri">🏰</div><div class="rt"><b>ยังไม่มีกิลด์</b><br><small>รวมพลกับเพื่อน ๆ ตีบอสกิลด์ประจำสัปดาห์ (ดาเมจจากบอสโลกของสมาชิกทุกคนนับรวม) รับรางวัลขั้น 25/50/75/100%</small></div></div>
+  <div class="row"><div class="rt"><input id="gN" maxlength="16" placeholder="ชื่อกิลด์ใหม่" style="width:100%;padding:8px;border-radius:8px;border:2px solid #b99b6b;box-sizing:border-box;font-family:inherit"></div><button class="btn" id="gC">สร้าง (💎50)</button></div>
+  <div class="row"><div class="rt"><input id="gJ" maxlength="8" placeholder="รหัสกิลด์ 6 ตัว" style="width:100%;padding:8px;border-radius:8px;border:2px solid #b99b6b;box-sizing:border-box;font-family:inherit;text-transform:uppercase"></div><button class="btn blue" id="gJb">เข้าร่วม</button></div>`,
+  b=>{b.querySelector('#gC').onclick=async()=>{const n=b.querySelector('#gN').value.trim().replace(/[<>]/g,'');if(n.length<2){say('ตั้งชื่อกิลด์อย่างน้อย 2 ตัวอักษร');return}if(st.gems<50){say('ต้องใช้ 💎50');return}const code=Math.random().toString(36).slice(2,8).toUpperCase();
+    const g0={name:n,owner:myUid(),wk:weekId(),dmg:0,members:{[myUid()]:{n:pname(),pow:power(S()),d:0}},t:Date.now()};g0.hp=gbHp(g0);try{await FB.fs.setDoc(FB.fs.doc(FB.D,'guilds',code),g0);st.gems-=50;ACCT.guild=code;ACCT.gname=n;saveAcct();save();renderAll();lbPush(true);openGuild()}catch(e){say('สร้างกิลด์ไม่สำเร็จ')}};
+   b.querySelector('#gJb').onclick=async()=>{const code=b.querySelector('#gJ').value.trim().toUpperCase();try{const d=await FB.fs.getDoc(FB.fs.doc(FB.D,'guilds',code));if(!d.exists()){say('ไม่พบกิลด์รหัสนี้');return}const g1=d.data();if(Object.keys(g1.members||{}).length>=20){say('กิลด์เต็มแล้ว (20 คน)');return}
+    const u={};u['members.'+myUid()]={n:pname(),pow:power(S()),d:0};await FB.fs.updateDoc(FB.fs.doc(FB.D,'guilds',code),u);ACCT.guild=code;ACCT.gname=g1.name;saveAcct();lbPush(true);say('เข้าร่วมกิลด์ '+g1.name+' แล้ว!');openGuild()}catch(e){say('เข้าร่วมไม่สำเร็จ')}}});return}
+ const hp=g.hp||gbHp(g),pct=Math.min(1,(g.dmg||0)/hp),ms=Object.entries(g.members||{}).sort((a,b)=>(b[1].d||0)-(a[1].d||0));const cl=ACCT.gcl&&ACCT.gcl.wk===weekId()?ACCT.gcl.l:[];
+ openSheet('🏰 '+String(g.name).replace(/</g,''),`<div class="row" style="background:linear-gradient(#3a2156,#1a0f2a);color:#fff"><div class="ri" style="font-size:38px">🐉</div><div class="rt"><b>บอสกิลด์ประจำสัปดาห์: มังกรเงานิรันดร์</b><div class="shard" style="height:14px;margin:6px 0"><b style="width:${pct*100}%;background:linear-gradient(#ff8a5a,#d4401a)"></b></div><small>ดาเมจรวม ${fmt(g.dmg||0)} / ${fmt(hp)} (${Math.round(pct*100)}%) · ตีบอสโลกแล้วดาเมจนับเข้าบอสกิลด์อัตโนมัติ · รีเซ็ตทุกสัปดาห์</small></div></div>`+
+  GB_MS.map(([p,r],i)=>`<div class="row"><div class="ri">${pct>=p?'🎁':'🔒'}</div><div class="rt"><b>ขั้น ${p*100}%</b><br><small>${Object.entries(r).map(([k,v])=>(RWN[k]||k)+' '+v).join(' · ')}</small></div><button class="btn gold ${pct>=p&&!cl.includes(i)?'':'off'}" data-gm="${i}">${cl.includes(i)?'รับแล้ว':'รับ'}</button></div>`).join('')+
+  `<p style="font-weight:800;margin:8px 0 4px">สมาชิก ${ms.length}/20 · รหัสกิลด์ <span style="background:#fff;padding:2px 6px;border-radius:6px;letter-spacing:2px">${ACCT.guild}</span></p>`+ms.map(([u,m],i)=>`<div class="lead ${u===myUid()?'me':''}"><div class="rk">${i+1}</div><div class="nm">${String(m.n||'?').replace(/</g,'')}${u===g.owner?' 👑':''}<br><small>⚔️ ${fmt(m.pow||0)}</small></div><div>${fmt(m.d||0)}</div></div>`).join('')+
+  `<button class="btn red" style="width:100%;padding:8px;margin-top:8px" id="gL">ออกจากกิลด์</button>`,
+  b=>{b.querySelectorAll('[data-gm]').forEach(e=>e.onclick=()=>{const i=+e.dataset.gm;if(!ACCT.gcl||ACCT.gcl.wk!==weekId())ACCT.gcl={wk:weekId(),l:[]};if(ACCT.gcl.l.includes(i)||pct<GB_MS[i][0])return;ACCT.gcl.l.push(i);saveAcct();const t=giveR(GB_MS[i][1]);save();sfx('level');say('รางวัลกิลด์: '+t);openGuild()});
+   b.querySelector('#gL').onclick=async e=>{if(!e.target.dataset.c){e.target.dataset.c=1;e.target.textContent='ยืนยันออกจากกิลด์?';return}try{const u={};u['members.'+myUid()]=FB.fs.deleteField();await FB.fs.updateDoc(FB.fs.doc(FB.D,'guilds',ACCT.guild),u)}catch(err){}ACCT.guild='';ACCT.gname='';saveAcct();lbPush(true);openGuild()}})}
+function openSocial(){openSheet('🤝 สังคม',`<div class="hub">`+[['fr','🤝','เพื่อน','ของขวัญ · ยืมฮีโร่'],['gd','🏰','กิลด์',ACCT.gname?String(ACCT.gname).replace(/</g,''):'บอสกิลด์รายสัปดาห์'],['rk','🏆','อันดับออนไลน์','แข่งกับผู้เล่นจริง'],['ml','📬','จดหมาย',mailUnread()?mailUnread()+' ฉบับใหม่':'ของขวัญจากผู้พัฒนา']].map(([k,i,n,s0])=>`<div class="hc ${k==='ml'&&mailUnread()?'hot':''}" data-s="${k}"><i>${i}</i>${n}<small>${s0}</small></div>`).join('')+'</div>'+(online()?'':offMsg),
+ b=>b.querySelectorAll('[data-s]').forEach(e=>e.onclick=()=>({fr:openFriends,gd:openGuild,rk:()=>openRankOnline(),ml:openMail})[e.dataset.s]()))}
+/* ================= STORY ================= */
+const STORY=[
+ ['บทที่ 1 · เถ้าถ่านแรก','หมู่บ้านต้นกล้าถูกเผาโดยกองทัพโครงกระดูก เหลือเพียงคบเพลิงศักดิ์สิทธิ์ที่ลุงเปลวฝากไว้ "จุดไฟนี้ไว้ แล้วตามหาผู้ท้าชิงบัลลังก์ให้เจอ"','ราชันกระดูกเขียวล้มลง ในมือมันกำแผนที่สู่ป่าสนเหนือ … มีคนสั่งการอยู่เบื้องหลัง'],
+ ['บทที่ 2 · ป่าที่หนาวเหน็บ','หิมะในป่าสนไม่เคยละลาย ตั้งแต่ขุนศึกน้ำแข็งยึดเส้นทางการค้า พ่อค้าที่รอดชีวิตกระซิบถึง "หุบเงา"','ขุนศึกน้ำแข็งพ่ายแพ้ เกล็ดน้ำแข็งที่หลอมละลายเผยตราประทับรูปพระจันทร์สีม่วง'],
+ ['บทที่ 3 · หุบเงา','แม่มดหุบเงาสาปให้ตะวันไม่ส่องถึงหุบนี้ … ระวัง! มอนสเตอร์ที่นี่แข็งแกร่งขึ้นมาก ต้องเตรียมตัวให้พร้อม','คำสาปสลาย แม่มดหัวเราะก่อนสลายเป็นควัน "นายท่านที่สุสานจันทรากำลังรอเจ้าอยู่…"'],
+ ['บทที่ 4 · สุสานจันทรา','ใต้แสงจันทร์ ศพนักรบโบราณลุกขึ้นมาอีกครั้ง ผู้ใดกันที่ปลุกพวกมัน?','วิญญาณนักรบได้พักผ่อน ทิ้งไว้เพียงเข็มทิศชี้ไปทางทะเลทราย'],
+ ['บทที่ 5 · ทะเลทรายสนิม','ซากเครื่องจักรสงครามเกลื่อนทราย ที่นี่เคยเป็นสมรภูมิของราชันย์องค์ก่อน','ท่านพบมงกุฎสนิมเขรอะ … ราชันย์องค์ก่อนไม่ได้ตาย เขาถูกทรยศ'],
+ ['บทที่ 6 · ภูเขาไฟเดือด','ลาวาไหลทะลักจากปากปล่อง ผู้ท้าชิงกำลังหลอมกองทัพเหล็กกล้าอยู่ที่นี่','เตาหลอมดับลง กองทัพเหล็กหยุดนิ่ง … แต่ผู้ท้าชิงหนีไปได้'],
+ ['บทที่ 7 · หนองโคลนพิษ','หมอกพิษปกคลุมทุกสิ่ง เสียงร้องของสัตว์ประหลาดดังมาจากโคลนลึก','น้ำในหนองใสขึ้น ชาวบ้านกลับมาตกปลาได้อีกครั้ง พวกเขามอบคาถาสายฟ้าให้ท่าน'],
+ ['บทที่ 8 · ยอดเขาสายฟ้า','พายุไม่เคยหยุด บนยอดเขามีวิหารที่ผนึกพลังแห่งแสง','สายฟ้าสงบ ประตูสู่วิหารแสงทองเปิดออก'],
+ ['บทที่ 9 · วิหารแสงทอง','ผู้พิทักษ์วิหารทดสอบว่าท่านคู่ควรกับพลังแห่งแสงหรือไม่','แสงทองโอบล้อมคบเพลิงของท่าน มันลุกโชนกว่าที่เคย'],
+ ['บทที่ 10 · นครมังกรนิล','นี่คือที่มั่นสุดท้ายของผู้ท้าชิงบัลลังก์ มังกรนิลเฝ้าประตูนครไว้','ผู้ท้าชิงล้มลง บัลลังก์ว่างเปล่ารอผู้ถือคบเพลิง … แต่เงามืดที่แท้จริงเพิ่งเริ่มขยับ (ต่อในวงรอบใหม่)']];
+function storyShow(i,which){const S0=STORY[i%STORY.length];if(!S0)return;const cyc=Math.floor(i/STORY.length);
+ openSheet('📖 '+S0[0]+(cyc?' (รอบ '+(cyc+1)+')':''),`<div class="row" style="background:linear-gradient(#fff6dc,#f2dca0)"><div class="ri" style="font-size:34px">${which==='b'?'🏆':'📜'}</div><div class="rt" style="font-size:14px;line-height:1.6">${which==='b'?S0[2]:S0[1]}</div></div><button class="btn" style="width:100%;padding:10px" id="stOk">${which==='b'?'ไปต่อ ➡':'ออกเดินทาง!'}</button>`,b=>b.querySelector('#stOk').onclick=()=>{closeSheet();if(which==='b'){st.story=st.story||{a:-1,b:-1};if(i+1>st.story.a&&i+1<=st.maxMap){st.story.a=i+1;save();setTimeout(()=>storyShow(i+1,'a'),300)}}});
+ if(st.auto.on)setTimeout(()=>{if($('sheet').classList.contains('on')&&document.getElementById('stOk'))closeSheet()},5000)}
+function storyCheck(){st.story=st.story||{a:-1,b:-1};if(st.map>st.story.a&&st.map>=st.maxMap){st.story.a=st.map;save();setTimeout(()=>{if(!$('sheet').classList.contains('on'))storyShow(st.map,'a')},1400)}}
+function openStory(){st.story=st.story||{a:-1,b:-1};const n=Math.max(st.story.a,st.maxMap);openSheet('📖 เนื้อเรื่อง',Array.from({length:n+1},(_,i)=>`<div class="row"><div class="ri">${i<st.maxMap?'✅':'📜'}</div><div class="rt"><b>${STORY[i%STORY.length][0]}</b><br><small>${STORY[i%STORY.length][1].slice(0,60)}…</small></div><button class="btn blue" data-st="${i}">อ่าน</button></div>`).join(''),b=>b.querySelectorAll('[data-st]').forEach(e=>e.onclick=()=>{const i=+e.dataset.st;storyShow(i,i<st.maxMap?'b':'a')}))}
+/* ================= NOTIFICATIONS ================= */
+let notifSent={};
+async function notifToggle(){if(!('Notification' in window)){say('อุปกรณ์นี้ไม่รองรับการแจ้งเตือน');return}if(ACCT.notif){ACCT.notif=0;saveAcct();say('ปิดการแจ้งเตือนแล้ว');return}const p=await Notification.requestPermission();if(p==='granted'){ACCT.notif=1;saveAcct();say('🔔 เปิดการแจ้งเตือนแล้ว! จะเตือนเมื่อหีบ AFK เต็ม พลังงานหอคอยเต็ม และอาคารสร้างเสร็จ (ขณะเปิดเกมค้างไว้ในแท็บ/แอป)')}else say('ไม่ได้รับอนุญาตให้แจ้งเตือน')}
+async function notify(key,title,body){if(!ACCT.notif||notifSent[key]||!document.hidden)return;notifSent[key]=1;try{const r=await navigator.serviceWorker.getRegistration();if(r)r.showNotification(title,{body,icon:'icon.svg',tag:key});else new Notification(title,{body})}catch(e){}}
+setInterval(()=>{if(phase==='title'||!st)return;if(afkMs()>=AFK_MAX)notify('afk','🧰 หีบ AFK เต็มแล้ว!','กลับมารับรางวัลที่แคมป์ ก่อนเสียเวลาสะสมเปล่า');else notifSent.afk=0;
+ const E=enObj();if(E.v>=enMax())notify('en','⚡ พลังงานหอคอยเต็ม','พร้อมลุยหอคอยไร้ที่สิ้นสุดแล้ว!');else notifSent.en=0;
+ if(st.bldQ&&Date.now()>=st.bldQ.end)notify('bld','🏗️ สร้างอาคารเสร็จแล้ว!','กลับมาดูอาคารใหม่ในแคมป์')},60e3);
+/* ================= TIMED BUILDINGS ================= */
+const bldMin=L=>Math.max(1,Math.round(1.5*L*L));
+function bldTick(){const q=st.bldQ;if(q&&Date.now()>=q.end){st.bld=st.bld||{};st.bld[q.k]=q.lv;st.bldQ=null;const B=BLD.find(x=>x.k===q.k);banner(`🏗️ ${B.n} Lv ${q.lv} เสร็จแล้ว!`);sfx('level');php=Math.min(php,S().hp);save();renderAll();if(inCamp){campOff();campOn()}}}
+setInterval(()=>{if(st&&phase!=='title')bldTick()},3000);
+NAV.camp=enterCamp;NAV.adv=openAdv;const RANK_LOCAL=NAV.rank;NAV.rank=()=>openRankOnline();
 
 function heroDetail(k){const h=heroOf(k),H=st.heroes[k],s=heroStats(k),own=H.lvl>0,isM=k===st.main,lc=heroCost(H.lvl,h),cap=capHero(H),sc=STAR_COST[H.star]||0;
  openSheet('🧝 '+h.n,`<div class="row" style="border-left:6px solid ${RT[h.r].c}"><div class="rp" style="width:80px;height:80px;background-image:url(${PORT[k]||''})">${PORT[k]?'':h.ic}</div><div class="rt"><b>${h.cls}</b> ${rTag(h.r)} ${elTag(h.el)} · <span class="tag ${h.role}">${ROLEN[h.role]}</span><br>${own?`Lv ${H.lvl}/${cap} · <span style="color:#d89a00">${'★'.repeat(H.star)}</span>${'☆'.repeat(5-H.star)}`:'ยังไม่ได้ปลดล็อก (🧩 '+H.sh+'/'+RT[h.r].unlock+')'}<br>${starStr(h.star)}<br><b>พลัง ${fmt(power(s))}</b>${isM?' · 👑 ตัวหลัก':''}</div></div>
@@ -1935,11 +2049,11 @@ async function cloudPull(){const{fs,D}=FB,uid=authUser.uid;const last=localStora
  if(m.cur!==undefined)curSlot=Math.min(NSLOT-1,+m.cur||0);return true}
 async function cloudPush(force){if(!authUser||!FB||cloudBusy)return;if(!force&&!cloudDirty)return;cloudBusy=true;cloudDirty=false;const{fs,D}=FB,uid=authUser.uid;
  try{save();for(let i=0;i<NSLOT;i++){const raw=localStorage.getItem(slotKey(i));if(raw){const d=JSON.parse(raw);await fs.setDoc(fs.doc(D,'users',uid,'slots',''+i),{d:raw,t:(d.s&&d.s.lastSeen)||Date.now(),name:(d.s&&d.s.name)||'',lvl:(d.s&&d.s.lvl)||1})}}
-  await fs.setDoc(fs.doc(D,'users',uid),{acct:localStorage.getItem('emberfall3d_acct')||'{}',cur:curSlot,t:Date.now(),prov:provName(authUser),name:authUser.displayName||''},{merge:true});cloudLast=Date.now()}
+  await fs.setDoc(fs.doc(D,'users',uid),{acct:localStorage.getItem('emberfall3d_acct')||'{}',cur:curSlot,t:Date.now(),prov:provName(authUser),name:authUser.displayName||''},{merge:true});cloudLast=Date.now();lbPush()}
  catch(e){console.warn('cloud save',e);cloudDirty=true}cloudBusy=false}
 async function cloudDelSlot(i){if(!authUser||!FB)return;try{await FB.fs.setDoc(FB.fs.doc(FB.D,'users',authUser.uid,'slots',''+i),{del:true,t:Date.now()})}catch(e){}}
 setInterval(()=>{if(authUser)cloudPush()},45000);document.addEventListener('visibilitychange',()=>{if(document.hidden&&authUser)cloudPush(true)});
-async function afterLogin(u){authUser=u;setAcctLine();const box=$('loginBox');if(box)box.querySelector('.lmsg').textContent='☁️ กำลังซิงก์เซฟ...';
+async function afterLogin(u){authUser=u;setAcctLine();mailFetch().then(()=>renderAll());const box=$('loginBox');if(box)box.querySelector('.lmsg').textContent='☁️ กำลังซิงก์เซฟ...';
  try{await cloudPull()}catch(e){console.warn(e)}st=loadSlot(curSlot);curWT=curPT=undefined;try{setHandWeapon();setHandPet()}catch(e){}php=S().hp;buildScenery();renderAll();
  const ov=$('loginOv');if(ov)ov.remove();sfx('level');openSlots()}
 const authErr=e=>({'auth/popup-closed-by-user':'ปิดหน้าต่างล็อกอินก่อนเสร็จ','auth/cancelled-popup-request':'ยกเลิกแล้ว','auth/invalid-email':'อีเมลไม่ถูกต้อง','auth/missing-password':'กรุณาใส่รหัสผ่าน','auth/weak-password':'รหัสผ่านต้องยาว 6 ตัวขึ้นไป','auth/email-already-in-use':'อีเมลนี้สมัครแล้ว — กด "เข้าสู่ระบบ" แทน','auth/invalid-credential':'อีเมลหรือรหัสผ่านไม่ถูกต้อง','auth/wrong-password':'รหัสผ่านไม่ถูกต้อง','auth/user-not-found':'ไม่พบบัญชีนี้ — กด "สมัครสมาชิก"','auth/too-many-requests':'ลองบ่อยเกินไป รอสักครู่','auth/operation-not-allowed':'ผู้ดูแลยังไม่ได้เปิดวิธีล็อกอินนี้','auth/unauthorized-domain':'โดเมนนี้ยังไม่ได้รับอนุญาตใน Firebase','auth/popup-blocked':'เบราว์เซอร์บล็อกป๊อปอัป — อนุญาตป๊อปอัปแล้วลองใหม่','auth/account-exists-with-different-credential':'อีเมลนี้เคยใช้ล็อกอินวิธีอื่น'})[e.code]||e.message;
