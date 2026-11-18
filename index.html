@@ -980,9 +980,10 @@ function killEnemy(){
   const after=e.fromBossTab?()=>{phase=inCamp?'camp':'walk'}:(e.boss?mapClear:nextStep);showGear(drop,after)},1100/SPD());
  checkUnlock();renderAll()}
 function defeat(){
+ const fromTab=!!(enemy&&enemy.fromBossTab);if(!fromTab)setTimeout(()=>say(`💀 พ่ายแพ้! กลับไปเริ่มที่มอนสเตอร์ตัวแรกของแมป ${st.map+1} — เก็บเลเวลและของใหม่ เตรียมตัวให้พร้อมแล้วลุยอีกครั้ง`),2100);
  st.deathStreak++;const retreat=false;if(st.deathStreak>=3&&st.deathStreak%3===0)setTimeout(stuckPrompt,2300);
  phase='dead';if(enemy)play(enemy.ch,'cheer');banner('พ่ายแพ้…');say(pick(['ไม่เป็นไร! ถอยไปตั้งหลักก่อน แล้วค่อยกลับมาเอาคืน','ล้มได้ก็ลุกได้ … แต่รอบหน้าลองใส่เกราะดูนะ','ลองอัปเกรดที่ร้านค้า หรือชวนเพื่อนจากโรงเตี๊ยมมาช่วยสิ']));
- setTimeout(()=>{if(enemy){scene.remove(enemy.ch.holder);enemy=null}$('bossBar').style.display='none';st.step=Math.max(1,Math.floor((st.step-1)/5)*5+1);st.buff={dmg:0,mul:0};php=S().hp;renderAll();save();
+ setTimeout(()=>{if(enemy){scene.remove(enemy.ch.holder);enemy=null}$('bossBar').style.display='none';if(!fromTab){st.step=1;st.dgUntil=0}st.buff={dmg:0,mul:0};php=S().hp;renderAll();save();
   if(retreat){st.deathStreak=0;st.pushLeft=2;phase='walk';say('ออโต้: แมปนี้ยากไป ถอยไปฟาร์มแมปก่อนหน้า 2 รอบ แล้วจะกลับมาลุยใหม่!');goMap(st.map-1);return}startWalk()},2000)}
 function heal(v,show=false){const m=S().hp,b=php;php=Math.min(m,php+v);if(show&&php-b>1)num('+'+fmt(php-b),'heal',{x:view.clientWidth*.5,y:view.clientHeight*.86})}
 function addXp(x){x=Math.round(x*(1+bldB().xp));st.xp+=x;let up=0;while(st.xp>=xpNeed(st.lvl)){st.xp-=xpNeed(st.lvl);st.lvl++;up=1;php=S().hp;banner('เลเวลอัป! Lv '+st.lvl);sfx('level')}if(up)checkClassQ()}
@@ -1361,7 +1362,7 @@ function openPass(){const draw=b=>{const P0=passObj(),tier=Math.min(PASS_TIERS,M
 
 /* ---------- คู่มือ ---------- */
 const MANUAL=[
- ['🎮 พื้นฐานการเล่น',`ฮีโร่จะเดินและต่อสู้เอง หน้าที่ของท่านคือตัดสินใจเรื่องอุปกรณ์ อีเวนต์ และการพัฒนาตัวละคร<br>• แต่ละแมปมี 30 ขั้น ทุก 5 ขั้นเจออีเวนต์ ขั้นที่ 30 คือบอส<br>• แพ้แล้วจะถอยกลับไปต้นช่วง 5 ขั้น ไม่เสียของ<br>• ปุ่ม <b>▶ x1/x2/x4</b> เร่งความเร็ว (คีย์ S)`],
+ ['🎮 พื้นฐานการเล่น',`ฮีโร่จะเดินและต่อสู้เอง หน้าที่ของท่านคือตัดสินใจเรื่องอุปกรณ์ อีเวนต์ และการพัฒนาตัวละคร<br>• แต่ละแมปมี 30 ขั้น ทุก 5 ขั้นเจออีเวนต์ ขั้นที่ 30 คือบอส<br>• แพ้แล้วจะกลับไปเริ่มมอนสเตอร์ตัวแรกของแมปนั้น (ขั้น 1) ไม่เสียของ — ได้เก็บเลเวลและของเพิ่มก่อนลุยใหม่<br>• ปุ่ม <b>▶ x1/x2/x4</b> เร่งความเร็ว (คีย์ S)`],
  ['🎒 อุปกรณ์และการ์ด',`มอนสเตอร์ทุกตัวดรอปอุปกรณ์ <b>ปัดขวา/กดสวมใส่</b> หรือ <b>ปัดซ้าย/กดทิ้ง</b> (ได้ทอง+🔩เศษเหล็ก)<br>• ลูกศร ▲▼ เทียบกับของที่ใส่อยู่ · แถวรูปฮีโร่ใต้การ์ด = เลือกว่าจะให้ใครใส่ (คีย์ 1-4)<br>• ความหายาก: ธรรมดา › ไม่ธรรมดา › หายาก › มหากาพย์ › ตำนาน › เทพนิยาย › โบราณ<br>• <b>เซ็ตอุปกรณ์ ◆</b>: ใส่ชุดเดียวกันครบ 2 และ 4 ชิ้นได้โบนัสพิเศษ`],
  ['📊 ค่าสถานะ',`ดาเมจ · พลังชีวิต · เกราะ (ลดดาเมจ) · ความทนทาน (ลดดาเมจ %) · คริติคอล/แรงคริ · คอมโบ (ตีซ้ำ) · เลือดไหล (ดาเมจต่อเนื่อง) · หลบหลีก · ดูดเลือด · ความเร็วโจมตี · ทองเพิ่ม<br>กดปุ่ม <b>i</b> ข้างแถบเลือดเพื่อดูค่าทั้งหมด`],
  ['🔥 สกิลและสัตว์คู่ใจ',`ตอนผจญภัยไม่มีสกิลกดเอง — ฮีโร่ตีอัตโนมัติ · ตอนบุก/ดันเจี้ยน/หอคอย/บอสโลก ตัวท่านใช้ <b>สกิลของตัวหลัก</b> (ปุ่มขวาบน หรือ Space)<br>• สัตว์คู่ใจในมือซ้ายมีความสามารถเฉพาะ: กบ=รักษา · นกฮูก=ยิงเวท · ลูกเจี๊ยบ=ทองเพิ่ม · สไลม์=โล่ · จิ้งจอก=กัดไฟ<br>• แตะช่องสัตว์คู่ใจเพื่อเปิด <b>บ้านสัตว์เลี้ยง</b> ใช้ 🍖 อาหารสัตว์วิวัฒนาการได้ถึง ★5`],
