@@ -653,7 +653,7 @@ const GEN_SETS=Object.keys(SETS);
 {const RT_={str:[{dmgP:.05},{dmgP:.05},{dmgP:.06},{critd:20},{dmgP:.12}],def:[{hpP:.06},{armorP:.1},{hpP:.08},{tough:5},{hpP:.12,armorP:.1}],sup:[{hpP:.06},{ls:2},{hpP:.07},{armorP:.12},{hpP:.1,ls:3}]},
  ET={wind:{dodge:3,spd:4},fire:{crit:3},water:{ls:2},earth:{armorP:.08},dark:{bleed:5,combo:3},light:{crit:3,critd:10}},EC={wind:'#2fb45a',fire:'#e8562a',water:'#3aa0ff',earth:'#9a6a2a',dark:'#5a3a8a',light:'#d0a020'};
  for(const h of HEROES){const t={},rb=RT_[h.role]||RT_.str,eb=ET[h.el]||ET.fire;[2,4,6,8,10].forEach((n,i)=>t[n]={...rb[i]});[3,5,7,9].forEach((n,i)=>{const m=[1,1,1.3,1.6][i],o={};for(const[a,v]of Object.entries(eb))o[a]=v<1?Math.round(v*m*100)/100:Math.round(v*m);t[n]=o});
-  SETS['h_'+h.k]={n:'ชุด'+h.cls,i:h.ic,c:EC[h.el]||'#8a6a3a',st:'ประจำตัว '+h.n,hero:h.k,t}}}
+  SETS['h_'+h.k]={n:'ชุด'+h.n,i:h.ic,c:EC[h.el]||'#8a6a3a',st:'เซ็ตประจำตัว · '+h.cls,hero:h.k,t}}}
 const setOwnerOK=(k,hk)=>!SETS[k].hero||SETS[k].hero===hk;
 const SIG_M=1.5;
 function fixSetW(it){const SH=it&&it.set&&SETS[it.set]&&SETS[it.set].hero;if(SH&&it.slot==='weapon'){const wl=WCLS[HWC[SH]||'guard'].w;if(!wl.includes(it.wt)){const w=WEAPONS.find(x=>x.k===pick(wl));it.wt=w.k;it.name=pick(w.n)+pick(SUFR[it.r]||SUFR[0])}}return it}
