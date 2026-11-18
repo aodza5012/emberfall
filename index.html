@@ -518,7 +518,7 @@ const WCLS={guard:{n:'นักรบโล่',i:'🛡️',w:['sword_1handed','
  caster:{n:'จอมเวท',i:'🔮',w:['staff','wand','spellbook_open'],st:['staff','คทาฝึกหัด']},
  duel:{n:'นักดาบ',i:'🤺',w:['sword_1handed','dagger'],st:['sword_1handed','ดาบเรเพียร์ฝึกหัด']},druid:{n:'ดรูอิด',i:'🌿',w:['staff','spellbook_open'],st:['staff','ไม้เท้าพงไพร']},
  curse:{n:'ผู้ใช้คำสาป',i:'🕯️',w:['wand','spellbook_open'],st:['wand','ไม้สาปฝึกหัด']}};
-const HWC={knight:'guard',skwar:'guard',barbarian:'heavy',paladin:'heavy',morg:'heavy',rogue:'blade',thief:'blade',srogue:'blade',hunter:'ranger',mage:'caster',smage:'caster',ignis:'caster',novice:'caster',duelist:'duel',druid:'druid',warlock:'curse',sniper:'ranger',warden:'guard'};
+const HWC={knight:'guard',skwar:'guard',barbarian:'heavy',paladin:'heavy',morg:'heavy',rogue:'blade',thief:'blade',srogue:'blade',hunter:'ranger',mage:'caster',smage:'caster',ignis:'caster',novice:'caster',duelist:'duel',druid:'druid',warlock:'curse',sniper:'ranger',warden:'guard',aurora:'caster',kaiser:'duel',nyx:'blade',titan:'heavy'};
 const hkOf=k=>k==='me'?(st.main||'knight'):k;
 const wclsOf=k=>WCLS[HWC[hkOf(k)]||'guard'];
 const canUse=(k,it)=>!it||it.slot!=='weapon'||!it.wt||wclsOf(k).w.includes(it.wt);
@@ -622,7 +622,15 @@ HEROES.push(
  {k:'sniper',n:'เรเวนมือหน้าไม้',cls:'นักแม่นธนู',ic:'🎯',f:'rogue_hooded',keep:['1H_Crossbow'],tint:0x8a8aaa,role:'str',hp:.85,dmg:1.1,aps:1,atk:'cast',star:{a:5,d:1,s:2,v:4},r:2,el:'dark',
   pas:'เล็งจุดตาย: คริติคอล +15% · แรงคริ +30%',sk:{n:'ลูกดอกเจาะเกราะ',cd:8,anim:'cast',d:'ยิงศัตรูที่ HP มากที่สุด 450% คริแน่นอน'}},
  {k:'warden',n:'โกลิอัทผู้คุมป้อม',cls:'ผู้คุมป้อม',ic:'🏰',f:'knight',w:'axe_1handed',wl:'shield_round',keep:[],tint:0xb8d0a8,role:'def',hp:1.95,dmg:.5,aps:.75,atk:'attack',star:{a:2,d:5,s:3,v:2},r:2,el:'earth',
-  pas:'หนามเหล็ก: สะท้อนดาเมจ 15% กลับใส่ผู้โจมตี',sk:{n:'กำแพงเหล็ก',cd:10,anim:'block',d:'ยั่วศัตรู 5 วิ รับดาเมจลด 50% · เพื่อนรับดาเมจลด 20%'}});
+  pas:'หนามเหล็ก: สะท้อนดาเมจ 15% กลับใส่ผู้โจมตี',sk:{n:'กำแพงเหล็ก',cd:10,anim:'block',d:'ยั่วศัตรู 5 วิ รับดาเมจลด 50% · เพื่อนรับดาเมจลด 20%'}},
+ {k:'aurora',n:'ออโรร่าเทพธิดาแสง',cls:'เทพธิดาแห่งแสง',ic:'🌟',f:'mage',keep:['2H_Staff'],tint:0xfff4c0,role:'sup',hp:1.3,dmg:.8,aps:.9,atk:'cast',star:{a:3,d:3,s:5,v:3},r:3,el:'light',
+  pas:'พรแห่งแสง: การรักษาแรงขึ้น 50% · ดูดเลือด +8%',sk:{n:'ปาฏิหาริย์',cd:10,anim:'raise',d:'ฟื้น HP ทั้งทีม 35% และสร้างโล่ 15% ของ HP สูงสุด'}},
+ {k:'kaiser',n:'ไกเซอร์ราชันย์พันดาบ',cls:'ราชันย์พันดาบ',ic:'⚔️',f:'knight',w:'sword_1handed',keep:['Knight_Cape'],tint:0xbfe0ff,role:'str',hp:1.25,dmg:1.15,aps:1.1,atk:'attack',star:{a:5,d:3,s:2,v:4},r:3,el:'wind',
+  pas:'เพลงดาบ: คอมโบ 25% · ดาเมจ +30% ใส่ศัตรู HP > 70%',sk:{n:'พันดาบพิฆาต',cd:8,anim:'spin',d:'ฟันศัตรูทุกตัว 5 ครั้ง ครั้งละ 70%'}},
+ {k:'nyx',n:'นิกซ์ราชินีรัตติกาล',cls:'ราชินีนักฆ่า',ic:'🦇',f:'rogue',keep:['Knife','Knife_Offhand'],tint:0x6a5a8a,role:'str',hp:.95,dmg:1,aps:1.45,atk:'stab',star:{a:5,d:1,s:2,v:5},r:3,el:'dark',
+  pas:'เก็บเกี่ยววิญญาณ: คริ +25% · ฆ่าศัตรูแล้วสกิลพร้อมใช้ทันที',sk:{n:'สังหารเงาสามเงื่อน',cd:8,anim:'stab',d:'แทงศัตรูที่ HP น้อยที่สุด 3 ครั้ง ครั้งละ 220% คริแน่นอน'}},
+ {k:'titan',n:'ไททันผู้ค้ำฟ้า',cls:'ยักษ์ผู้ค้ำฟ้า',ic:'⛰️',f:'barbarian',keep:['2H_Axe'],tint:0xc8b8a0,role:'def',hp:2.2,dmg:.85,aps:.7,atk:'attack2',star:{a:3,d:5,s:3,v:2},r:3,el:'earth',
+  pas:'ภูผาไม่สะเทือน: HP ต่ำกว่า 30% รับดาเมจลด 50%',sk:{n:'แผ่นดินไหว',cd:9,anim:'spin',d:'ฟาดศัตรูทุกตัว 180% และยั่วศัตรู 4 วิ'}});
 const RT=[{n:'ธรรมดา',c:'#8d969f',m:1,mb:0,unlock:10},{n:'หายาก',c:'#2f86e0',m:1.15,mb:.05,unlock:20},{n:'มหากาพย์',c:'#9a3fe0',m:1.32,mb:.1,unlock:30},{n:'ตำนาน',c:'#e8a010',m:1.55,mb:.2,unlock:50}];
 const EL={earth:{n:'ดิน',i:'🪨',c:'#9a6a2a',beat:'water',b:{armor:.2,hp:.1},bt:'แข็งแกร่ง: เกราะ +20% · HP +10%'},water:{n:'น้ำ',i:'💧',c:'#3aa0ff',beat:'fire',b:{hp:.12,ls:3},bt:'ฟื้นฟู: HP +12% · ดูดเลือด +3%'},wind:{n:'ลม',i:'🌪️',c:'#2fb45a',beat:'earth',b:{dodge:8,spd:10},bt:'ว่องไว: หลบหลีก +8% · ความเร็วโจมตี +10%'},fire:{n:'ไฟ',i:'🔥',c:'#ff6a3a',beat:'wind',b:{dmg:.15},bt:'ดุดัน: ดาเมจ +15%'},light:{n:'แสง',i:'✨',c:'#e8b800',beat:'dark',b:{crit:8,dmg:.05},bt:'ศักดิ์สิทธิ์: คริติคอล +8% · ดาเมจ +5%'},dark:{n:'มืด',i:'🌑',c:'#8a4ae8',beat:'light',b:{critd:25,ls:3},bt:'กลืนกิน: แรงคริ +25% · ดูดเลือด +3%'}};
 function applyEl(s,e){const b=(EL[e]||{}).b||{};s.dmg*=1+(b.dmg||0);s.hp*=1+(b.hp||0);s.armor*=1+(b.armor||0);s.dodge+=b.dodge||0;s.spd+=b.spd||0;s.crit+=b.crit||0;s.critd+=b.critd||0;s.ls+=b.ls||0}
@@ -771,7 +779,7 @@ function heroStats(k){const h=HEROES.find(x=>x.k===k),H=st.heroes[k],lm=1+.22*(M
  const s={dmg:(8+st.lvl*1.6)*lm,hp:(100+st.lvl*13)*lm,armor:2,tough:0,crit:5,critd:150,combo:0,bleed:0,dodge:2,ls:0,spd:0,gold:0};
  for(const sl in H.eq){const it=H.eq[sl];if(it)for(const t in it.s)s[t]+=it.s[t]}
  applySets(H.eq,s,k);gemApply(H.eq,s);const pr=1+st.prest*.25;const sm=RT[h.r].m*(1+.15*(Math.max(1,H.star)-1))*(H.awk?1.3:1);s.dmg*=h.dmg*sm*(1+st.up.dmg*.04)*pr*(1+s.dmgP);s.hp*=h.hp*sm*(1+st.up.hp*.04)*pr*(1+s.hpP);s.armor*=(1+st.up.armor*.04)*(1+s.armorP);
- if(k==='rogue'){s.crit+=20;s.dodge+=15}if(k==='thief'){s.crit+=5;s.dodge+=12}if(k==='duelist')s.dodge+=8;if(k==='sniper'){s.crit+=15;s.critd+=30}applyEl(s,h.el);if(k==='morg')s.ls+=10;
+ if(k==='rogue'){s.crit+=20;s.dodge+=15}if(k==='thief'){s.crit+=5;s.dodge+=12}if(k==='duelist')s.dodge+=8;if(k==='aurora')s.ls+=8;if(k==='nyx')s.crit+=25;if(k==='sniper'){s.crit+=15;s.critd+=30}applyEl(s,h.el);if(k==='morg')s.ls+=10;
  for(const c in CAP)s[c]=Math.min(s[c],CAP[c]);s.aps=h.aps*(1+s.spd/100);s.dmg=Math.round(s.dmg);s.hp=Math.round(s.hp);s.armor=Math.round(s.armor);return s}
 const heroPower=k=>power(heroStats(k));
 function heroPowerWith(k,it){const H=st.heroes[k],o=H.eq[it.slot];H.eq[it.slot]=it;const p=heroPower(k);H.eq[it.slot]=o;return p}
@@ -1244,10 +1252,10 @@ function dealDmg(u,t,mult,{forceCrit=false,noDodge=false,splash=true,adv=false}=
  if(!t||t.dead)return;if(!noDodge&&Math.random()*100<t.dodge){num('หลบ!','miss',unitScreen(t));return}
  if(t.kit==='knight'&&Math.random()<.2&&!noDodge){num('บล็อก!','miss',unitScreen(t));if(!(t.atkT>0))play(t.ch,'block',{once:true,speed:1.6});return}
  let v=u.dmg*mult*rnd(.9,1.1);const cr=forceCrit||Math.random()*100<u.crit;if(cr)v*=u.critd/100;
- if(u.kit==='barbarian'&&u.hp<u.max*.5)v*=1.4;if(u.weak>0)v*=.75;v*=adv||(u.kit==='novice'&&Math.random()<.3)?1.35:elMul(u.el,t.el);if(u.kit==='paladin'&&t.el==='dark')v*=1.25;if(u.kit==='duelist'&&t.hp>t.max*.7)v*=1.3;if(u.kit==='warlock'&&mult===1)t.weak=Math.max(t.weak||0,2);if(u.kit==='ignis'&&mult===1&&!(t.bleedT>0)){t.bleedT=2;t.bleedD=u.dmg*.15}
+ if(u.kit==='barbarian'&&u.hp<u.max*.5)v*=1.4;if(u.weak>0)v*=.75;v*=adv||(u.kit==='novice'&&Math.random()<.3)?1.35:elMul(u.el,t.el);if(u.kit==='paladin'&&t.el==='dark')v*=1.25;if((u.kit==='duelist'||u.kit==='kaiser')&&t.hp>t.max*.7)v*=1.3;if(t.kit==='titan'&&t.hp<t.max*.3)v*=.5;if(u.kit==='warlock'&&mult===1)t.weak=Math.max(t.weak||0,2);if(u.kit==='ignis'&&mult===1&&!(t.bleedT>0)){t.bleedT=2;t.bleedD=u.dmg*.15}
  v=Math.max(1,Math.round(v*(1-Math.min(.8,t.red+t.tmpRed))));if(t.shield>0){const ab=Math.min(t.shield,v);t.shield-=ab;v-=ab}t.hp-=v;sfx(cr?'crit':'hit');if(t.kit==='warden'&&!u.dead&&u!==t){u.hp-=Math.round(v*.15);if(u.hp<=0){killUnit(u)}}if(raid&&raid.wb&&t.isWB)raid.wbDmg+=v;
  num(fmt(v),(cr?'crit ':'')+(t.side==='me'?'bad sm':'sm'),unitScreen(t),cr?'คริ!':'');if(u.ls)u.hp=Math.min(u.max,u.hp+v*u.ls/100);
- if(t.hp<=0)killUnit(t);else if(!(t.atkT>0))play(t.ch,'hit',{once:true,speed:1.5});
+ if(t.hp<=0){if(u.kit==='nyx'&&u.sk)u.skT=Math.min(u.skT,.3);killUnit(t)}else if(!(t.atkT>0))play(t.ch,'hit',{once:true,speed:1.5});
  if(splash&&u.kit==='smage'){const o=foesOf(u).filter(x=>x!==t);if(o.length)dealDmg(u,pick(o),mult*.3,{noDodge:true,splash:false})}}
 const SKILLS={
  me:u=>{const t=pickTarget(u);if(!t)return;burstAt(t.ch.holder);dealDmg(u,t,3,{noDodge:true,splash:false});for(const o of foesOf(u))if(o!==t)dealDmg(u,o,.6,{noDodge:true,splash:false})},
@@ -1268,13 +1276,17 @@ const SKILLS={
  warlock:u=>{for(const o of foesOf(u)){dealDmg(u,o,1.3,{noDodge:true,splash:false});o.bleedT=5;o.bleedD=u.dmg*.3;o.weak=4}const t=foesOf(u)[0];if(t)burstAt(t.ch.holder,0x9a3aff,2.6)},
  sniper:u=>{const f=foesOf(u);if(!f.length)return;const t=f.reduce((a,b)=>a.hp>b.hp?a:b);burstAt(t.ch.holder,0xffe07a,1.3);dealDmg(u,t,4.5,{forceCrit:true,noDodge:true,splash:false})},
  warden:u=>{u.taunt=5;u.tmpRed=.5;u.tmpT=5;for(const a of alliesOf(u))if(a!==u){a.tmpRed=Math.max(a.tmpRed||0,.2);a.tmpT=5}burstAt(u.ch.holder,0xb8d0a8,2)},
+ aurora:u=>{for(const a of alliesOf(u)){const v=Math.round(a.max*.35);a.hp=Math.min(a.max,a.hp+v);a.shield=(a.shield||0)+Math.round(a.max*.15);num('+'+fmt(v),'heal',unitScreen(a))}burstAt(u.ch.holder,0xfff4a0,2.8)},
+ kaiser:u=>{burstAt(u.ch.holder,0xbfe0ff,2.2);for(let i=0;i<5;i++)setTimeout(()=>{for(const o of foesOf(u))dealDmg(u,o,.7,{noDodge:true,splash:false})},i*150)},
+ nyx:u=>{const f=foesOf(u);if(!f.length)return;const t=f.reduce((a,b)=>a.hp<b.hp?a:b);burstAt(t.ch.holder,0x6a3aaa,1.4);for(let i=0;i<3;i++)setTimeout(()=>{const tt=t.dead||!units.includes(t)?(foesOf(u)[0]):t;if(tt)dealDmg(u,tt,2.2,{forceCrit:true,noDodge:true,splash:false})},i*180)},
+ titan:u=>{u.taunt=4;for(const o of foesOf(u))dealDmg(u,o,1.8,{noDodge:true,splash:false});burstAt(u.ch.holder,0xc8a060,2.6)},
  smage:u=>{for(const o of foesOf(u)){dealDmg(u,o,1.4,{noDodge:true,splash:false});o.weak=4}const t=foesOf(u)[0];if(t)burstAt(t.ch.holder,0x7affee,2.6)}};
 function castUnitSkill(u){sfx('skill');const H0=u.side==='me'&&st.heroes[u.kit];if(H0&&H0.awk&&!u.awkB){u.awkB=1;const d0=u.dmg;u.dmg*=1.5;setTimeout(()=>{u.dmg=d0;u.awkB=0},900)}const d=play(u.ch,u.sk.anim||'attack',{once:true,speed:1.1})||1;u.atkT=d;u.actAt=d*.5;u.done=false;num(u.sk.n,'tag',unitScreen(u,-50));u.act=()=>((u.key==='me'&&u.side!=='me')?SKILLS.me:(SKILLS[u.kit]||SKILLS.me))(u);if(u.key==='me'&&u.side==='me')qp('skill')}
 function unitAct(u){
- if(u.heal){const allies=alliesOf(u).filter(x=>x.hp<x.max*.7);if(allies.length){const t=allies.reduce((a,b)=>a.hp/a.max<b.hp/b.max?a:b);const d=play(u.ch,'cast',{once:true,speed:1.2});u.atkT=d;u.act=()=>{const v=Math.round(u.dmg*1.6*(u.kit==='druid'?1.3:1));t.hp=Math.min(t.max,t.hp+v);num('+'+fmt(v),'heal',unitScreen(t))};u.actAt=d*.5;u.done=false;return}}
+ if(u.heal){const allies=alliesOf(u).filter(x=>x.hp<x.max*.7);if(allies.length){const t=allies.reduce((a,b)=>a.hp/a.max<b.hp/b.max?a:b);const d=play(u.ch,'cast',{once:true,speed:1.2});u.atkT=d;u.act=()=>{const v=Math.round(u.dmg*1.6*(u.kit==='druid'?1.3:u.kit==='aurora'?1.5:1));t.hp=Math.min(t.max,t.hp+v);num('+'+fmt(v),'heal',unitScreen(t))};u.actAt=d*.5;u.done=false;return}}
  const t=pickTarget(u);if(!t)return;const d=play(u.ch,u.atk,{once:true,speed:1.25})||.8;u.atkT=d;u.actAt=d*.45;u.done=false;
  const ranged=u.atk==='cast';
- const cmb=u.kit==='srogue'&&Math.random()<.2;
+ const cmb=(u.kit==='srogue'&&Math.random()<.2)||(u.kit==='kaiser'&&Math.random()<.25);
  u.act=()=>{if(cmb)setTimeout(()=>{if(!t.dead&&units.includes(t))dealDmg(u,t,.7)},180);if(ranged){const p=new THREE.Vector3();u.ch.holder.getWorldPosition(p);p.y+=1.2;shoot(u.side==='me'?0x7ad0ff:0xff6a4a,p,t.ch.holder,()=>dealDmg(u,t,1))}else dealDmg(u,t,1)}}
 function battleUpdate(dt){
  for(const u of units){u.ch.mixer.update(dt);if(u.dead)continue;
