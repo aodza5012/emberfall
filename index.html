@@ -618,7 +618,7 @@ let st;
 function loadSlot(i){let st;try{st=Object.assign(fresh(),readSlot(i)||{})}catch(e){st=fresh()}
 for(const h of HEROES){st.heroes[h.k]=Object.assign({lvl:0,sh:0,eq:{},star:1},st.heroes[h.k]||{});const H=st.heroes[h.k];if(H.lvl>lvCap(H))H.star=Math.min(5,Math.ceil(H.lvl/10))}
 st.snd=Object.assign({music:true,sfx:true,mv:.5,sv:.8},st.snd||{});st.sumT=st.sumT||0;st.pity=st.pity||0;
-st.auto=Object.assign({dung:true,wb:true,pass:true,pet:true,on:false,gear:true,events:true,skill:true,chest:true,quest:true,raid:true,tower:false,upgrade:false,hero:true,retreat:true,path:true},st.auto||{});if(!st.autoV2){st.autoV2=1;st.auto.events=true;st.auto.path=true}
+st.auto=Object.assign({dung:true,wb:true,pass:true,pet:true,on:false,gear:true,events:true,skill:true,chest:true,quest:true,raid:true,tower:false,upgrade:false,hero:true,retreat:true,path:true},st.auto||{});if(!st.autoV2){st.autoV2=1;st.auto.events=true;st.auto.path=true}if(!st.autoV3){st.autoV3=1;st.auto.gear=true}
 if(!SPEEDS.includes(st.speed))st.speed=st.speed>=3?4:1;for(const k in st.auto)if(k!=='on'&&!AUTO_ON.includes(k))st.auto[k]=false;st.bag=st.bag||[];st.ess=st.ess||0;st.stat=st.stat||{};st.ach=st.ach||[];st.titles=st.titles||[];st.skins=st.skins||['none'];if(!st.skin)st.skin='none';if(st.guide===undefined)st.guide=st.kills>50?GUIDE.length:0;st.gemInv=st.gemInv||{};for(const g in GEMS)st.gemInv[g]=st.gemInv[g]||[0,0,0,0,0];if(st.main&&!st.cls)st.cls=st.main;for(const k of ACCT.unl){const H=st.heroes[k];if(H&&!H.lvl){H.lvl=1;H.star=Math.max(1,H.star||1)}}
 return st}
 st=loadSlot(curSlot);
@@ -1037,11 +1037,11 @@ function candOf(k){return k==='me'?{eq:st.eq,pow:()=>power(S()),powWith:it=>powe
 function showGear(it,after){
  gearCands=['me',...st.team.filter(k=>st.heroes[k].lvl)];
  const diffs=gearCands.map(k=>{const c=candOf(k);return c.powWith(it)-c.pow()});const best=Math.max(...diffs);
- if((st.autoDisc||(st.auto.on&&st.auto.gear))&&best<=0){if(it.set&&it.r>=2&&stash(it)){num('🎒 เก็บชิ้นเซ็ตเข้ากระเป๋า','tag',{x:view.clientWidth/2,y:view.clientHeight*.5});renderTop();phase='busy';setTimeout(()=>after&&after(),150);return}const v=sellVal(it);st.gold+=v;st.scrap+=scrapVal(it);num('ทิ้งอัตโนมัติ +'+fmt(v)+' 🪙','gold',{x:view.clientWidth/2,y:view.clientHeight*.5});renderTop();phase='busy';setTimeout(()=>after&&after(),150);return}
+ if((st.autoDisc||(st.auto.on&&st.auto.gear))&&best<=0){if(!(st.auto.on&&st.auto.gear)&&it.set&&it.r>=2&&stash(it)){num('🎒 เก็บชิ้นเซ็ตเข้ากระเป๋า','tag',{x:view.clientWidth/2,y:view.clientHeight*.5});renderTop();phase='busy';setTimeout(()=>after&&after(),150);return}const v=sellVal(it);st.gold+=v;st.scrap+=scrapVal(it);num('ทิ้งอัตโนมัติ +'+fmt(v)+' 🪙','gold',{x:view.clientWidth/2,y:view.clientHeight*.5});renderTop();phase='busy';setTimeout(()=>after&&after(),150);return}
  if(it.r>=4){st.stat.leg=(st.stat.leg||0)+1;legendFlash(RAR[it.r].c);sfx('level')}
  gearItem=it;gearAfter=after;phase='gear';gearSel=best>0?gearCands[diffs.indexOf(best)]:'me';gearDiffs=diffs;renderGearCard();$('gearOv').classList.add('on');
  if(!st.seen.gear){st.seen.gear=1;say('ใส่อาวุธมันช่วยได้จริง ๆ นะ … ใครจะไปรู้ว่ามือเปล่ามันเจ็บ')}
- if(st.auto.on&&st.auto.gear){const want=best>0;setTimeout(()=>{if(gearItem===it&&phase==='gear')decideGear(want)},650/SPD())}
+ if((st.auto.on&&st.auto.gear))setTimeout(()=>{if(gearItem===it&&phase==='gear')autoGear()},650/SPD())
  if(gearCands.length>1&&!st.seen.hpick){st.seen.hpick=1;say('แตะรูปฮีโร่ด้านล่างการ์ด เพื่อเลือกว่าจะให้ใครสวมใส่ ลูกศรเขียวคือคนที่ใส่แล้วแข็งแกร่งขึ้น!')}}
 let gearDiffs=[];
 function renderGearCard(){const it=gearItem;if(!it)return;const c=candOf(gearSel),cur=c.eq[it.slot],R=RAR[it.r],dp=gearDiffs[gearCands.indexOf(gearSel)];
@@ -1054,7 +1054,8 @@ function renderGearCard(){const it=gearItem;if(!it)return;const c=candOf(gearSel
  hp.innerHTML=gearCands.map((k,i)=>{const cd=candOf(k),d=gearDiffs[i];return `<div class="hp ${k===gearSel?'sel':''}" data-k="${k}"><div class="pp" style="background-image:url(${cd.port||''})"></div><div class="nm2 stroke">${cd.name}</div><div class="df ${d>0?'up':'dn'} stroke" style="color:${d>0?'#6dff7a':'#ff7a6a'}">${d>0?'▲':'▼'}${fmt(Math.abs(d))}</div></div>`}).join('');
  hp.querySelectorAll('.hp').forEach(e=>e.onclick=()=>{gearSel=e.dataset.k;renderGearCard()})}
 function stash(it){if(!it)return false;if(st.bag.length<BAG_MAX){st.bag.push(it);st.stat.bagged=(st.stat.bagged||0)+1;return true}return false}
-function dropOld(old){if(!old)return;if(old.set&&stash(old)){num('🎒 เก็บชิ้นเก่าเข้ากระเป๋า','tag',{x:view.clientWidth/2,y:view.clientHeight*.42});return}st.gold+=sellVal(old);st.scrap+=scrapVal(old)}
+function autoGear(){if(phase!=='gear'||!gearItem)return;const it=gearItem;const d=gearCands.map(k=>{const c=candOf(k);return c.powWith(it)-c.pow()}),b=Math.max(...d);if(b>0){gearSel=gearCands[d.indexOf(b)];decideGear(true)}else decideGear(false)}
+function dropOld(old){if(!old)return;if(!(st.auto.on&&st.auto.gear)&&old.set&&stash(old)){num('🎒 เก็บชิ้นเก่าเข้ากระเป๋า','tag',{x:view.clientWidth/2,y:view.clientHeight*.42});return}st.gold+=sellVal(old);st.scrap+=scrapVal(old)}
 function decideGear(eq){
  if(phase!=='gear')return;const it=gearItem;
  if(eq==='bag'){if(!stash(it)){say('กระเป๋าเต็ม! ('+BAG_MAX+' ช่อง) ไปขายหรือย่อยของก่อนนะ');return}gearItem=null;$('gearOv').classList.remove('on');num('🎒 เก็บเข้ากระเป๋า','tag',{x:view.clientWidth/2,y:view.clientHeight*.5});renderAll();save();const a=gearAfter;gearAfter=null;phase='busy';setTimeout(()=>a&&a(),200);return}
@@ -1343,7 +1344,7 @@ function welcomeFlow(){const off=offlineReward(),newDay=loginCheck(),steps=[];
  let i=0;function next(){const f=steps[i++];if(f)setTimeout(f,250)}next()}
 
 /* ---------- AUTO ---------- */
-const AUTO_OPTS=[['path','เลือกทางแยกเอง (ปลอดภัย/อันตราย)','ไปทางอันตรายเมื่อเลเวลถึง เลือดเต็ม และไม่ได้เพิ่งแพ้'],['gear','สวมใส่/ทิ้งอุปกรณ์อัตโนมัติ','ให้คนที่ได้พลังเพิ่มมากที่สุด ถ้าไม่มีใครดีขึ้นจะขายเป็นทอง+เศษเหล็ก'],['events','เลือกอีเวนต์อัตโนมัติ','เลือกตัวเลือกที่ปลอดภัย/คุ้มที่สุดตามเลือดที่เหลือ'],['skill','ปล่อยสกิลตัวหลักเองตอนบุก/ดันเจี้ยน',''],
+const AUTO_OPTS=[['path','เลือกทางแยกเอง (ปลอดภัย/อันตราย)','ไปทางอันตรายเมื่อเลเวลถึง เลือดเต็ม และไม่ได้เพิ่งแพ้'],['gear','สวมใส่/ทิ้งอุปกรณ์อัตโนมัติ','ให้คนที่ได้พลังเพิ่มมากที่สุด ถ้าไม่มีใครดีขึ้นจะทิ้ง (ขายเป็นทอง+เศษเหล็ก) — ออโต้จะไม่เก็บของเข้ากระเป๋า'],['events','เลือกอีเวนต์อัตโนมัติ','เลือกตัวเลือกที่ปลอดภัย/คุ้มที่สุดตามเลือดที่เหลือ'],['skill','ปล่อยสกิลตัวหลักเองตอนบุก/ดันเจี้ยน',''],
  ['chest','เปิดหีบที่พร้อมแล้ว',''],['quest','รับรางวัลภารกิจที่ทำเสร็จ',''],['hero','รับสมัคร/อัปเลเวลฮีโร่','เมื่อชิ้นส่วนและทองพอ'],['upgrade','อัปเกรดที่ช่างตีเหล็ก','ใช้ทองซื้ออัปเกรดที่ถูกที่สุด (ทองจะหมดเร็ว)'],
  ['raid','บุกปราสาทเมื่อมีตั๋ว','รวมถึงเลือกพลังทีมให้เอง'],['tower','ไต่หอคอยต่อเนื่อง','ชนะแล้วขึ้นชั้นถัดไปทันทีจนกว่าจะแพ้ (ต้องเข้าหอคอยเอง)'],['dung','ลงดันเจี้ยนรายวันให้ครบ','เลือกระดับยากที่สุดที่น่าจะชนะ'],['wb','ตีบอสโลกเมื่อมีสิทธิ์',''],['pass','รับรางวัล Season Pass',''],['pet','วิวัฒนาการสัตว์คู่ใจที่ใส่อยู่',''],['retreat','ถอยไปฟาร์มเมื่อแพ้ซ้ำ ๆ','แพ้ 3 ครั้งติด ถอยไปแมปก่อนหน้า 2 รอบ แล้วกลับมาลุยใหม่']];
 function openAuto(){const draw=b=>{b.innerHTML=`<label class="tog" style="background:${st.auto.on?'#c8f5cc':'#f2e3c0'}"><input type="checkbox" data-o="on" ${st.auto.on?'checked':''}><div><b>🤖 เปิดโหมดออโต้</b><br>ปล่อยให้เกมเล่นเอง เหมาะกับฟาร์มยาว ๆ (ใช้คู่กับ x4 ได้)</div></label>
@@ -1357,7 +1358,7 @@ $('sideT').onclick=()=>{st.sideMin=!st.sideMin;$('side').classList.toggle('min',
 function legendFlash(c){const f=$('legFx');f.style.background=`radial-gradient(circle at 50% 45%,${c}cc,${c}33 40%,transparent 70%)`;f.classList.remove('on');void f.offsetWidth;f.classList.add('on');banner('✨ ของระดับสูง!')}
 function bossWarn(){const w=$('bossWarn');w.classList.remove('on');void w.offsetWidth;w.classList.add('on');clearTimeout(w._t);w._t=setTimeout(()=>w.classList.remove('on'),2600)}
 let autoT=0;
-function autoTick(){if(!st.auto.on||phase==='title')return;const A0=st.auto;
+function autoTick(){if(!st.auto.on||phase==='title')return;const A0=st.auto;if(A0.gear&&gearItem&&$('gearOv').classList.contains('on')){phase='gear';autoGear();return}
  if(A0.quest){const D=daily();for(const q of D.q)if(!q.c&&q.p>=q.g){q.c=true;addPass(100);st.gems+=8;st.gold+=Math.round(30*P(gIdx()));addShards(null,2);addXp(Math.round(xpNeed(st.lvl)*.15));num('📜 รับรางวัลภารกิจ','gold',{x:view.clientWidth/2,y:view.clientHeight*.3})}}
  if(A0.hero&&unlocked()){if(st.freeSum!==new Date().toDateString())doSummon('king',1,true,true);for(const h of HEROES){const H=st.heroes[h.k];if(H.lvl&&H.star<5&&H.sh>=STAR_COST[H.star]&&H.lvl>=lvCap(H)){H.sh-=STAR_COST[H.star];H.star++;num(`${h.n} ★${H.star}!`,'tag',{x:view.clientWidth/2,y:view.clientHeight*.38});break}}for(const h of HEROES){const H=st.heroes[h.k],c=heroCost(H.lvl,h);if(H.lvl<capHero(H)&&H.sh>=c.sh&&st.gold>=c.g){H.sh-=c.sh;st.gold-=c.g;H.lvl++;if(H.lvl===1&&st.team.length<3&&h.k!==st.main)st.team.push(h.k);num(`${h.n} ${H.lvl===1?'เข้าร่วม!':'Lv '+H.lvl}`,'tag',{x:view.clientWidth/2,y:view.clientHeight*.35});break}}}
  if(A0.upgrade){const u=UPG.filter(x=>!x.max||st.up[x.k]<x.max).sort((a,b)=>upCost(a)-upCost(b))[0];if(u&&st.gold>=upCost(u)){st.gold-=upCost(u);st.up[u.k]++;qp('upgrade')}}
