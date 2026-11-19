@@ -1516,7 +1516,7 @@ let lastInput=Date.now(),wdSig='',wdT=Date.now();addEventListener('pointerdown',
 function watchdog(){const sg=[phase,mode,st.step,st.map,st.kills,inCamp,enemy?Math.round(enemy.hp):-1,units.length?units.reduce((a,u)=>a+Math.round(u.hp),0):0].join('|');
  if(sg!==wdSig){wdSig=sg;wdT=Date.now();return}if(Date.now()-wdT<40000||Date.now()-lastInput<60000)return;wdT=Date.now();
  if(inCamp||phase==='camp'||phase==='title')return;
- console.warn('watchdog: stuck at',sg);say('🛠️ ออโต้ค้าง — กู้คืนให้อัตโนมัติแล้ว');
+ recErr('stuck '+sg,'watchdog');say('🛠️ ออโต้ค้าง — กู้คืนให้อัตโนมัติแล้ว (ดูรายละเอียด: โปรไฟล์ → 🐞 บันทึกปัญหา)');
  try{if($('sheet').classList.contains('on')){onSheetClose=null;closeSheet()}}catch(e){}
  ['gearOv','evOv','powOv'].forEach(x=>{const el=$(x);if(el)el.classList.remove('on')});gearItem=null;gearAfter=null;
  if(mode==='raid'){try{dgAuto=null;exitTower()}catch(e){}return}
@@ -1620,6 +1620,7 @@ $('prof').onclick=()=>openSheet('⚙️ ตั้งค่า',`<div class="row"
  <div class="row"><div class="ri">🗑️</div><div class="rt"><b>ทิ้งอัตโนมัติ</b><br>ถ้าอุปกรณ์ใหม่ทำให้พลังรวมลดลง จะขายทิ้งให้เลย</div><button class="btn ${st.autoDisc?'':'gray'}" id="adBtn">${st.autoDisc?'เปิด':'ปิด'}</button></div>
  <div class="row"><div class="ri">⌨️</div><div class="rt"><b>คีย์ลัด (PC)</b><br>← → หรือ A D: เลือก/ปัดการ์ด · 1 2 3: เลือกพลัง<br>Space: สกิล · S: ความเร็ว · M: แผนที่ · R: บุกปราสาท · T: โรงเตี๊ยม · B: ร้านค้า · Q: ภารกิจ · Esc: ปิด</div></div>
  <div class="row"><div class="ri">♻️</div><div class="rt"><b>เริ่มตัวละครนี้ใหม่</b><br>ลบความคืบหน้าของตัวละครนี้ (ตัวอื่นไม่หาย)</div><button class="btn red" id="rsBtn">ลบ</button></div>
+ <div class="row"><div class="ri">🐞</div><div class="rt"><b>บันทึกปัญหา (${(window.__efErr||[]).length})</b><br><small>ถ้าเกมค้าง ให้แคปหน้าจอส่วนนี้ส่งให้ผู้พัฒนา</small><pre id="errLog" style="display:none;white-space:pre-wrap;font-size:10px;max-height:180px;overflow:auto;background:#222;color:#cfc;padding:6px;border-radius:6px;margin-top:4px">${(window.__efErr||[]).slice().reverse().join('\n')||'ไม่มีข้อผิดพลาด'}</pre></div><button class="btn" id="errB">ดู</button></div>
  <div class="row" style="background:#fde3df"><div class="ri">🧨</div><div class="rt"><b>รีเซ็ตตัวละครทั้งหมด</b><br>ลบตัวละครทุกช่อง + ข้อมูลบัญชีในเกม (ฮีโร่ เพื่อน ปลดล็อก ฯลฯ) ทั้งในเครื่องและบนคลาวด์ — เริ่มใหม่จากศูนย์ · บัญชีล็อกอินยังอยู่</div><button class="btn red" id="rsAll">รีเซ็ต</button></div>`,b=>{
  b.querySelectorAll('[data-sp]').forEach(e=>e.onclick=()=>{setSpeed(+e.dataset.sp);$('prof').onclick()});
  b.querySelector('#adBtn').onclick=()=>{st.autoDisc=!st.autoDisc;save();$('prof').onclick()};
@@ -1629,6 +1630,7 @@ $('prof').onclick=()=>openSheet('⚙️ ตั้งค่า',`<div class="row"
  b.querySelector('#svR').oninput=e=>{st.snd.sv=e.target.value/100;b.querySelector('#svL').textContent=e.target.value+'%';applyVol()};b.querySelector('#svR').onchange=()=>{save();sfx('coin')};
  b.querySelector('#nmB').onclick=()=>{const v=b.querySelector('#nmI').value.trim().slice(0,14);if(v){st.name=v;save();renderAll();num('เปลี่ยนชื่อเป็น '+v,'gold',{x:view.clientWidth/2,y:view.clientHeight*.3})}};
  b.querySelector('#asBtn').onclick=()=>{st.autoSkill=!st.autoSkill;save();$('prof').onclick()};
+ b.querySelector('#errB').onclick=e=>{const p=b.querySelector('#errLog');const on=p.style.display==='none';p.style.display=on?'block':'none';e.target.textContent=on?'ล้าง':'ดู';if(!on){window.__efErr.length=0;try{localStorage.removeItem('emberfall3d_err')}catch(_){}p.textContent='ไม่มีข้อผิดพลาด'}};
  b.querySelector('#rsAll').onclick=async e=>{const t=e.target,c=+(t.dataset.c||0);if(c<2){t.dataset.c=c+1;t.textContent=c?'ยืนยันครั้งสุดท้าย!':'แน่ใจ? กดอีกครั้ง';return}
   t.textContent='กำลังลบ…';t.disabled=true;WIPE=true;
   try{if(authUser&&FB){const{fs,D}=FB,uid=authUser.uid;for(let i=0;i<NSLOT;i++){try{await fs.setDoc(fs.doc(D,'users',uid,'slots',''+i),{del:true,t:Date.now()})}catch(_){}}
@@ -2397,14 +2399,14 @@ addEventListener('keydown',e=>{
 /* ================= LOOP ================= */
 const clock=new THREE.Clock();
 function update(dt){
- T+=dt;if(inCamp)campUpdate(dt);if(mode==='adv'&&!inCamp)advTeamUpdate(dt);else if(advT.length)advTeamClear();const s=S();
+ T+=dt;try{if(inCamp)campUpdate(dt);if(mode==='adv'&&!inCamp)advTeamUpdate(dt);else if(advT.length)advTeamClear()}catch(e){recErr(e,'team');try{advTeamClear()}catch(_){}}const s=S();
  if(phase==='walk'){const d=WALK_SPEED*dt;scrollWorld(d);if(mode==='adv')pickupUpdate(d);walkLeft-=d;
   const bob=Math.sin(T*10);R.g.position.y=-.66+bob*.018;L.g.position.y=-.62-bob*.018;CAM_FP.p.y=1.55+Math.abs(bob)*.03;
   if(mode==='raid')raidProg();
-  if(walkLeft<=0){if(mode==='raid')raidNext();else{const t=encounterType();if(t==='mob')spawnEnemy();else if(t==='boss')spawnEnemy(true);else startEvent(t)}}}
+  if(walkLeft<=0){if(mode==='raid')raidNext();else{let t='mob';try{t=encounterType();if(t==='mob')spawnEnemy();else if(t==='boss')spawnEnemy(true);else startEvent(t)}catch(e){recErr(e,'spawn:'+t);phase='busy';if(enemy){try{rmChar(enemy.ch.holder)}catch(_){}enemy=null}setTimeout(()=>{try{t==='boss'?startWalk():nextStep()}catch(_){startWalk()}},300)}}}}
  else{R.g.position.y=lerp(R.g.position.y,-.66,.1);L.g.position.y=lerp(L.g.position.y,-.62,.1)}
- if(mode==='raid'&&units.length)battleUpdate(dt);
- if(enemy){const e=enemy;e.ch.mixer.update(dt);
+ if(mode==='raid'&&units.length){try{battleUpdate(dt)}catch(e){recErr(e,'battle')}}
+ try{if(enemy){const e=enemy;e.ch.mixer.update(dt);
   if(e.state==='approach'){const z=e.ch.holder.position.z+dt*APPROACH;e.ch.holder.position.z=Math.min(z,e.targetZ);if(z>=e.targetZ){e.state='fight';play(e.ch,'idle')}}
   else if(e.state==='spawn'){e.spawnT-=dt;if(e.spawnT<=0){e.state='fight';play(e.ch,'idle')}}
   else if(e.state==='fight'&&phase==='fight'){
@@ -2415,9 +2417,9 @@ function update(dt){
    if(e.bleed>0&&enemy){e.bleed-=dt;bleedT-=dt;if(bleedT<=0){bleedT=.75;const d=Math.max(1,Math.round(s.dmg*.12));e.hp-=d;num(fmt(d),'bad sm',enemyScreen(-10));if(e.hp<=0)killEnemy()}}}
   if(enemy){const eb=$('ebar');if(e.state!=='dead'&&!e.boss){const p=new THREE.Vector3();e.ch.holder.getWorldPosition(p);p.y+=e.ch.height+.25;p.project(camera);eb.style.display='block';eb.style.left=((p.x*.5+.5)*view.clientWidth)+'px';eb.style.top=((-p.y*.5+.5)*view.clientHeight)+'px';eb.querySelector('.nmT').textContent=e.name;setHB(eb,e.hp,e.max)}else eb.style.display='none';
    if(e.boss&&e.state!=='dead')setHB($('bossBar'),e.hp,e.max)}}
- else $('ebar').style.display='none';
+ else $('ebar').style.display='none';}catch(e){recErr(e,'enemy')}
  if(evChar){evChar.mixer.update(dt);if(evChar.flee){evChar.holder.position.x+=dt*3;evChar.holder.rotation.y=Math.PI/2}}
- swingUpdate(dt);vfxUpdate(dt);petUpdate(dt);
+ try{swingUpdate(dt);vfxUpdate(dt);petUpdate(dt)}catch(e){recErr(e,'fx')}
  if(skCd>0)skCd-=dt;if((st.autoSkill||(st.auto.on&&st.auto.skill))&&mode==='adv'&&skCd<=0&&phase==='fight'&&enemy&&enemy.state==='fight'&&enemy.hp>0)castSkill();
  for(let i=projs.length-1;i>=0;i--){const p=projs[i];p.t+=dt*3;const to=new THREE.Vector3();p.toObj.getWorldPosition(to);to.y+=1.1;p.m.position.lerpVectors(p.from,to,Math.min(1,p.t));if(p.t>=1){scene.remove(p.m);p.m.material.dispose();projs.splice(i,1);try{p.onHit()}catch(e){console.error(e)}}}
  if(petMesh)petMesh.position.y=.05+Math.abs(Math.sin(T*(phase==='walk'?10:3)))*.03;
@@ -2427,12 +2429,14 @@ function updateCamera(rdt){if(inCamp){campCam(rdt);return}camT=lerp(camT,camTarg
  if(shake>0){shake-=rdt;camera.rotateZ(rnd(-.02,.02)*shake*4);camera.rotateX(rnd(-.02,.02)*shake*4)}}
 function setHB0(){const m=S().hp;$('hpBar').querySelector('b').style.width=clamp(php/m*100,0,100)+'%';$('hpBar').querySelector('span').textContent=fmt(php)+'/'+fmt(m)}
 let saveT=0,uiT=0;
-let frameErr=0;window.__efErr=[];addEventListener('error',e=>{window.__efErr.push((e.message||'')+' @'+(e.lineno||'')+':'+(e.colno||''));if(window.__efErr.length>30)window.__efErr.shift()});addEventListener('unhandledrejection',e=>{window.__efErr.push('rej '+(e.reason&&e.reason.message||e.reason));if(window.__efErr.length>30)window.__efErr.shift()});
+let frameErr=0;window.__efErr=[];try{window.__efErr=JSON.parse(localStorage.getItem('emberfall3d_err')||'[]')}catch(e){}
+function recErr(e,w){const m=new Date().toLocaleTimeString('th-TH')+' '+(w||'')+': '+(e&&e.message||e)+' '+(((e&&e.stack)||'').split('\n').slice(1,3).map(x=>x.trim().replace(/https?:\/\/[^ )]*\//g,'')).join(' | '));const L=window.__efErr;if(L.length&&L[L.length-1].slice(9)===m.slice(9))return;L.push(m);while(L.length>20)L.shift();try{localStorage.setItem('emberfall3d_err',JSON.stringify(L))}catch(_){}console.error(m)}
+window.recErr=recErr;addEventListener('error',e=>recErr(e.error||e.message,'@'+(e.lineno||'')));addEventListener('unhandledrejection',e=>{const r=e.reason;if(r&&/firestore|firebase|network|fetch|permission/i.test((r.message||'')+(r.code||'')))return;recErr(r,'promise')});
 window.__ef=()=>({phase,mode,inCamp,step:st.step,map:st.map,kills:st.kills,auto:st.auto.on,enemy:enemy?{st:enemy.state,hp:Math.round(enemy.hp)}:null,units:units.length,sheet:$('sheet').classList.contains('on'),gear:$('gearOv').classList.contains('on'),ev:$('evOv').classList.contains('on'),frameErr,paused,ECO,vfx:vfx.length,projs:projs.length,scene:scene.children.length,geo:renderer.info.memory.geometries,tex:renderer.info.memory.textures,prog:renderer.info.programs.length,heap:performance.memory?Math.round(performance.memory.usedJSHeapSize/1e6):0,wd:Date.now()-wdT,err:window.__efErr.slice(-5)});
-function frame(){const eco=ECO,next=()=>eco?setTimeout(frame,eco===2?250:66):requestAnimationFrame(frame);try{frameBody(eco)}catch(e){console.error(e);frameErr++;if(frameErr<5||frameErr%50===0)console.warn('frame recovered',frameErr)}next()}
+function frame(){const eco=ECO,next=()=>eco?setTimeout(frame,eco===2?250:66):requestAnimationFrame(frame);try{frameBody(eco)}catch(e){frameErr++;recErr(e,'frame')}next()}
 function frameBody(eco){const rdt=Math.min(eco?1.1:.05,clock.getDelta());
  if(paused){if(eco!==2){updateCamera(0);renderer.render(scene,camera)}return}
- if(phase!=='title'){{let r=rdt*SPD();while(r>1e-4){const d=Math.min(.05*SPD(),r);update(d);r-=d}}saveT+=rdt;if(saveT>6){saveT=0;save()}uiT+=rdt;if(uiT>.15){uiT=0;setHB0();skillBtnUpdate()}autoT+=rdt;if(autoT>1){autoT=0;autoTick()}}else{scrollWorld(rdt*1.5);T+=rdt}
+ if(phase!=='title'){try{let r=rdt*SPD();while(r>1e-4){const d=Math.min(.05*SPD(),r);update(d);r-=d}}catch(e){frameErr++;recErr(e,'update')}saveT+=rdt;if(saveT>6){saveT=0;save()}uiT+=rdt;if(uiT>.15){uiT=0;setHB0();skillBtnUpdate()}autoT+=rdt;if(autoT>1){autoT=0;try{autoTick()}catch(e){recErr(e,'auto')}}}else{scrollWorld(rdt*1.5);T+=rdt}
  if(eco!==2){updateCamera(rdt);renderer.render(scene,camera)}else if((ecoT+=rdt)>1){ecoT=0;ecoHud()}}
 let ecoT=0;
 
