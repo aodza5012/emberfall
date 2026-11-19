@@ -2427,7 +2427,8 @@ function updateCamera(rdt){if(inCamp){campCam(rdt);return}camT=lerp(camT,camTarg
  if(shake>0){shake-=rdt;camera.rotateZ(rnd(-.02,.02)*shake*4);camera.rotateX(rnd(-.02,.02)*shake*4)}}
 function setHB0(){const m=S().hp;$('hpBar').querySelector('b').style.width=clamp(php/m*100,0,100)+'%';$('hpBar').querySelector('span').textContent=fmt(php)+'/'+fmt(m)}
 let saveT=0,uiT=0;
-let frameErr=0;
+let frameErr=0;window.__efErr=[];addEventListener('error',e=>{window.__efErr.push((e.message||'')+' @'+(e.lineno||'')+':'+(e.colno||''));if(window.__efErr.length>30)window.__efErr.shift()});addEventListener('unhandledrejection',e=>{window.__efErr.push('rej '+(e.reason&&e.reason.message||e.reason));if(window.__efErr.length>30)window.__efErr.shift()});
+window.__ef=()=>({phase,mode,inCamp,step:st.step,map:st.map,kills:st.kills,auto:st.auto.on,enemy:enemy?{st:enemy.state,hp:Math.round(enemy.hp)}:null,units:units.length,sheet:$('sheet').classList.contains('on'),gear:$('gearOv').classList.contains('on'),ev:$('evOv').classList.contains('on'),frameErr,paused,ECO,vfx:vfx.length,projs:projs.length,scene:scene.children.length,geo:renderer.info.memory.geometries,tex:renderer.info.memory.textures,prog:renderer.info.programs.length,heap:performance.memory?Math.round(performance.memory.usedJSHeapSize/1e6):0,wd:Date.now()-wdT,err:window.__efErr.slice(-5)});
 function frame(){const eco=ECO,next=()=>eco?setTimeout(frame,eco===2?250:66):requestAnimationFrame(frame);try{frameBody(eco)}catch(e){console.error(e);frameErr++;if(frameErr<5||frameErr%50===0)console.warn('frame recovered',frameErr)}next()}
 function frameBody(eco){const rdt=Math.min(eco?1.1:.05,clock.getDelta());
  if(paused){if(eco!==2){updateCamera(0);renderer.render(scene,camera)}return}
