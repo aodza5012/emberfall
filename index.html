@@ -1041,6 +1041,13 @@ function packUpdate(e,dt){if(!e.pack||!e.pack.length)return;const fighting=e.sta
 function packDeal(m){const s=S();if(Math.random()*100<s.dodge){num('หลบ!','miss',{x:view.clientWidth*.3,y:view.clientHeight*.72});return}
  const dv=m.defn&&m.defn.magic?s.mdef:s.armor,red=dv/(dv+18*Math.pow(1.079,gIdx()));let d=m.atk*(m.rm||.5)*rnd(.85,1.15)*(1-Math.min(.75,red))*(1-s.tough/100)*elMul(m.el,myEl());d=Math.max(1,Math.round(d*teamGuard()));php-=d;
  num('-'+fmt(d),'bad',{x:view.clientWidth*rnd(.25,.75),y:view.clientHeight*.8},m.boss?'👑':'👥');if(php<=0){php=0;defeat()}}
+const AOE_H=['barbarian','mage','ignis','morg','titan','warlock','kaiser'];
+['witch','firemage','thundermage','darkwitch','yeti','sandgolem','magmabrute','mudbrute'].forEach(k=>{if(MON[k])MON[k].aoe=1});
+let aoeC=0;
+function packHurtAll(raw,mag){const e=enemy;if(!e||!e.pack||!e.pack.length)return;for(const m of e.pack.slice()){if(m.hp<=0)continue;let d=Math.max(1,Math.round(raw*resMul(mag,m)*rnd(.9,1.1)));if(m.boss)d=Math.min(d,Math.max(0,m.hp-1));if(d<=0)continue;m.hp-=d;num(fmt(d),'team',unitScreen(m),'💥');if(m.hp<=0)packKill(e,m);else play(m.ch,'hit',{once:true,fade:.05,speed:1.4})}}
+function packKill(e,m){e.pack=e.pack.filter(x=>x!==m);const s=S(),g=gIdx();play(m.ch,'death',{once:true,fade:.08});sfx('death');
+ const gold=Math.round(6*Math.pow(1.075,g)*(1+s.gold/100));st.gold+=gold;num('+'+fmt(gold)+' 🪙','gold',unitScreen(m,-20));{const lo=st.lvl-3-monLv(g);addXp(Math.round(Math.max(9*Math.pow(1.06,g),xpNeed(monLv(g))*.012)*(lo>0?Math.max(.1,1-.15*lo):1)))}st.kills++;qp('kill');st.codex[m.mk]=(st.codex[m.mk]||0)+1;
+ if(e.name)e.name=e.name.replace(/ 👥\+\d+$/,'')+(e.pack.filter(x=>!x.boss).length?` 👥+${e.pack.filter(x=>!x.boss).length}`:'');setTimeout(()=>rmChar(m.ch.holder),1000/SPD());renderTop()}
 function promotePack(e){const rest=e.pack||[];const nx=rest.shift();if(!nx)return false;nx.pack=rest;nx.packTot=e.packTot;nx.fromBossTab=nx.fromBossTab||e.fromBossTab;nx.state='approach';nx.targetZ=nx.boss?-5.4:-4.3;nx.cd=.8;
  if(rest.length&&!nx.boss)nx.name=nx.name.replace(/ 👥\+\d+$/,'')+` 👥+${rest.length}`;play(nx.ch,'walk',{speed:1.3});enemy=nx;phase='fight';pcd=.4;
  if(nx.boss){$('bossBar').style.display='block';$('bossNm').textContent=nx.name;sfx('boss');banner('👑 บอสลงสนาม!')}else num(`👥 เหลืออีก ${rest.length+1} ตัว`,'tag',{x:view.clientWidth/2,y:view.clientHeight*.3});return true}
@@ -1062,10 +1069,10 @@ function bossTick(e,dt){const tr=e.tr||[];e.trT+=dt;
  if(tr.includes('shield')&&(e.shT=(e.shT||0)+dt)>=8){e.shT=0;e.sh=Math.round(e.max*.12);num('🛡️ โล่','tag',enemyScreen(-90))}
  if(tr.includes('regen')&&(e.rgT=(e.rgT||0)+dt)>=3){e.rgT=0;const v=Math.round(e.max*.02);e.hp=Math.min(e.max,e.hp+v);num('+'+fmt(v),'heal',enemyScreen(-60))}
  if(pPois>0){pPois-=dt;php-=S().hp*.02*dt;if(php<=0){php=0;pPois=0;defeat()}}}
-function enemyAttack(){const e=enemy;const dur=play(e.ch,e.defn.atk||'attack',{once:true,speed:1.2});e.atkT=dur;e.dmgAt=dur*(e.defn.magic?.55:.42);e.dealt=false}
+function enemyAttack(){const e=enemy;if((e.defn.aoe||e.boss)&&(e.ac=(e.ac||0)+1)%3===0){e.aoeNext=1;num('💥 '+(e.boss?'บอส':'')+'โจมตีหมู่!','tag',enemyScreen(-90))}const dur=play(e.ch,e.defn.atk||'attack',{once:true,speed:1.2});e.atkT=dur;e.dmgAt=dur*(e.defn.magic?.55:.42);e.dealt=false}
 function enemyDeal(){const s=S(),e=enemy;if(e&&e.tr&&e.tr.includes('poison'))pPois=3;if(Math.random()*100<s.dodge){num('หลบ!','miss',{x:view.clientWidth/2,y:view.clientHeight*.72});return}
  const dv=e.defn&&e.defn.magic?s.mdef:s.armor,red=dv/(dv+18*Math.pow(1.079,gIdx()));let d=e.atk*rnd(.85,1.15)*(1-Math.min(.75,red))*(1-s.tough/100)*elMul(e.el,myEl());d=Math.max(1,Math.round(d));if(myPx().includes('guard')&&Math.random()<.15){d=Math.round(d*.4);num('🛡 กายาเหล็ก','miss',{x:view.clientWidth*.6,y:view.clientHeight*.7})}if(petShield>0){const ab=Math.min(petShield,d);petShield-=ab;d=Math.max(0,Math.round(d-ab));if(ab>0)num('ดูดซับ '+fmt(ab),'miss',{x:view.clientWidth*.35,y:view.clientHeight*.7})}
- d=Math.max(1,Math.round(d*teamGuard()));php-=d;if(e.tr&&e.tr.includes('combo')&&++e.cmb%3===0&&!e.comboing){e.comboing=1;setTimeout(()=>{if(enemy===e&&phase==='fight'&&php>0){num('👊 คอมโบ!','tag',enemyScreen(-60));enemyDeal()}e.comboing=0},260)}sfx('hurt');shake=.25;$('vign').style.opacity=.55;setTimeout(()=>$('vign').style.opacity=0,180);num('-'+fmt(d),'bad',{x:view.clientWidth*rnd(.35,.65),y:view.clientHeight*.78});if(php<=0){php=0;defeat()}}
+ if(e.aoeNext){e.aoeNext=0;d*=.7;if(advT.length){for(const u of advT)u.cd+=1;num('ทีมถูกกระแทก!','miss',{x:view.clientWidth*.5,y:view.clientHeight*.6})}}d=Math.max(1,Math.round(d*teamGuard()));php-=d;if(e.tr&&e.tr.includes('combo')&&++e.cmb%3===0&&!e.comboing){e.comboing=1;setTimeout(()=>{if(enemy===e&&phase==='fight'&&php>0){num('👊 คอมโบ!','tag',enemyScreen(-60));enemyDeal()}e.comboing=0},260)}sfx('hurt');shake=.25;$('vign').style.opacity=.55;setTimeout(()=>$('vign').style.opacity=0,180);num('-'+fmt(d),'bad',{x:view.clientWidth*rnd(.35,.65),y:view.clientHeight*.78});if(php<=0){php=0;defeat()}}
 function killEnemy(){
  const e=enemy,s=S(),g=gIdx();e.state='dead';e.hp=0;sfx('death');play(e.ch,'death',{once:true,fade:.08});
  const dm=e.danger?1.7:1;if(myPx().includes('reaper'))heal(s.hp*.1);const gold=Math.round(6*Math.pow(1.075,g)*(e.boss?10:1)*(1+s.gold/100)*dm);if(e.boss||(e.danger&&Math.random()<.06)){const gg=addGem(e.boss?Math.min(3,1+Math.floor(st.maxMap/3)):1);setTimeout(()=>num(`+${GEMS[gg.g].i} ${GEMS[gg.g].n} ขั้น ${gg.t}`,'tag',enemyScreen(90)),700)}st.gold+=gold;sfx('coin');num('+'+fmt(gold)+' 🪙','gold',enemyScreen(40));addPass(e.boss?40:3);if(Math.random()<(e.boss?1:.08)){const fd=e.boss?5:1;st.food+=fd;setTimeout(()=>num('+'+fd+' 🍖','gold',enemyScreen(70)),400)}
@@ -1099,7 +1106,7 @@ function swingUpdate(dt){
  if(swingMagic){R.g.position.z=-.62-Math.sin(t*Math.PI)*.18;R.g.rotation.x=-.85-Math.sin(t*Math.PI)*.35}
  else{const a=t<.3?lerp(0,.55,t/.3):t<.55?lerp(.55,-1.25,(t-.3)/.25):lerp(-1.25,0,(t-.55)/.45);R.g.rotation.x=-.85+a;R.g.rotation.z=.42+(t>.3&&t<.7?-.35*Math.sin((t-.3)/.4*Math.PI):0)}
  if(!swingHit&&t>=(swingMagic?.35:.48)){swingHit=true;const combo=Math.random()*100<s.combo;
-  const doHit=()=>{hitEnemy();if(combo){num('คอมโบ!','tag',enemyScreen(-50));setTimeout(()=>hitEnemy(.6),140/SPD())}};
+  const doHit=()=>{if(AOE_H.includes(st.main)&&enemy&&enemy.pack&&enemy.pack.length&&++aoeC%3===0){num('💥 โจมตีหมู่!','tag',enemyScreen(-70));hitEnemy(.55,'💥');packHurtAll(S().dmg*.55,isMag('me'));return}hitEnemy();if(combo){num('คอมโบ!','tag',enemyScreen(-50));setTimeout(()=>hitEnemy(.6),140/SPD())}};
   if(swingMagic&&enemy){const p=new THREE.Vector3();R.hand.getWorldPosition(p);shoot(0x9a7aff,p,enemy.ch.holder,doHit)}else doHit()}
  if(swingT>=1){swingT=-1;R.g.rotation.set(-.85,0,.42);R.g.position.z=-.62}}
 
@@ -1275,7 +1282,7 @@ function makeUnit(side,o,i,n){
  const bar=document.createElement('div');bar.className='ubar';bar.innerHTML=`<div class="nmT stroke" style="font-size:10px">${el?EL[el].i:''}${o.name}</div><div class="hb ${side==='me'?'g':''}"><b></b><span class="stroke"></span></div>`;$('ubars').appendChild(bar);
  const sk=o.key==='me'?(side==='me'&&heroOf(st.main)?heroOf(st.main).sk:LEADER_SK):(HEROES.find(h=>h.k===o.key)||{}).sk;
  return {side,key:o.key,kit:o.kit||(o.key==='me'&&side==='me'?st.main:o.key),el,name:o.name,role:o.role,hp:o.hp,max:o.hp,dmg:o.dmg,aps:o.aps,crit:o.crit||10,critd:o.critd||150,ls:o.ls||0,red:o.red||0,dodge:o.dodge||0,atk:o.atk||'attack',port:o.port,ch,bar,cd:rnd(.2,.9),atkT:0,dead:false,heal:o.role==='sup',
-  sk,skT:sk?sk.cd*rnd(.45,.7):1e9,tmpRed:0,tmpT:0,weak:0,taunt:0,bleedT:0,bleedD:0,revived:false}}
+  aoe:AOE_H.includes(o.kit||(o.key==='me'&&side==='me'?st.main:o.key))||(side==='foe'&&(o.aoe||/^👑/.test(o.name||'')||(o.f==='mage'&&o.role!=='sup')||(o.f==='barbarian'&&(o.h||1.8)>=2.2))),ac:0,sk,skT:sk?sk.cd*rnd(.45,.7):1e9,tmpRed:0,tmpT:0,weak:0,taunt:0,bleedT:0,bleedD:0,revived:false}}
 function teamRef(list){const n=list.length;return{hp:list.reduce((a,u)=>a+u.hp,0)/n,dps:list.reduce((a,u)=>a+u.dmg*u.aps,0)/n,n}}
 function myTeamDefs(){
  const s=S(),m=raid.mods,mh=heroOf(st.main)||{f:'knight',keep:[]},list=[{key:'me',name:pname(),el:myEl(),f:mh.f,keep:(mh.keep||[]).filter(x=>/Cape|Spellbook/.test(x)),tint:mh.tint,w:(st.eq.weapon||{}).wt||'sword_1handed',role:'str',hp:s.hp*(1+m.hp)*1.4,dmg:s.dmg*(1+m.dmg),aps:s.aps*(1+m.aps),crit:s.crit+m.crit,critd:s.critd,ls:s.ls+m.ls,red:m.red,dodge:s.dodge,port:PORT.me}];
@@ -1344,6 +1351,7 @@ function castUnitSkill(u){sfx('skill');const H0=u.side==='me'&&st.heroes[u.kit];
 function unitAct(u){
  if(u.heal){const allies=alliesOf(u).filter(x=>x.hp<x.max*.7);if(allies.length){const t=allies.reduce((a,b)=>a.hp/a.max<b.hp/b.max?a:b);const d=play(u.ch,'cast',{once:true,speed:1.2});u.atkT=d;u.act=()=>{const v=Math.round(u.dmg*1.6*(u.kit==='druid'?1.3:u.kit==='aurora'?1.5:1));t.hp=Math.min(t.max,t.hp+v);num('+'+fmt(v),'heal',unitScreen(t))};u.actAt=d*.5;u.done=false;return}}
  const t=pickTarget(u);if(!t)return;const d=play(u.ch,u.atk,{once:true,speed:1.25})||.8;u.atkT=d;u.actAt=d*.45;u.done=false;
+ if(u.aoe&&++u.ac%3===0&&foesOf(u).length>1){u.act=()=>{num('💥 โจมตีหมู่','tag',unitScreen(u,-30));burstAt(t.ch.holder,u.side==='me'?0xffb84a:0xff4a3a,2.4);for(const o of foesOf(u))dealDmg(u,o,.5,{splash:false})};return}
  const ranged=u.atk==='cast';
  const cmb=(u.kit==='srogue'&&Math.random()<.2)||(u.kit==='kaiser'&&Math.random()<.25);
  u.act=()=>{if(cmb)setTimeout(()=>{if(!t.dead&&units.includes(t))dealDmg(u,t,.7)},180);if(ranged){const p=new THREE.Vector3();u.ch.holder.getWorldPosition(p);p.y+=1.2;shoot(u.side==='me'?0x7ad0ff:0xff6a4a,p,t.ch.holder,()=>dealDmg(u,t,1))}else dealDmg(u,t,1)}}
@@ -2098,7 +2106,7 @@ function advTeamUpdate(dt){if(teamSig()!==advSig){if(allLoaded)advTeamBuild();el
   if(u.atkT>0){u.atkT-=dt;continue}
   if(fighting){u.cd-=dt;u.skT-=dt;if(u.cd<=0){const hs=heroStats(u.k);u.cd=1/Math.max(.4,hs.aps);u.st='atk';u.atkT=play(u.ch,u.h.atk||'attack',{once:true,speed:1.3})*.9;
     const sk=u.skT<=0&&u.h.sk;if(sk)u.skT=u.h.sk.cd;
-    setTimeout(()=>{if(!enemy||enemy.state!=='fight')return;if(u.role==='sup'&&!sk){heal(hs.dmg*.6,true);return}const LA=leadAura();let d=hs.dmg*.45*(sk?2.5:1)*rnd(.9,1.1)*elMul(u.h.el,enemy.el)*(1+LA.dmg+(u.h.el===LA.elK?LA.el:0));if(Math.random()*100<hs.crit)d*=hs.critd/100;teamHit(Math.round(d),sk?'✨'+u.h.sk.n:'',u)},260)}}}}
+    setTimeout(()=>{if(!enemy||enemy.state!=='fight')return;if(u.role==='sup'&&!sk){heal(hs.dmg*.6,true);return}const LA=leadAura();let d=hs.dmg*.45*(sk?2.5:1)*rnd(.9,1.1)*elMul(u.h.el,enemy.el)*(1+LA.dmg+(u.h.el===LA.elK?LA.el:0));if(Math.random()*100<hs.crit)d*=hs.critd/100;if(!sk&&AOE_H.includes(u.k)&&enemy.pack&&enemy.pack.length&&(u.ac=(u.ac||0)+1)%3===0){teamHit(Math.round(d*.55),'💥หมู่',u);packHurtAll(d*.55,isMag(u.k))}else teamHit(Math.round(d),sk?'✨'+u.h.sk.n:'',u)},260)}}}}
 function teamHit(d,tag,u){const e=enemy;if(!e||e.state!=='fight')return;d=Math.max(1,Math.round(d*resMul(isMag(u.k),e)));const tr=e.tr||[];if(tr.includes('dodge')&&Math.random()<.12){num('💨','miss',enemyScreen(-30));return}if(tr.includes('block')&&Math.random()<.15)d=Math.round(d*.3);
  if(e.sh>0){const a=Math.min(e.sh,d);e.sh-=a;d-=a}if(d<=0)return;e.hp-=d;const p=new THREE.Vector3();u.ch.holder.getWorldPosition(p);
  num(fmt(d),'team',enemyScreen(-20),tag||u.h.ic||'');if(e.hp<=0)killEnemy()}
