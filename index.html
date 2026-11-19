@@ -84,9 +84,10 @@ button,.nb,.slot,.cpill,#spdBtn{cursor:pointer}
 .slot .ic{font-size:clamp(16px,3.4dvh,28px);line-height:1}
 .slot.empty .ic{opacity:.28;filter:grayscale(1)}
 .slot .lv{position:absolute;bottom:1px;left:0;right:0;text-align:center;font-size:clamp(8px,1.4dvh,11px);text-shadow:0 1px 0 #000,0 0 2px #000}
-nav{display:flex;align-items:flex-end;justify-content:space-around;background:#4a2b13;margin:6px -6px 0;padding:4px 4px calc(4px + env(safe-area-inset-bottom));border-top:3px solid #2a170a}
+nav{display:flex;align-items:flex-end;justify-content:space-around;background:linear-gradient(#5a3518,#3a210c);margin:6px -6px 0;padding:5px 4px calc(5px + env(safe-area-inset-bottom));border-top:3px solid #e0b860;box-shadow:0 -3px 8px #0006}
 .nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:11px;position:relative;padding-top:2px}
-.nb .ni{width:40px;height:36px;border-radius:9px;background:#7a4a24;border:2px solid #2a170a;display:flex;align-items:center;justify-content:center;font-size:21px;box-shadow:inset 0 -3px 0 #0003}
+.nb .ni{width:44px;height:40px;border-radius:12px;background:linear-gradient(#9a6434,#6a3e1a);border:2px solid #2a170a;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:inset 0 2px 0 #ffffff33,inset 0 -3px 0 #0004,0 2px 0 #0006;transition:transform .12s}.nb:active .ni{transform:scale(.92)}
+.nb.c1 .ni{background:linear-gradient(#e08a3a,#a5521a)}.nb.c2 .ni{background:linear-gradient(#5a9ae8,#2a5ab0)}.nb.c3 .ni{background:linear-gradient(#b07ae0,#6a3aa0)}.nb.c4 .ni{background:linear-gradient(#f0c84a,#b88a10)}
 .nb:hover .ni{filter:brightness(1.2)}
 .nb.lock .ni{filter:grayscale(.8) brightness(.7)}
 .nb.lock::before{content:'🔒';position:absolute;top:14px;font-size:14px;z-index:1}
@@ -204,7 +205,7 @@ table.odds{width:100%;border-collapse:collapse;margin:6px 0;font-size:12px;text-
 .srow1{display:flex;gap:4px}
 #side button{font-size:11px!important;padding:2px 6px!important;border-width:2px!important;border-radius:9px!important;box-shadow:0 2px 0 #0006!important;line-height:1.3}
 #sideT,#pauseBtn,#ecoBtn{background:#000a;color:#fff;border:2px solid #ffffff55;font-weight:800;min-width:26px}
-#sideIn{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+#sideIn{display:flex;flex-direction:column;gap:4px;align-items:flex-start}#bagBtn,#craftBtn{display:none!important}
 #side.min #sideIn,#side.min #buffs{display:none}
 .sb2{background:linear-gradient(#c08a4a,#8a5a24);border:2px solid #4a2a0c;color:#fff;font-family:'Kanit';font-weight:800}
 #side{gap:4px!important}
@@ -328,6 +329,19 @@ textarea.code{width:100%;height:56px;font-size:10px;font-family:monospace;border
 #questBtn{background:radial-gradient(#7ab8ff,#2b6ad0);border:3px solid #0d3a7a;border-radius:12px;padding:3px 8px;font-size:12px;font-family:'Kanit';font-weight:800;box-shadow:0 3px 0 #0d3a7a;color:#fff;position:relative}
 #questBtn .badge{position:absolute;top:-7px;right:-7px;background:#e8382b;border:2px solid #fff;border-radius:50%;width:18px;height:18px;font-size:11px;line-height:14px;text-align:center}
 .stars{font-size:11px;letter-spacing:-1px}
+.hubTop{background:radial-gradient(ellipse at 50% 35%,color-mix(in srgb,var(--rc) 35%,#3a2a1e),#24170f 75%);border-radius:14px;padding:8px;margin:-4px -2px 8px;color:#fff;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--rc) 60%,#000)}
+.hubStrip{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none}.hubStrip::-webkit-scrollbar{display:none}
+.hubAv{flex:0 0 44px;height:44px;border-radius:50%;border:3px solid #888;background:#5a4030 center/cover;position:relative;padding:0;cursor:pointer;opacity:.7;transition:.15s}.hubAv.on{opacity:1;transform:scale(1.1);box-shadow:0 0 0 2px #ffd84a}.hubAv i{position:absolute;top:-8px;right:-6px;font-style:normal;font-size:14px}
+.hubStage{position:relative;height:250px}.hubCvBox{position:absolute;inset:0}.hubCv{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+.hubNav{position:absolute;top:45%;left:0;z-index:2;width:34px;height:44px;border:0;border-radius:10px;background:#0006;color:#fff;font-size:18px;cursor:pointer}.hubNav.r{left:auto;right:0}
+.hubName{position:absolute;left:6px;top:4px;z-index:2;text-shadow:0 2px 3px #000;line-height:1.25;pointer-events:none}.hubName b{font-size:17px}
+.hubPow{position:absolute;right:6px;top:4px;z-index:2;text-align:right;font-weight:800;font-size:16px;color:#ffe08a;text-shadow:0 2px 3px #000;pointer-events:none}
+.hubHint{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:10px;opacity:.75;pointer-events:none}
+.hubCls{font-size:11.5px;text-align:center;margin:4px 0 6px;opacity:.95}
+.hubAct{display:flex;gap:6px}.hubAct .btn{flex:1;padding:9px 4px;font-size:12.5px;position:relative}.bdg{position:absolute;top:-7px;right:-4px;background:#e23;color:#fff;border-radius:9px;font-style:normal;font-size:10px;padding:1px 6px}
+.hubTabs{margin-bottom:6px}.hubSlots{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.hslot{aspect-ratio:1;border:3px solid #b9a27a;border-radius:10px;background:#e8d9b8;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;cursor:pointer;font-size:24px}
+.hslot img{width:72%;height:auto}.hslot small{font-size:9.5px;font-weight:700;position:absolute;bottom:1px}.hslot.empty{opacity:.55;border-style:dashed}.hslot .ic{font-size:20px}.hslot u{position:absolute;top:1px;left:2px;font-size:10px;border-radius:4px;padding:0 2px;text-decoration:none}.hslot s{position:absolute;top:0;right:2px;font-size:10px;text-decoration:none}
 .skbox{background:#ddc89c;border-radius:8px;padding:5px 7px;margin-top:4px;font-size:12px;line-height:1.35}
 .hgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:8px 0}
 .hgrid .slot{max-height:none}
@@ -351,10 +365,11 @@ textarea.code{width:100%;height:56px;font-size:10px;font-family:monospace;border
 .pass .tn{width:34px;height:34px;border-radius:50%;background:#7a4a24;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;flex:none}
 .pass.done .tn{background:#22a12f}
 .pass .ri2{font-size:22px}
-.hub{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.hub .hc{background:#f2e3c0;border:3px solid #b99b6b;border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;font-weight:800;position:relative}
-.hub .hc i{display:block;font-style:normal;font-size:32px}
-.hub .hc small{display:block;font-weight:600;font-size:11px;margin-top:2px}
+.hub{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.hubH{font-weight:800;margin:12px 2px 5px;font-size:13px;color:#5a3a18;border-bottom:2px solid #c9ad7c;padding-bottom:2px}
+.hub .hc{background:linear-gradient(#fbf0d6,#ead6ad);border:2px solid #b99b6b;border-radius:12px;padding:7px 2px 6px;text-align:center;cursor:pointer;font-weight:800;position:relative;font-size:11.5px;line-height:1.15;box-shadow:0 2px 0 #9a7a4a;transition:transform .1s}.hub .hc:active{transform:translateY(2px);box-shadow:none}
+.hub .hc i{display:block;font-style:normal;font-size:26px;margin-bottom:2px;filter:drop-shadow(0 2px 1px #0003)}
+.hub .hc small{display:block;font-weight:600;font-size:9px;margin-top:2px;opacity:.75;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hub .hc .badge{position:absolute;top:-6px;right:-6px;background:#e8382b;color:#fff;border:2px solid #fff;border-radius:50%;width:20px;height:20px;font-size:12px;line-height:16px}
 .hub .hc.hot{border-color:#ff6a3d;box-shadow:0 0 12px #ff6a3d88}
 @keyframes afkS{0%,100%{transform:rotate(0)}10%{transform:rotate(-12deg)}20%{transform:rotate(10deg)}30%{transform:rotate(-6deg)}40%{transform:rotate(0)}}
@@ -442,9 +457,11 @@ body.pc .bmGrid{grid-template-columns:repeat(3,1fr)}
     <div id="grid"></div>
   </div>
   <nav>
-    <div class="nb" data-n="camp"><div class="ni">🏕️</div><span>แคมป์</span></div>
+    <div class="nb c1" data-n="camp"><div class="ni">🏕️</div><span>แคมป์</span></div>
+    <div class="nb c2" data-n="char"><div class="ni">🧍</div><span>ตัวละคร</span></div>
     <div class="nb big" data-n="adv"><div class="ni">⚔️</div><span>ผจญภัย</span></div>
-    <div class="nb" data-n="rank"><div class="ni">🏆</div><span>อันดับ</span></div>
+    <div class="nb c3" data-n="bag"><div class="ni">🎒</div><span>กระเป๋า</span></div>
+    <div class="nb c4" data-n="rank"><div class="ni">🏆</div><span>อันดับ</span></div>
   </nav></div>
 
   <div class="ov" id="gearOv"><div class="dim"></div><div class="col">
@@ -1566,7 +1583,7 @@ function badge(n,on){const el=document.querySelector(`[data-n=${n}]`);el.querySe
 function renderAll(){renderTop();renderGrid();renderBuffs();$('heroLv').textContent='Lv '+st.lvl;regenTix();
  const _bT=(unlocked()&&(st.freeSum!==new Date().toDateString()||HEROES.some(h=>{const H=st.heroes[h.k];return H.lvl?H.star<5&&H.sh>=STAR_COST[H.star]:H.sh>=RT[h.r].unlock})));
 const _bB=(st.maxMap>0&&Array.from({length:st.maxMap},(_,i)=>i).some(i=>Date.now()>=(st.bossCd[i]||0)));
- const _bM=(st.chests.some(c=>Date.now()>=c.ready)||(unlocked()&&st.tix>0));badge('camp',_bT||afkMs()>=3600e3);badge('adv',_bB||_bM);
+ const _bM=(st.chests.some(c=>Date.now()>=c.ready)||(unlocked()&&st.tix>0));badge('camp',_bT||afkMs()>=3600e3);badge('adv',_bB||_bM);try{const pw0=power(S());badge('char',st.bag.some(x=>x.slot&&canUse('me',x)&&!slotLocked('me',x.slot)&&powerWith(x)>pw0+.5));badge('bag',st.bag.length>=BAG_MAX-5)}catch(e){}
  $('raidBtn').style.display=unlocked()&&mode==='adv'&&!inCamp?'block':'none';$('raidBtn').textContent=`⚔️ บุก ${st.tix}/${MAXTIX}`;
  $('spdBtn').textContent='x'+st.speed;$('side').classList.toggle('min',!!st.sideMin);$('sideT').textContent=st.sideMin?'▶':'◀';$('bagBtn').textContent=`🎒 ${st.bag.length}/${BAG_MAX}`;$('bagBtn').style.display=st.lvl>=2||st.bag.length?'':'none';$('craftBtn').style.display=st.lvl>=4?'':'none';renderQuestBtn();$('autoBtn').classList.toggle('on',st.auto.on);$('autoBtn').textContent=st.auto.on?'🤖 ON':'🤖 AUTO';$('evtBtn').style.display=unlocked()?'':'none';{const c=hubCounts(),n=c.wb+c.pass+c.login+c.pet+c.sum+(c.dg?1:0)+achReady()+(unlocked()?wkObj().tries:0);$('evtBtn').innerHTML='🎉 กิจกรรม'+(n?`<div class="badge">${n>9?'9+':n}</div>`:'')}}
 function renderQuestBtn(){const D=daily(),n=D.q.filter(q=>q.p>=q.g&&!q.c).length;const b=$('questBtn');b.innerHTML='📜 เควส'+(n?`<div class="badge">${n}</div>`:'')}
@@ -1607,9 +1624,10 @@ function openQuests(){const D=daily();const draw=b=>{const left=Math.ceil((new D
  b.querySelector('#lgB').onclick=()=>{if(!st.login)loginCheck();showLogin()};
  const qb=b.querySelector('#qb');if(qb)qb.onclick=()=>{if(D.bonus)return;if(st.chests.length>=5){say('ช่องหีบเต็ม! เปิดหีบที่หน้าแผนที่ก่อนนะ');return}D.bonus=true;st.chests.push({t:1,ready:Date.now()});save();renderAll();draw(b);say('ได้หีบเงิน! ไปเปิดที่หน้าแผนที่ได้เลย')}};
  openSheet('📜 ภารกิจ','',draw)}$('raidBtn').onclick=()=>startRaid();$('ebar').onclick=e=>{e.stopPropagation();enemyInfo()};$('bossBar').onclick=e=>{e.stopPropagation();enemyInfo()};
-$('infoBtn').onclick=()=>{const s=S(),tb=teamBonus();openSheet('📜 ค่าสถานะฮีโร่',`<div class="row"><div class="rp" style="background-image:url(${PORT.me})"></div><div class="rt"><b>พลังรวม ${fmt(power(s))}</b><br>Lv ${st.lvl} · XP ${fmt(st.xp)}/${fmt(xpNeed(st.lvl))}${st.prest?'<br>✨ Prestige '+st.prest+' (+'+st.prest*25+'%)':''}</div></div>
+function statsSheet(){const s=S(),tb=teamBonus();openSheet('📜 ค่าสถานะฮีโร่',`<div class="row"><div class="rp" style="background-image:url(${PORT.me})"></div><div class="rt"><b>พลังรวม ${fmt(power(s))}</b><br>Lv ${st.lvl} · XP ${fmt(st.xp)}/${fmt(xpNeed(st.lvl))}${st.prest?'<br>✨ Prestige '+st.prest+' (+'+st.prest*25+'%)':''}</div></div>
  <div class="statg">${['dmg','hp','armor','tough','crit','critd','combo','bleed','dodge','ls','spd','gold'].map(k=>`<div><span>${STN[k]}</span><span>${fmt(s[k])}</span></div>`).join('')}<div><span>โจมตี/วินาที</span><span>${s.aps.toFixed(2)}</span></div><div><span>โบนัสทีม</span><span>⚔${tb.dmg}% ❤${tb.hp}%</span></div><div><span>📖 สมุดมอนสเตอร์</span><span>+${codexBonus()}%</span></div><div><span>🔩 เศษเหล็ก</span><span>${st.scrap}</span></div></div>${setsHTML(st.eq)}${(()=>{const bb=bldB(),LA=leadAura(),mb=mainBonus(),p=v=>Math.round(v*100)+'%';const rows=[['👑 ตัวหลัก ('+(heroOf(st.main)||{n:'-'}).n+')','ดาเมจ +'+p(mb.dmg)+' · HP +'+p(mb.hp)],['🚩 ออร่าผู้นำ (ให้ทีม)',LA.txt],['🏗️ สิ่งปลูกสร้าง','ดาเมจ +'+p(bb.dmg)+' · HP +'+p(bb.hp)+' · เกราะ +'+p(bb.armor)+' · คริ +'+bb.crit.toFixed(1)+'% · หลบ +'+bb.dodge.toFixed(1)+'%'],['⚒️ ช่างตีเหล็ก','ดาเมจ +'+st.up.dmg*4+'% · HP +'+st.up.hp*4+'% · เกราะ +'+st.up.armor*4+'%'],['🔨 ตีบวก',SLOTS.filter(x=>st.refine[x.k]).map(x=>x.ic+'+'+st.refine[x.k]).join(' ')||'—'],['🏅 ลีก','ดาเมจ/HP +'+leagueIdx()*3+'%'],['🛡️ โบนัสทีม',teamOn()?'ดาเมจ +'+tb.dmg+'% · HP +'+tb.hp+'%':'🔒 ผ่านแมป 2']];
  return `<details style="margin-top:8px"><summary style="font-weight:800;cursor:pointer">📊 ที่มาของพลัง (แตะเพื่อดู)</summary>${rows.map(r=>`<div class="row"><div class="rt"><b>${r[0]}</b><br><small>${r[1]}</small></div></div>`).join('')}</details><details style="margin-top:6px"><summary style="font-weight:800;cursor:pointer">📖 ความหมายของค่าสถานะ</summary>${Object.entries(STD).map(([k,d])=>`<div class="row"><div class="rt"><b>${STN[k]}</b><br><small>${d}</small></div></div>`).join('')}</details>`})()}<button class="btn blue" style="width:100%;margin-top:10px;padding:10px" id="cdxB">📖 เปิดสมุดมอนสเตอร์</button>`,b=>b.querySelector('#cdxB').onclick=openCodex)};
+$('infoBtn').onclick=()=>openChar('me');$('heroPic').style.cursor='pointer';$('heroPic').onclick=()=>openChar('me');
 function openCodex(){const rows=Object.entries(MON).map(([k,m])=>{const c=st.codex[k]||0,t=CODEX_T.filter(x=>c>=x).length,nx=CODEX_T[t];return `<div class="row"><div class="ri">${m.f.startsWith('skeleton')?'💀':'🗡️'}</div><div class="rt"><b>${m.n}</b> · ปราบแล้ว ${fmt(c)}<div class="shard"><b style="width:${nx?Math.min(100,c/nx*100):100}%;background:linear-gradient(#ffd86a,#e8a21a)"></b></div><small>ขั้น ${t}/4 · โบนัส ดาเมจ/HP +${t*.5}%${nx?' · ขั้นถัดไปที่ '+nx:' · ครบแล้ว!'}</small></div></div>`}).join('')+MAPS.map((m,i)=>{const c=st.codex['boss'+i]||0,t=BOSS_T.filter(x=>c>=x).length,nx=BOSS_T[t];return `<div class="row"><div class="ri">👑</div><div class="rt"><b>${m.boss.n}</b> · ปราบแล้ว ${c}<div class="shard"><b style="width:${nx?Math.min(100,c/nx*100):100}%;background:linear-gradient(#ff8a6a,#c4251a)"></b></div><small>ขั้น ${t}/3 · โบนัส +${t}%${nx?' · ถัดไป '+nx:''}</small></div></div>`}).join('');openSheet('📖 สมุดมอนสเตอร์',`<div class="row"><div class="ri">📖</div><div class="rt"><b>โบนัสรวม ดาเมจ/HP +${codexBonus()}%</b><br>ปราบมอนสเตอร์แต่ละชนิดให้ครบตามจำนวน เพื่อรับโบนัสถาวร</div></div>`+rows)}
 $('prof').onclick=()=>openSheet('⚙️ ตั้งค่า',`<div class="row"><div class="ri">⏩</div><div class="rt"><b>ความเร็วเกม</b><br>เร่งการเดินและการต่อสู้</div><div class="bc" style="flex-direction:row">${SPEEDS.map(v=>`<button class="btn ${st.speed===v?'gold':'gray'}" data-sp="${v}">x${v}</button>`).join('')}</div></div>
  <button class="btn gold" style="width:100%;margin-bottom:8px;padding:10px" id="slB">👥 เปลี่ยน / สร้างตัวละคร (สูงสุด 4)</button><div class="acts" style="margin-bottom:8px"><button class="btn blue" id="amB" style="flex:1">👤 บัญชี</button><button class="btn blue" id="bkB" style="flex:1">💾 สำรอง</button><button class="btn blue" id="fsB" style="flex:1">⛶ เต็มจอ</button><button class="btn blue" id="acB" style="flex:1">🏅 ความสำเร็จ</button></div><button class="btn blue" style="width:100%;margin-bottom:8px;padding:10px" id="manB">📘 คู่มือการเล่น</button>
@@ -1638,7 +1656,8 @@ $('prof').onclick=()=>openSheet('⚙️ ตั้งค่า',`<div class="row"
   try{Object.keys(localStorage).filter(k=>k.startsWith('emberfall3d')&&k!=='emberfall3d_uid'&&k!=='emberfall3d_eco').forEach(k=>localStorage.removeItem(k))}catch(_){}
   location.reload()};
  b.querySelector('#rsBtn').onclick=e=>{if(e.target.dataset.c){try{localStorage.removeItem(slotKey(curSlot));if(!curSlot)localStorage.removeItem('emberfall3d_v1')}catch(_){}if(enemy){rmChar(enemy.ch.holder);enemy=null}['gearOv','evOv','powOv','mapScr'].forEach(i=>$(i).classList.remove('on'));gearItem=null;gearAfter=null;queued=null;if(mode==='raid'){clearUnits();mode='adv';raid=null;camTarget=0;$('raidBar').style.display='none';$('dots').style.display=''}$('bossBar').style.display='none';st=loadSlot(-1);curWT=curPT=undefined;setHandWeapon();setHandPet();php=S().hp;closeSheet();buildScenery();renderAll();save();phase='busy';showCreate(()=>{renderAll();startWalk();say('เริ่มต้นใหม่แล้ว! ขอให้โชคดีนะ '+pname())})}else{e.target.dataset.c=1;e.target.textContent='ยืนยันลบ?'}}});
-document.querySelectorAll('nav .nb').forEach(b=>b.onclick=()=>NAV[b.dataset.n]());
+NAV.char=()=>{hubTab='eq';openChar('me')};NAV.bag=()=>{bagWho='me';bagF='all';openBag('items')};
+document.querySelectorAll('nav .nb').forEach(b=>b.onclick=()=>{sfx&&sfx('click');NAV[b.dataset.n]()});
 const NAV={
  map:()=>openMap(),
  tavern:()=>{if(!unlocked()){openSheet('🍺 โรงเตี๊ยม',`<div class="row"><div class="ri">🔒</div><div class="rt"><b>ปลดล็อกที่ Lv ${UNLOCK_LV}</b><br>อัญเชิญฮีโร่ จัดทีม 3 คน และบุกปราสาทผู้เล่นอื่น</div></div>`);return}
@@ -1652,7 +1671,7 @@ const NAV={
     <div class="bc">${isM?'<button class="btn gold off">👑 ตัวหลัก</button>':own?(teamOn()?`<button class="btn ${inT?'gold':'blue'} ${!inT&&st.team.length>=3?'off':''}" data-t="${h.k}">${inT?'ในทีม ✓':'เข้าทีม'}</button>`:'<button class="btn off" style="font-size:11px">🔒 ทีม<br>ผ่านแมป 2</button>'):`<button class="btn ${H.sh>=need?'':'off'}" data-u="${h.k}">ปลดล็อก</button>`}</div></div>`}).join('');
    b.querySelector('#sumB').onclick=openSummon;{const rt=b.querySelector('#recT');if(rt)rt.onclick=()=>{const t=recommendTeam();if(!t.length){say('ยังไม่มีฮีโร่ — ไปอัญเชิญก่อนนะ');return}st.team=t;save();renderAll();sfx('level');say('จัดทีมแนะนำแล้ว: '+t.map(k=>heroOf(k).n).join(', '));draw(b)}}
    b.querySelectorAll('[data-t]').forEach(e=>e.onclick=()=>{const k=e.dataset.t;st.team=st.team.includes(k)?st.team.filter(x=>x!==k):[...st.team,k].slice(0,3);save();renderAll();draw(b)});
-   b.querySelectorAll('[data-d]').forEach(e=>e.onclick=()=>heroDetail(e.dataset.d));
+   b.querySelectorAll('[data-d]').forEach(e=>e.onclick=()=>{const k=e.dataset.d;if(st.heroes[k]&&st.heroes[k].lvl&&k!==st.main){hubTab='eq';openChar(k)}else heroDetail(k)});
    b.querySelectorAll('[data-u]').forEach(e=>e.onclick=()=>{const h=heroOf(e.dataset.u),H=st.heroes[h.k];if(H.sh<RT[h.r].unlock)return;H.sh-=RT[h.r].unlock;H.lvl=1;H.star=1;if(st.team.length<3)st.team.push(h.k);sfx('level');save();renderAll();draw(b);banner('ได้ฮีโร่ใหม่! '+h.n)})};
   openSheet('🍺 โรงเตี๊ยม','',draw)},
  shop:()=>{const draw=b=>{b.innerHTML=`<p style="font-weight:600;margin-bottom:6px">⚒️ ช่างตีเหล็ก (อัปเกรดถาวร) <small>เพดาน = เลเวลท่าน (Lv ${capUp()})</small></p>`+UPG.map(u=>{const c=upCost(u),mx=(u.max&&st.up[u.k]>=u.max)||st.up[u.k]>=capUp();const L=st.up[u.k],per=u.k==='crit'?1:4,stk={dmg:'dmg',hp:'hp',armor:'armor',crit:'crit'}[u.k],s0=S(),p0=power(s0);let s1=s0,p1=p0;if(!mx){st.up[u.k]=L+1;s1=S();p1=power(s1);st.up[u.k]=L}return `<div class="row"><div class="ri">${u.ic}</div><div class="rt"><b>${u.n}</b> Lv ${L}${u.max?'/'+u.max:''}<br><small>ปัจจุบัน <b>+${L*per}%</b>${mx?'':` → <b style="color:#1d7a2a">+${(L+1)*per}%</b>`} ${STN[stk].replace(' %','')} (${u.d}/เลเวล)</small><br><small>${STN[stk].replace(' %','')} ${fmt(s0[stk])}${mx?'':` → <b style="color:#1d7a2a">${fmt(s1[stk])}</b> · ⚔️ พลัง ${fmt(p0)} → <b style="color:#1d7a2a">${fmt(p1)}</b> (+${fmt(p1-p0)})`}</small></div><button class="btn ${st.gold<c||mx?'off':''}" data-u="${u.k}">${mx?'สูงสุด':'🪙 '+fmt(c)}</button></div>`}).join('')+
@@ -1693,12 +1712,13 @@ function afkBox(){const r=afkCalc(),pct=r.ms/AFK_MAX*100,full=r.ms>=AFK_MAX;
  <div class="statg" style="margin-top:6px"><div><span>🪙 ทอง</span><span>${fmt(r.gold)}</span></div><div><span>⭐ XP</span><span>${fmt(r.xp)}</span></div><div><span>🎁 อุปกรณ์สุ่ม</span><span>${r.items}</span></div><div><span>🔩 เศษเหล็ก</span><span>${r.scrap}</span></div><div><span>🧩 ชิ้นส่วนฮีโร่</span><span>${r.sh}</span></div><div><span>💎 เพชร</span><span>${r.gems}</span></div><div><span>🍖 อาหารสัตว์</span><span>${r.food}</span></div><div><span>🎫 ตั๋วอัญเชิญ</span><span>${r.tix}</span></div></div>
  <button class="btn ${r.min>=1?'':'off'}" style="padding:11px;margin-top:8px;font-size:16px" id="afkC">🧰 รับรางวัล</button>
  <small style="text-align:center;margin-top:4px;opacity:.8">อุปกรณ์ 1 ชิ้น/2 ชม. · ดีกว่าที่ใส่อยู่จะสวมให้เลย ที่เหลือขายเป็นทอง · รางวัลขึ้นกับแมปไกลสุดที่ผ่าน</small></div>`}
-const CAMP=[['char','🧍','ตัวละคร','ค่าสถานะ & อุปกรณ์',()=>$('infoBtn').click()],['smith','⚒️','ช่างตีเหล็ก','อัปเกรดถาวร',()=>NAV.shop()],['craft','🔨','โรงคราฟ','ตีบวก ย่อย สร้างของ',()=>openCraft()],['bag','🎒','กระเป๋า','เก็บชิ้นเซ็ต',()=>openBag()],
+const CAMP=[['char','🧍','ตัวละคร','ดู 360° · อุปกรณ์ · พัฒนา',()=>openChar('me')],['smith','⚒️','ช่างตีเหล็ก','อัปเกรดถาวร',()=>NAV.shop()],['craft','🔨','โรงคราฟ','ตีบวก ย่อย สร้างของ',()=>openCraft()],['bag','🎒','กระเป๋า','เก็บชิ้นเซ็ต',()=>openBag()],
  ['tav','🍺','ฮีโร่ & ทีม','อัปเลเวล เลื่อนดาว จัดทีม',()=>NAV.tavern(),1],['sum','🔮','อัญเชิญฮีโร่','สุ่มฮีโร่',()=>openSummon(),1],['pet','🐾','บ้านสัตว์เลี้ยง','วิวัฒนาการ',()=>openPets()],['quest','📜','ภารกิจ','ประจำวัน',()=>openQuests()],
  ['pass','🎖','Season Pass','รางวัล 30 ขั้น',()=>openPass()],['login','📅','เช็คอิน','รางวัล 7 วัน',()=>{if(!st.login)loginCheck();showLogin()}],['ach','🏅','ความสำเร็จ','ฉายา & สกิน',()=>openAch()],['codex','📖','สมุดมอนสเตอร์','โบนัสสะสม',()=>openCodex()],
  ['auto','🤖','ออโต้','ตั้งค่า',()=>openAuto()],['manual','📘','คู่มือ','วิธีเล่น',()=>openManual()]];
 function openCamp(){const c=hubCounts();const cnt={social:mailUnread(),bm:st.lvl>=UNLOCK_LV&&(!st.bm||st.bm.seen!==Math.floor(Date.now()/BM_WIN))?1:0,sum:st.freeSum!==new Date().toDateString()&&unlocked()?1:0,pet:c.pet,pass:c.pass,login:c.login,ach:achReady()};
- const draw=b=>{b.innerHTML=afkBox()+`<p style="font-weight:800;margin:10px 0 6px">🏕️ พัฒนาตัวละคร</p><div class="hub">`+CAMP.map(([k,i,n,sub,f,lk])=>{if(k==='sum')sub=`🎫 ตั๋ว ${st.sumT} ใบ`;if(k==='notif')sub=ACCT.notif?'🔔 เปิดอยู่':'🔕 ปิดอยู่';if(k==='bld'&&st.bldQ)sub='🏗️ กำลังสร้าง…';if(k==='tav')sub=`🎫 ${st.sumT} · ทีม ${st.team.length}/3`;const L=lk&&!unlocked();return `<div class="hc ${cnt[k]?'hot':''}" data-c="${k}" style="${L?'filter:grayscale(.8);opacity:.7':''}"><i>${L?'🔒':i}</i>${n}<small>${L?'ปลดล็อก Lv '+UNLOCK_LV:sub}</small>${cnt[k]?`<div class="badge">${cnt[k]}</div>`:''}</div>`}).join('')+'</div>';
+ const draw=b=>{b.innerHTML=afkBox()+``+(()=>{const G=[['🧍 ตัวละคร & อุปกรณ์',['char','main','bag','sets','smith','craft','pet']],['🍺 ฮีโร่',['tav','sum']],['🏪 สิ่งปลูกสร้าง · ร้าน · สังคม',['bld','bm','social']],['🎁 รางวัล & ภารกิจ',['quest','pass','login','ach','codex']],['⚙️ ระบบ & ช่วยเหลือ',['auto','eco','notif','story','tips','manual']]];const used=G.flatMap(g=>g[1]);const rest=CAMP.map(c=>c[0]).filter(k=>!used.includes(k));if(rest.length)G.push(['✨ อื่น ๆ',rest]);
+ return G.map(([t,ks])=>{const items=ks.map(k=>CAMP.find(c=>c[0]===k)).filter(Boolean);if(!items.length)return '';return `<p class="hubH">${t}</p><div class="hub">`+items.map(([k,i,n,sub,f,lk])=>{if(k==='sum')sub=`🎫 ตั๋ว ${st.sumT} ใบ`;if(k==='notif')sub=ACCT.notif?'🔔 เปิดอยู่':'🔕 ปิดอยู่';if(k==='bld'&&st.bldQ)sub='🏗️ กำลังสร้าง…';if(k==='tav')sub=`🎫 ${st.sumT} · ทีม ${st.team.length}/3`;const L=lk&&!unlocked();return `<div class="hc ${cnt[k]?'hot':''}" data-c="${k}" style="${L?'filter:grayscale(.8);opacity:.7':''}"><i>${L?'🔒':i}</i>${n}<small>${L?'ปลดล็อก Lv '+UNLOCK_LV:sub}</small>${cnt[k]?`<div class="badge">${cnt[k]}</div>`:''}</div>`}).join('')+'</div>'}).join('')})();
   b.querySelector('#afkC').onclick=()=>{const r=afkClaim();if(!r)return;draw(b);
    const box=document.createElement('div');box.className='row';box.style.cssText='background:#c8f5cc;border:2px solid #3a9a45;margin-top:6px';
    box.innerHTML=`<div class="ri">🎉</div><div class="rt"><b>ได้รับ!</b> ${fmt(r.gold)} 🪙 · ${fmt(r.xp)} XP · ${r.scrap} 🔩${r.sh?' · '+r.sh+' 🧩':''}${r.gems?' · '+r.gems+' 💎':''}${r.food?' · '+r.food+' 🍖':''}${r.tix?' · '+r.tix+' 🎫':''}<br><small>อุปกรณ์ ${r.items} ชิ้น: สวมใส่ ${r.eq} · ขาย ${r.sold}${r.bag?' · เก็บ '+r.bag:''}${r.best?' · ดีสุด: '+RAR[r.best.r].n+' '+r.best.name:''}</small></div>`;
@@ -2106,6 +2126,82 @@ ${setsHTML(H.eq)}
   const sb=b.querySelector('#hSt');if(sb)sb.onclick=()=>{if(H.star>=5||H.sh<sc)return;H.sh-=sc;H.star++;sfx('level');banner(h.n+' ★'+H.star);save();renderAll();heroDetail(k)};
   const aw=b.querySelector('#hAwk');if(aw)aw.onclick=()=>{const c=Math.round(500*P(gIdx()));if(H.awk||H.lvl<50||H.star<5||H.sh<100||st.ess<150||st.gold<c)return;H.sh-=100;st.ess-=150;st.gold-=c;H.awk=1;sfx('level');banner('⚡ '+h.n+' ตื่นรู้!');save();renderAll();heroDetail(k)};
   const mb=b.querySelector('#hMain');if(mb)mb.onclick=()=>{setMain(k);heroDetail(k)}})}
+
+/* ================= CHARACTER HUB (หน้าต่างตัวละคร) ================= */
+let HV=null,hubWho='me',hubTab='eq';
+function hubList(){return ['me',...HEROES.filter(h=>st.heroes[h.k]&&st.heroes[h.k].lvl&&h.k!==st.main).map(h=>h.k)]}
+function hubDef(k){const hk=hkOf(k),h=heroOf(hk)||heroOf('knight'),eq=whoEq(k),w=eq.weapon&&canUse(k,eq.weapon)?eq.weapon.wt:null;return {f:h.f,keep:h.keep,w:h.w?(w||h.w):null,wl:h.wl,tint:h.tint,h:1.8}}
+function hubView(){if(HV)return HV;const cv=document.createElement('canvas');cv.className='hubCv';const r=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});r.setPixelRatio(Math.min(devicePixelRatio,2));r.outputColorSpace=THREE.SRGBColorSpace;
+ const sc=new THREE.Scene();sc.add(new THREE.HemisphereLight(0xfff4e0,0x5a4a3a,1.6));const dl=new THREE.DirectionalLight(0xffffff,2.2);dl.position.set(2,4,3);sc.add(dl);const rl=new THREE.DirectionalLight(0x9ab8ff,1.2);rl.position.set(-3,2,-3);sc.add(rl);
+ const disc=new THREE.Mesh(new THREE.CylinderGeometry(1.15,1.25,.12,40),new THREE.MeshStandardMaterial({color:0x5a4030,roughness:.8}));disc.position.y=-.06;sc.add(disc);
+ const ring=new THREE.Mesh(new THREE.TorusGeometry(1.2,.035,8,60),new THREE.MeshBasicMaterial({color:0xffc84a}));ring.rotation.x=Math.PI/2;ring.position.y=.01;sc.add(ring);
+ const cam=new THREE.PerspectiveCamera(32,1,.1,50);cam.position.set(0,1.35,4.6);cam.lookAt(0,.95,0);
+ HV={cv,r,sc,cam,ring,ch:null,key:'',rot:0,vel:.6,drag:null,last:performance.now(),run:false,zoom:4.6};
+ cv.addEventListener('pointerdown',e=>{HV.drag=e.clientX;HV.vel=0;cv.setPointerCapture(e.pointerId)});
+ cv.addEventListener('pointermove',e=>{if(HV.drag==null)return;const d=e.clientX-HV.drag;HV.drag=e.clientX;HV.rot+=d*.012;HV.vel=d*.6});
+ const up=()=>{HV.drag=null;if(Math.abs(HV.vel)<.3)HV.vel=.6};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('wheel',e=>{e.preventDefault();HV.zoom=clamp(HV.zoom+e.deltaY*.003,3,6.5)},{passive:false});
+ cv.addEventListener('dblclick',()=>{if(HV.ch){play(HV.ch,pick(['attack','cast','raise','spin'].filter(a=>HV.ch.acts[a]))||'idle',{once:true});setTimeout(()=>HV.ch&&play(HV.ch,'idle'),1200)}});
+ return HV}
+function hubSetChar(k,col){const V=hubView(),key=k+'|'+JSON.stringify(hubDef(k));V.ring.material.color.set(col);if(V.key===key&&V.ch)return;if(V.ch){V.sc.remove(V.ch.holder);disposeObj(V.ch.holder)}
+ try{V.ch=makeChar(hubDef(k));V.sc.add(V.ch.holder);play(V.ch,'idle');V.key=key;V.rot=-.5}catch(e){recErr(e,'hub');V.ch=null}}
+function hubLoop(){const V=HV;if(!V||!document.body.contains(V.cv)||!$('sheet').classList.contains('on')){if(V)V.run=false;return}
+ const now=performance.now(),dt=Math.min(.05,(now-V.last)/1000);V.last=now;
+ if(V.drag==null){V.rot+=V.vel*dt;V.vel+=(.6*Math.sign(V.vel||1)-V.vel)*dt*1.5}
+ if(V.ch){V.ch.holder.rotation.y=V.rot;V.ch.mixer.update(dt)}
+ V.cam.position.set(0,1.35*V.zoom/4.6,V.zoom);V.cam.lookAt(0,.95,0);
+ const w=V.cv.clientWidth,h=V.cv.clientHeight;if(w&&(V.cv.width!==Math.round(w*V.r.getPixelRatio())||V.cv.height!==Math.round(h*V.r.getPixelRatio()))){V.r.setSize(w,h,false);V.cam.aspect=w/h;V.cam.updateProjectionMatrix()}
+ V.r.render(V.sc,V.cam);requestAnimationFrame(hubLoop)}
+
+function autoBest(k){const eq=whoEq(k),pw=()=>k==='me'?power(S()):heroPower(k);let n=0;
+ for(let pass=0;pass<2;pass++)for(const sl of SLOTS){if(slotLocked(k,sl.k))continue;const cands=st.bag.filter(x=>x.slot===sl.k&&canUse(k,x));if(!cands.length)continue;
+  let best=null,bp=pw();for(const it of cands){const o=eq[sl.k];eq[sl.k]=it;const p=pw();eq[sl.k]=o;if(p>bp+.5){bp=p;best=it}}
+  if(best){const m0=k==='me'?S().hp:0;equipFromBag(best,k);n++;if(k==='me')php=clamp(php+S().hp-m0,1,S().hp)}}
+ return n}
+
+function openChar(k){const L=hubList();if(k)hubWho=k;if(!L.includes(hubWho))hubWho='me';const draw=b=>{const who=hubWho,isMe=who==='me',hk=hkOf(who),h=heroOf(hk)||heroOf('knight'),H=isMe?null:st.heroes[who],s=isMe?S():heroStats(who),eq=whoEq(who),C=wclsOf(who),R0=RT[h.r]||RT[0],L=hubList(),i=L.indexOf(who),
+  pw=isMe?power(s):heroPower(who),lv=isMe?st.lvl:H.lvl,star=isMe?(st.heroes[st.main]||{star:0}).star:H.star,sig=SETS['h_'+hk],nb=st.bag.filter(x=>SLOTS.some(sl=>sl.k===x.slot)&&canUse(who,x)&&!slotLocked(who,x.slot)&&(isMe?powerWith(x)>pw+.5:heroPowerWith(who,x)>pw+.5)).length;
+ b.innerHTML=`<div class="hubTop" style="--rc:${R0.c}">
+  <div class="hubStrip">${L.map(x=>{const xh=heroOf(hkOf(x));return `<button class="hubAv ${x===who?'on':''}" data-hw="${x}" style="background-image:url(${x==='me'?PORT.me:(PORT[x]||'')});border-color:${RT[xh?xh.r:0].c}">${x==='me'?'<i>👑</i>':''}</button>`}).join('')}</div>
+  <div class="hubStage"><button class="hubNav" data-hn="-1">◀</button><div class="hubCvBox"></div><button class="hubNav r" data-hn="1">▶</button>
+   <div class="hubName"><b>${isMe?pname():h.n}</b><br><small>${isMe?'👑 ตัวหลัก · '+h.cls:h.cls} · ${rTag(h.r)} ${elTag(h.el)}</small></div>
+   <div class="hubPow">⚔️ ${fmt(pw)}<br><small>Lv ${lv} · <span style="color:#ffd84a">${'★'.repeat(star)}</span>${'☆'.repeat(Math.max(0,5-star))}</small></div>
+   <div class="hubHint">👆 ลากเพื่อหมุน 360° · แตะ 2 ครั้งดูท่า</div></div>
+  <div class="hubCls">${C.i} สายอาวุธ <b>${C.n}</b>: ${C.w.map(w=>WEAPONS.find(x=>x.k===w).n[0]).join(' / ')} · <span class="tag ${h.role}">${ROLEN[h.role]}</span></div>
+  <div class="hubAct"><button class="btn gold" id="hbAuto">⚡ สวมอัตโนมัติ${nb?` <i class="bdg">${nb}</i>`:''}</button><button class="btn blue" id="hbSet">◆ สวมทั้งเซ็ต</button><button class="btn" id="hbBag">🎒 กระเป๋า</button></div></div>
+ <div class="tabs hubTabs">${[['eq','🛡️ อุปกรณ์'],['st','📊 สถานะ'],['sk','✨ สกิล & เซ็ต'],['up','⬆️ พัฒนา']].map(([t,n])=>`<button class="${hubTab===t?'on':''}" data-ht="${t}">${n}</button>`).join('')}</div>
+ <div class="hubBody">${hubTab==='eq'?`<div class="hubSlots">${SLOTS.map(sl=>{const it=eq[sl.k],lk=slotLocked(who,sl.k);if(!it)return `<div class="hslot empty" data-hs="${sl.k}"><div class="ic">${sl.ic}</div><small>${sl.n}</small>${lk?'<s>🔒</s>':''}</div>`;const R=RAR[it.r];return `<div class="hslot" data-hs="${sl.k}" style="background:${R.bg};border-color:${R.c}">${itemIcon(it)}<small>Lv ${it.ilvl}${st.refine&&isMe&&st.refine[sl.k]?' +'+st.refine[sl.k]:''}</small>${it.set?`<u style="background:${SETS[it.set].c}">${SETS[it.set].i}</u>`:''}${lk?'<s>🔒</s>':''}</div>`}).join('')}</div><p class="hint" style="text-align:center">แตะช่องเพื่อดู/เปลี่ยน/ล็อก · ช่องว่าง = เปิดกระเป๋า</p>`
+  :hubTab==='st'?`<div class="statg">${['dmg','hp','armor','tough','crit','critd','combo','bleed','dodge','ls','spd'].filter(x=>s[x]!==undefined).map(x=>`<div><span>${STN[x]}</span><span>${fmt(s[x])}</span></div>`).join('')}<div><span>โจมตี/วินาที</span><span>${s.aps.toFixed(2)}</span></div></div>${isMe?'<button class="btn blue" style="width:100%;margin-top:8px;padding:9px" id="hbSrc">📊 ที่มาของพลัง · ความหมายค่าสถานะ</button>':''}`
+  :hubTab==='sk'?`<div class="skbox">✨ <b>สกิล: ${h.sk.n}</b> (คูลดาวน์ ${h.sk.cd} วิ)<br>${h.sk.d}<br>🔸 <b>ติดตัว:</b> ${h.pas}<br>👑 <b>ถ้าเป็นตัวหลัก:</b> ${mainTxt(h)}<br>🚩 <b>ออร่าผู้นำ:</b> ${leadAura(hk).txt}</div>
+   ${sig?`<div class="row" style="border-left:6px solid ${sig.c};margin-top:6px"><div class="ri">${sig.i}</div><div class="rt"><b>◆ เซ็ตประจำตัว: ${sig.n}</b><br><small>ใส่ให้ ${h.n} เอง โบนัส ×${SIG_M}</small></div></div>`:''}${setsHTML(eq)}`
+  :hubUp(who)}</div>`;
+ const box=b.querySelector('.hubCvBox'),V=hubView();box.appendChild(V.cv);hubSetChar(who,R0.c);if(!V.run){V.run=true;V.last=performance.now();requestAnimationFrame(hubLoop)}
+ b.querySelectorAll('[data-hw]').forEach(e=>e.onclick=()=>{hubWho=e.dataset.hw;draw(b)});
+ b.querySelectorAll('[data-hn]').forEach(e=>e.onclick=()=>{hubWho=L[(i+ +e.dataset.hn+L.length)%L.length];draw(b)});
+ b.querySelectorAll('[data-ht]').forEach(e=>e.onclick=()=>{hubTab=e.dataset.ht;draw(b)});
+ b.querySelector('#hbAuto').onclick=()=>{const n=autoBest(who);if(n){sfx('equip');num(`⚡ สวมของที่ดีที่สุดแล้ว ${n} ชิ้น`,'gold',{x:view.clientWidth/2,y:view.clientHeight*.3});save();renderAll()}else say('ใส่ของที่ดีที่สุดที่ใช้ได้อยู่แล้ว 👍 (ชิ้นที่ล็อกไว้จะไม่ถูกเปลี่ยน)');draw(b)};
+ b.querySelector('#hbSet').onclick=()=>{bagWho=who;openBag('sets');onSheetClose=()=>openChar(who)};
+ b.querySelector('#hbBag').onclick=()=>{bagWho=who;openBag('items');onSheetClose=()=>openChar(who)};
+ b.querySelectorAll('[data-hs]').forEach(e=>e.onclick=()=>{const sk=e.dataset.hs,it=eq[sk];if(it){itemPop(it,'🔍 '+(SLOTS.find(x=>x.k===sk)||{}).n+' · '+whoName(who),who,sk);onSheetClose=()=>openChar(who)}else{bagWho=who;bagF='all';openBag('items');onSheetClose=()=>openChar(who)}});
+ const src=b.querySelector('#hbSrc');if(src)src.onclick=()=>{statsSheet();onSheetClose=()=>openChar('me')};
+ hubUpBind(b,who,()=>draw(b))};
+ openSheet('🧍 ตัวละคร','',draw)}
+function hubUp(who){if(who==='me'){const mh=heroOf(st.main);return `<div class="row"><div class="ri">👑</div><div class="rt"><b>ตัวหลัก: ${mh?mh.n:'-'}</b><br><small>ตัวหลักกำหนดรูปร่าง อาชีพ สายอาวุธ และออร่าผู้นำของทีม</small></div><button class="btn blue" id="hbMain">เปลี่ยน</button></div>
+  <div class="row"><div class="ri">⚒️</div><div class="rt"><b>ช่างตีเหล็ก & ตีบวก</b><br><small>อัปค่าพลังพื้นฐาน · ตีบวกช่องอุปกรณ์</small></div><button class="btn" id="hbSmith">ไป</button></div>
+  <div class="row"><div class="ri">🔨</div><div class="rt"><b>โรงคราฟ</b><br><small>สร้าง/ย่อย/ถ่ายโอนเลเวลอุปกรณ์</small></div><button class="btn" id="hbCraft">ไป</button></div>`}
+ const h=heroOf(who),H=st.heroes[who],lc=heroCost(H.lvl,h),cap=capHero(H),sc=STAR_COST[H.star]||0,ac=Math.round(500*P(gIdx()));
+ return `<div class="row"><div class="ri">⬆️</div><div class="rt"><b>อัปเลเวล</b> Lv ${H.lvl}/${cap}<br><small>🪙 ${fmt(lc.g)}${lc.sh?' · 🧩 '+lc.sh:''} · ค่าพลัง +22%/เลเวล</small></div><button class="btn ${H.lvl<cap&&st.gold>=lc.g&&H.sh>=(lc.sh||0)?'':'off'}" id="hbLv">${H.lvl>=cap?'เต็ม':'อัป'}</button></div>
+ <div class="row"><div class="ri">⭐</div><div class="rt"><b>เลื่อนดาว</b> ${H.star<5?`🧩 ${H.sh}/${sc}`:'เต็ม'}<div class="shard"><b style="width:${H.star<5?Math.min(100,H.sh/sc*100):100}%"></b></div></div><button class="btn gold ${H.star<5&&H.sh>=sc?'':'off'}" id="hbSt">เลื่อน</button></div>
+ <div class="row" style="${H.awk?'background:#fff0b0':''}"><div class="ri">⚡</div><div class="rt"><b>ตื่นรู้ ${H.awk?'✅':''}</b><br><small>${H.awk?'ค่าพลัง +30% · สกิล +50%':`Lv 50 ★5 · 🧩100 💠150 🪙${fmt(ac)}`}</small></div>${H.awk?'':`<button class="btn gold ${H.lvl>=50&&H.star>=5&&H.sh>=100&&st.ess>=150&&st.gold>=ac?'':'off'}" id="hbAwk">ตื่นรู้</button>`}</div>
+ <button class="btn blue" style="width:100%;padding:10px;margin-top:4px" id="hbMain2">👑 ตั้ง ${h.n} เป็นตัวหลัก</button>`}
+function hubUpBind(b,who,re){const q=x=>b.querySelector(x);
+ if(q('#hbMain'))q('#hbMain').onclick=()=>{openMainPick();onSheetClose=()=>openChar('me')};
+ if(q('#hbSmith'))q('#hbSmith').onclick=()=>NAV.shop();if(q('#hbCraft'))q('#hbCraft').onclick=()=>openCraft();
+ if(who==='me')return;const h=heroOf(who),H=st.heroes[who];
+ if(q('#hbLv'))q('#hbLv').onclick=()=>{const lc=heroCost(H.lvl,h);if(H.lvl>=capHero(H)||st.gold<lc.g||H.sh<(lc.sh||0))return;st.gold-=lc.g;H.sh-=(lc.sh||0);H.lvl++;sfx('level');save();renderAll();re()};
+ if(q('#hbSt'))q('#hbSt').onclick=()=>{const sc=STAR_COST[H.star];if(H.star>=5||H.sh<sc)return;H.sh-=sc;H.star++;sfx('level');banner(h.n+' ★'+H.star);save();renderAll();re()};
+ if(q('#hbAwk'))q('#hbAwk').onclick=()=>{const c=Math.round(500*P(gIdx()));if(H.awk||H.lvl<50||H.star<5||H.sh<100||st.ess<150||st.gold<c)return;H.sh-=100;st.ess-=150;st.gold-=c;H.awk=1;sfx('level');banner('⚡ '+h.n+' ตื่นรู้!');save();renderAll();re()};
+ if(q('#hbMain2'))q('#hbMain2').onclick=()=>{setMain(who);hubWho='me';save();renderAll();re()}}
 
 /* ---------- SUMMON (อัญเชิญ) ---------- */
 const goldBoxCost=()=>Math.round(40*P(gIdx()));
