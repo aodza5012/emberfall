@@ -1013,8 +1013,29 @@ function spawnEnemy(boss=false,defOverride=null){if(inCamp){campOff();buildScene
  enemy={ch,defn,name,hp,max:hp,atk,boss,elite,mk,el,gap,danger,tr,trT:0,sh:0,raged:0,state:'approach',cd:1,targetZ:boss?-5.4:-4.3,bleed:0,cmb:0};
  if(elite){sfx('boss');num('⭐ มอนสเตอร์ชั้นยอด! '+tr.map(t=>BTR[t][0]+' '+BTR[t][1].split(':')[0]).join(' · '),'tag',{x:view.clientWidth/2,y:view.clientHeight*.28})}
  if(defn.f.startsWith('skeleton')&&!boss&&Math.random()<.5){ch.holder.position.z=enemy.targetZ;enemy.state='spawn';enemy.spawnT=1.4;play(ch,'spawn',{once:true,fade:0})}else play(ch,'walk',{speed:1.3});
- phase='fight';pcd=.5;
- if(boss){sfx('boss');bossWarn();setTimeout(()=>{if(enemy&&enemy.boss&&enemy.tr.length)say('ความสามารถบอส: '+enemy.tr.map(t=>BTR[t][0]+' '+BTR[t][1]).join(' · '))},2700);$('bossBar').style.display='block';$('bossNm').textContent=name+' '+(M.boss.tr||[]).map(t=>BTR[t][0]).join('');say(pick(['ตัวนี้ใหญ่จริง ๆ … อย่าลืมว่าเราก็ใหญ่ … ในใจ','บอสมาแล้ว! ถ้าแพ้ เราแกล้งทำเป็นว่ายังไม่ได้เริ่มกันนะ']))}}
+ phase='fight';pcd=.5;try{addPack(enemy,boss,defOverride)}catch(e){recErr(e,'pack')}
+ if(boss){sfx('boss');bossWarn();setTimeout(()=>{if(enemy&&enemy.boss&&enemy.tr.length)say('ความสามารถบอส: '+enemy.tr.map(t=>BTR[t][0]+' '+BTR[t][1]).join(' · '))},2700);$('bossBar').style.display=enemy.boss?'block':'none';$('bossNm').textContent=name+' '+(M.boss.tr||[]).map(t=>BTR[t][0]).join('');say(pick(['ตัวนี้ใหญ่จริง ๆ … อย่าลืมว่าเราก็ใหญ่ … ในใจ','บอสมาแล้ว! ถ้าแพ้ เราแกล้งทำเป็นว่ายังไม่ได้เริ่มกันนะ']))}}
+/* ---------- ฝูงมอนสเตอร์ & ลูกน้องบอส ---------- */
+function packSize(boss){if(mode!=='adv'||inCamp)return 0;const m=st.map;if(boss)return m>=7?3:m>=4?2:m>=2?1:0;if(st.step<=2)return 0;if(m<3)return 0;if(m<5)return Math.random()<.35?1:0;if(m<8)return 1+(Math.random()<.3?1:0);return 2}
+function mkMinion(k,bossMin){const g=gIdx(),HM=mapHard(st.map),defn=MON[k];let hp=42*.85*eCurve(g,ECH)*HM.hp*(bossMin?.75:.55),atk=7*eCurve(g,ECA)*HM.atk*(bossMin?.7:.6);const gap=Math.max(0,monLv(g)-st.lvl);atk*=1+.08*gap;
+ const el=MAPEL[st.map%MAPS.length];const ch=makeChar(defn);scene.add(ch.holder);play(ch,'walk',{speed:1.3});
+ return {ch,defn,name:EL[el].i+' '+(bossMin?'🗡️ ลูกน้อง ':'')+defn.n+' Lv'+monLv(g),hp,max:hp,atk,boss:false,elite:false,mk:k,el,gap,danger:false,tr:[],trT:0,sh:0,raged:0,state:'approach',cd:1,targetZ:-4.3,bleed:0,cmb:0,rm:.5,rcd:rnd(1.5,3)}}
+function addPack(lead,boss,defOverride){if(defOverride&&!boss)return;const n=packSize(boss);if(!n)return;const M=mapDef(),mins=[];for(let i=0;i<n;i++)mins.push(mkMinion(pick(M.mob),boss));
+ const z0=lead.ch.holder.position.z;
+ if(boss){lead.rm=.35;lead.rcd=rnd(2.5,3.5);lead.waitZ=-7.6;lead.waitX=0;const first=mins.shift();first.pack=[...mins,lead];first.packTot=n+1;first.ch.holder.position.set(0,0,z0+1);
+  mins.forEach((m,i)=>{m.waitX=i%2?1.9:-1.9;m.waitZ=-5.9-Math.floor(i/2)*.8;m.ch.holder.position.set(m.waitX,0,z0+.5)});lead.ch.holder.position.set(0,0,z0-1);
+  enemy=first;$('bossBar').style.display='none';num(`👑 บอสพาลูกน้องมา ${n} ตัว! จัดการลูกน้องก่อน`,'tag',{x:view.clientWidth/2,y:view.clientHeight*.26})}
+ else{lead.pack=mins;lead.packTot=n+1;mins.forEach((m,i)=>{m.waitX=i%2?1.9:-1.9;m.waitZ=-5.6-Math.floor(i/2)*.8;m.ch.holder.position.set(m.waitX,0,z0-1)});lead.name+=` 👥+${n}`;num(`👥 ฝูงมอนสเตอร์ ${n+1} ตัว!`,'tag',{x:view.clientWidth/2,y:view.clientHeight*.26})}}
+function clearPack(e){if(!e||!e.pack)return;for(const m of e.pack){try{rmChar(m.ch.holder)}catch(_){}}e.pack=[]}
+function packUpdate(e,dt){if(!e.pack||!e.pack.length)return;const fighting=e.state==='fight'&&phase==='fight';
+ for(const m of e.pack){m.ch.mixer.update(dt);const h=m.ch.holder.position;if(h.z<m.waitZ){h.z=Math.min(m.waitZ,h.z+dt*APPROACH);if(h.z>=m.waitZ)play(m.ch,'idle')}h.x+=((m.waitX||0)-h.x)*Math.min(1,dt*3);
+  if(fighting&&h.z>=m.waitZ-.01){m.rcd-=dt;if(m.rcd<=0){m.rcd=rnd(2.2,3.2)*(m.boss?1.2:1);const dur=play(m.ch,m.defn.atk||'attack',{once:true,speed:1.2})||.8;setTimeout(()=>{if(enemy===e&&phase==='fight'&&e.pack.includes(m))packDeal(m)},dur*450/SPD());setTimeout(()=>{if(e.pack.includes(m))play(m.ch,'idle',{fade:.2})},dur*1000/SPD())}}}}
+function packDeal(m){const s=S();if(Math.random()*100<s.dodge){num('หลบ!','miss',{x:view.clientWidth*.3,y:view.clientHeight*.72});return}
+ const red=s.armor/(s.armor+18*Math.pow(1.079,gIdx()));let d=m.atk*(m.rm||.5)*rnd(.85,1.15)*(1-Math.min(.75,red))*(1-s.tough/100)*elMul(m.el,myEl());d=Math.max(1,Math.round(d*teamGuard()));php-=d;
+ num('-'+fmt(d),'bad',{x:view.clientWidth*rnd(.25,.75),y:view.clientHeight*.8},m.boss?'👑':'👥');if(php<=0){php=0;defeat()}}
+function promotePack(e){const rest=e.pack||[];const nx=rest.shift();if(!nx)return false;nx.pack=rest;nx.packTot=e.packTot;nx.fromBossTab=nx.fromBossTab||e.fromBossTab;nx.state='approach';nx.targetZ=nx.boss?-5.4:-4.3;nx.cd=.8;
+ if(rest.length&&!nx.boss)nx.name=nx.name.replace(/ 👥\+\d+$/,'')+` 👥+${rest.length}`;play(nx.ch,'walk',{speed:1.3});enemy=nx;phase='fight';pcd=.4;
+ if(nx.boss){$('bossBar').style.display='block';$('bossNm').textContent=nx.name;sfx('boss');banner('👑 บอสลงสนาม!')}else num(`👥 เหลืออีก ${rest.length+1} ตัว`,'tag',{x:view.clientWidth/2,y:view.clientHeight*.3});return true}
 function hitEnemy(mult=1,tag=''){
  if(!enemy||enemy.state==='dead')return;const s=S(),em=(st.main==='novice'&&Math.random()<.3?1.35:elMul(myEl(),enemy.el))*Math.max(.35,1-.05*(enemy.gap||0));let d=s.dmg*mult*rnd(.9,1.1)*em;if(em!==1&&!enemy.elShown){enemy.elShown=1;num(em>1?'ได้เปรียบธาตุ!':'เสียเปรียบธาตุ','tag',enemyScreen(-80))}const cr=Math.random()*100<s.crit;if(cr)d*=s.critd/100;d=Math.max(1,Math.round(d));const etr=enemy.tr||[];if(etr.includes('dodge')&&Math.random()<.12){num('💨 หลบ!','miss',enemyScreen(-40));return}if(etr.includes('block')&&Math.random()<.15){d=Math.max(1,Math.round(d*.3));num('🛡 บล็อก','tag',enemyScreen(-60))}if(etr.includes('thorns')){php-=Math.min(d*.06,S().hp*.025);if(php<=0){php=0;defeat();return}}
  if(em>1&&!tag)tag='';const pcls=em>1?' el-'+myEl():'';if(cr)shake=Math.max(shake,.16);if(enemy.sh>0){const a=Math.min(enemy.sh,d);enemy.sh-=a;d-=a;if(!d){num('โล่ดูดซับ','tag',enemyScreen(-40));return}}enemy.hp-=d;sfx(cr?'crit':'hit');num(fmt(d),(cr||tag?'crit':'')+pcls,enemyScreen(),tag||(cr?'คริ!':''));if(!tag&&enemy.hp>0)procHit();if(s.ls>0)heal(d*s.ls/100);
@@ -1045,14 +1066,16 @@ function killEnemy(){
  heal(s.hp*(.15+s.heal/100),true);
  setTimeout(()=>{rmChar(e.ch.holder);if(enemy===e)enemy=null;$('bossBar').style.display='none';
   if(e.elite){st.stat.elite=(st.stat.elite||0)+1;if(Math.random()<.35){const gg=addGem(Math.min(3,1+Math.floor(st.maxMap/4)));setTimeout(()=>num(`+${GEMS[gg.g].i} ${GEMS[gg.g].n} ขั้น ${gg.t}`,'tag',enemyScreen(90)),700)}if(Math.random()<.3)addShards(null,1)}
-  const drop=e.boss?genItem(2,1.5):e.elite?genItem(1,1.4):e.fromBossTab?genItem(2,1):e.danger?genItem(1,1.2):genItem();
+  if(e.pack&&e.pack.length&&!e.boss){if(promotePack(e)){checkUnlock();renderAll();return}}
+  if(e.boss)clearPack(e);
+  const drop=e.boss?genItem(2,1.5):e.elite?genItem(1,1.4):e.fromBossTab?genItem(2,1):e.danger?genItem(1,1.2):e.packTot>=3?genItem(1,1.15):genItem();
   const after=e.fromBossTab?()=>{phase=inCamp?'camp':'walk'}:(e.boss?mapClear:nextStep);showGear(drop,after)},1100/SPD());
  checkUnlock();renderAll()}
 function defeat(){
  const fromTab=!!(enemy&&enemy.fromBossTab);if(!fromTab)setTimeout(()=>say(`💀 พ่ายแพ้! กลับไปเริ่มที่มอนสเตอร์ตัวแรกของแมป ${st.map+1} — เก็บเลเวลและของใหม่ เตรียมตัวให้พร้อมแล้วลุยอีกครั้ง`),2100);
  st.deathStreak++;const retreat=false;if(st.deathStreak>=3&&st.deathStreak%3===0)setTimeout(stuckPrompt,2300);
  phase='dead';if(enemy)play(enemy.ch,'cheer');banner('พ่ายแพ้…');say(pick(['ไม่เป็นไร! ถอยไปตั้งหลักก่อน แล้วค่อยกลับมาเอาคืน','ล้มได้ก็ลุกได้ … แต่รอบหน้าลองใส่เกราะดูนะ','ลองอัปเกรดที่ร้านค้า หรือชวนเพื่อนจากโรงเตี๊ยมมาช่วยสิ']));
- setTimeout(()=>{if(enemy){rmChar(enemy.ch.holder);enemy=null}$('bossBar').style.display='none';if(!fromTab){st.step=1;st.dgUntil=0}st.buff={dmg:0,mul:0};php=S().hp;renderAll();save();
+ setTimeout(()=>{if(enemy){(clearPack(enemy),rmChar(enemy.ch.holder));enemy=null}$('bossBar').style.display='none';if(!fromTab){st.step=1;st.dgUntil=0}st.buff={dmg:0,mul:0};php=S().hp;renderAll();save();
   if(retreat){st.deathStreak=0;st.pushLeft=2;phase='walk';say('ออโต้: แมปนี้ยากไป ถอยไปฟาร์มแมปก่อนหน้า 2 รอบ แล้วจะกลับมาลุยใหม่!');goMap(st.map-1);return}startWalk()},2000)}
 function heal(v,show=false){const m=S().hp,b=php;php=Math.min(m,php+v);if(show&&php-b>1)num('+'+fmt(php-b),'heal',{x:view.clientWidth*.5,y:view.clientHeight*.86})}
 function addXp(x){x=Math.round(x*(1+bldB().xp));st.xp+=x;let up=0;while(st.xp>=xpNeed(st.lvl)){st.xp-=xpNeed(st.lvl);st.lvl++;up=1;php=S().hp;banner('เลเวลอัป! Lv '+st.lvl);sfx('level')}if(up)checkClassQ()}
@@ -1548,7 +1571,7 @@ function watchdog(){const sg=[phase,mode,st.step,st.map,st.kills,inCamp,enemy?Ma
  try{if($('sheet').classList.contains('on')){onSheetClose=null;closeSheet()}}catch(e){}
  ['gearOv','evOv','powOv'].forEach(x=>{const el=$(x);if(el)el.classList.remove('on')});gearItem=null;gearAfter=null;
  if(mode==='raid'){try{dgAuto=null;exitTower()}catch(e){}return}
- if(enemy&&enemy.state!=='fight'){rmChar(enemy.ch.holder);enemy=null}
+ if(enemy&&enemy.state!=='fight'){(clearPack(enemy),rmChar(enemy.ch.holder));enemy=null}
  if(!enemy){phase='busy';startWalk()}}
 function autoTick(){if(!st.auto.on||phase==='title')return;try{watchdog()}catch(e){console.error(e)}const A0=st.auto;if(A0.gear&&gearItem&&$('gearOv').classList.contains('on')){phase='gear';autoGear();return}
  if(A0.quest){const D=daily();for(const q of D.q)if(!q.c&&q.p>=q.g){q.c=true;addPass(100);st.gems+=8;st.gold+=Math.round(30*P(gIdx()));addShards(null,2);addXp(Math.round(xpNeed(st.lvl)*.15));num('📜 รับรางวัลภารกิจ','gold',{x:view.clientWidth/2,y:view.clientHeight*.3})}}
@@ -1666,7 +1689,7 @@ $('prof').onclick=()=>openSheet('⚙️ ตั้งค่า',`<div class="row"
    try{await fs.setDoc(fs.doc(D,'users',uid),{acct:'{}',cur:0,t:Date.now()},{merge:true})}catch(_){}try{await fs.deleteDoc(fs.doc(D,'lb',uid))}catch(_){}}}catch(_){}
   try{Object.keys(localStorage).filter(k=>k.startsWith('emberfall3d')&&k!=='emberfall3d_uid'&&k!=='emberfall3d_eco').forEach(k=>localStorage.removeItem(k))}catch(_){}
   location.reload()};
- b.querySelector('#rsBtn').onclick=e=>{if(e.target.dataset.c){try{localStorage.removeItem(slotKey(curSlot));if(!curSlot)localStorage.removeItem('emberfall3d_v1')}catch(_){}if(enemy){rmChar(enemy.ch.holder);enemy=null}['gearOv','evOv','powOv','mapScr'].forEach(i=>$(i).classList.remove('on'));gearItem=null;gearAfter=null;queued=null;if(mode==='raid'){clearUnits();mode='adv';raid=null;camTarget=0;$('raidBar').style.display='none';$('dots').style.display=''}$('bossBar').style.display='none';st=loadSlot(-1);curWT=curPT=undefined;setHandWeapon();setHandPet();php=S().hp;closeSheet();buildScenery();renderAll();save();phase='busy';showCreate(()=>{renderAll();startWalk();say('เริ่มต้นใหม่แล้ว! ขอให้โชคดีนะ '+pname())})}else{e.target.dataset.c=1;e.target.textContent='ยืนยันลบ?'}}});
+ b.querySelector('#rsBtn').onclick=e=>{if(e.target.dataset.c){try{localStorage.removeItem(slotKey(curSlot));if(!curSlot)localStorage.removeItem('emberfall3d_v1')}catch(_){}if(enemy){(clearPack(enemy),rmChar(enemy.ch.holder));enemy=null}['gearOv','evOv','powOv','mapScr'].forEach(i=>$(i).classList.remove('on'));gearItem=null;gearAfter=null;queued=null;if(mode==='raid'){clearUnits();mode='adv';raid=null;camTarget=0;$('raidBar').style.display='none';$('dots').style.display=''}$('bossBar').style.display='none';st=loadSlot(-1);curWT=curPT=undefined;setHandWeapon();setHandPet();php=S().hp;closeSheet();buildScenery();renderAll();save();phase='busy';showCreate(()=>{renderAll();startWalk();say('เริ่มต้นใหม่แล้ว! ขอให้โชคดีนะ '+pname())})}else{e.target.dataset.c=1;e.target.textContent='ยืนยันลบ?'}}});
 document.querySelectorAll('nav .nb').forEach(b=>b.onclick=()=>{const n=b.dataset.n;if(n==='char'){hubTab='eq';openChar('me')}else if(n==='bag'){bagWho='me';bagF='all';openBag('items')}else NAV[n]()});
 const NAV={
  map:()=>openMap(),
@@ -2097,7 +2120,7 @@ function tipTick(){if(phase==='title'||tipShown||$('sheet').classList.contains('
  const done=()=>{st.tips.push(t.id);save();el.classList.remove('on');document.querySelectorAll('.nb.tipHi').forEach(e=>e.classList.remove('tipHi'));tipShown=null};
  const g=$('tpGo');if(g)g.onclick=()=>{done();t.go()};$('tpOk').onclick=done;
  if(st.auto.on)setTimeout(()=>{if(tipShown===t)done()},12000)}
-setInterval(tipTick,4000);if(location.hash==='#dbg7731')window.__g={get st(){return st},advT:()=>advT,teamOn,renderAll,save};
+setInterval(tipTick,4000);if(location.hash==='#dbg7731')window.__g={get st(){return st},advT:()=>advT,teamOn,renderAll,save,spawnEnemy,get enemy(){return enemy},get phase(){return phase},set phase(v){phase=v}};
 function openTips(){st.tips=st.tips||[];openSheet('📘 คำแนะนำ',TIPS.filter(t=>st.tips.includes(t.id)).map(t=>`<div class="row"><div class="ri">${t.i}</div><div class="rt"><b>${t.t}</b><br><small>${t.b}</small></div>${t.go?`<button class="btn blue" data-tp="${t.id}">ไป</button>`:''}</div>`).join('')+`<button class="btn" style="width:100%;padding:9px;margin-top:6px" id="tpRe">🔄 แสดงคำแนะนำทั้งหมดอีกครั้ง</button>`,
  b=>{b.querySelectorAll('[data-tp]').forEach(e=>e.onclick=()=>{closeSheet();TIPS.find(t=>t.id===e.dataset.tp).go()});b.querySelector('#tpRe').onclick=()=>{st.tips=[];save();closeSheet()}})}
 CAMP.push(['tips','📘','คำแนะนำ','ทบทวนวิธีเล่น',()=>openTips()]);CAMP.splice(5,0,['sets','◆','สวมทั้งเซ็ต','ใช้ชิ้นเซ็ตในกระเป๋า',()=>{bagWho='me';openBag('sets')}]);
@@ -2432,10 +2455,10 @@ function openAccount(){openSheet('👤 บัญชี',`<div class="row"><div c
  const Sv=b.querySelector('#acSave');if(Sv)Sv.onclick=async()=>{Sv.textContent='กำลังบันทึก...';await cloudPush(true);Sv.textContent='✅ บันทึกแล้ว'};
  const O=b.querySelector('#acOut');if(O)O.onclick=async()=>{if(!O.dataset.c){O.dataset.c=1;O.textContent=authUser.isAnonymous?'Guest จะหายถ้าไม่ผูกบัญชี! ยืนยัน?':'ยืนยันออก?';return}await cloudPush(true);await FB.auth.signOut(FB.A);authUser=null;closeSheet();clearScene();phase='title';$('title').classList.add('on');setAcctLine();openLogin()}})}
 /* ---------- CHARACTER SLOTS ---------- */
-function clearScene(){if(enemy){rmChar(enemy.ch.holder);enemy=null}['gearOv','evOv','powOv','mapScr'].forEach(x=>$(x).classList.remove('on'));gearItem=null;gearAfter=null;queued=null;
+function clearScene(){if(enemy){(clearPack(enemy),rmChar(enemy.ch.holder));enemy=null}['gearOv','evOv','powOv','mapScr'].forEach(x=>$(x).classList.remove('on'));gearItem=null;gearAfter=null;queued=null;
  if(mode==='raid'){clearUnits();mode='adv';raid=null;camTarget=0;$('raidBar').style.display='none';$('dots').style.display='';$('raidBtn').style.display=''}$('bossBar').style.display='none';closeSheet()}
 async function switchSlot(i){if(i===curSlot&&st)return;save();curSlot=i;try{localStorage.setItem('emberfall3d_cur',i)}catch(e){}
- if(enemy){rmChar(enemy.ch.holder);enemy=null}['gearOv','evOv','powOv','mapScr'].forEach(x=>$(x).classList.remove('on'));gearItem=null;gearAfter=null;queued=null;
+ if(enemy){(clearPack(enemy),rmChar(enemy.ch.holder));enemy=null}['gearOv','evOv','powOv','mapScr'].forEach(x=>$(x).classList.remove('on'));gearItem=null;gearAfter=null;queued=null;
  if(mode==='raid'){clearUnits();mode='adv';raid=null;camTarget=0;$('raidBar').style.display='none';$('dots').style.display=''}$('bossBar').style.display='none';
  st=loadSlot(i);if(!allLoaded)await loadAll();curWT=curPT=undefined;setHandWeapon();setHandPet();php=S().hp;closeSheet();buildScenery();renderAll()}
 function questTable(){const cls=[...new Set(UNLQ.map(q=>q.c))];return `<div class="cqt"><b>🏆 ภารกิจตัวละคร</b> <small>(ใช้ร่วมกันทุกตัวละคร · นับตามสายที่เลือกตอนสร้าง)</small>`+cls.map(c=>{const h0=heroOf(c),best=Math.max(0,...[...Array(NSLOT)].map((_,i)=>{const d=i===curSlot?st:readSlot(i);return d&&(d.cls||d.main)===c?d.lvl:0}));
@@ -2514,11 +2537,12 @@ function update(dt){
  if(phase==='walk'){const d=WALK_SPEED*dt;scrollWorld(d);if(mode==='adv')pickupUpdate(d);walkLeft-=d;
   const bob=Math.sin(T*10);R.g.position.y=-.66+bob*.018;L.g.position.y=-.62-bob*.018;CAM_FP.p.y=1.55+Math.abs(bob)*.03;
   if(mode==='raid')raidProg();
-  if(walkLeft<=0){if(mode==='raid')raidNext();else{let t='mob';try{t=encounterType();if(t==='mob')spawnEnemy();else if(t==='boss')spawnEnemy(true);else startEvent(t)}catch(e){recErr(e,'spawn:'+t);phase='busy';if(enemy){try{rmChar(enemy.ch.holder)}catch(_){}enemy=null}setTimeout(()=>{try{t==='boss'?startWalk():nextStep()}catch(_){startWalk()}},300)}}}}
+  if(walkLeft<=0){if(mode==='raid')raidNext();else{let t='mob';try{t=encounterType();if(t==='mob')spawnEnemy();else if(t==='boss')spawnEnemy(true);else startEvent(t)}catch(e){recErr(e,'spawn:'+t);phase='busy';if(enemy){try{(clearPack(enemy),rmChar(enemy.ch.holder))}catch(_){}enemy=null}setTimeout(()=>{try{t==='boss'?startWalk():nextStep()}catch(_){startWalk()}},300)}}}}
  else{R.g.position.y=lerp(R.g.position.y,-.66,.1);L.g.position.y=lerp(L.g.position.y,-.62,.1)}
  if(mode==='raid'&&units.length){try{battleUpdate(dt)}catch(e){recErr(e,'battle')}}
  try{if(enemy){const e=enemy;e.ch.mixer.update(dt);
-  if(e.state==='approach'){const z=e.ch.holder.position.z+dt*APPROACH;e.ch.holder.position.z=Math.min(z,e.targetZ);if(z>=e.targetZ){e.state='fight';play(e.ch,'idle')}}
+  packUpdate(e,dt);
+  if(e.state==='approach'){const z=e.ch.holder.position.z+dt*APPROACH;e.ch.holder.position.z=Math.min(z,e.targetZ);e.ch.holder.position.x*=Math.max(0,1-dt*3);if(z>=e.targetZ){e.state='fight';play(e.ch,'idle')}}
   else if(e.state==='spawn'){e.spawnT-=dt;if(e.spawnT<=0){e.state='fight';play(e.ch,'idle')}}
   else if(e.state==='fight'&&phase==='fight'){
    pcd-=dt;if(pcd<=0&&swingT<0){pcd=1/s.aps;playerSwing()}if(e.tr&&e.tr.length||pPois>0)bossTick(e,dt);
