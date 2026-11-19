@@ -714,7 +714,7 @@ const UNLOCK_LV=5,MAXTIX=3,TIXMIN=10;
 /* ---- FIREBASE: ใส่ค่าจาก Firebase console (Project settings → Your apps → Config) ---- */
 const FIREBASE_CONFIG={apiKey:"AIzaSyC0KCgLRo3Z0bVPPKBxKb8qd0Wmm7ut6zk",authDomain:"emberfall-bff62.firebaseapp.com",projectId:"emberfall-bff62",storageBucket:"emberfall-bff62.firebasestorage.app",messagingSenderId:"696297027456",appId:"1:696297027456:web:2abf02b5c8413352977365"};
 let cloudDirty=false;
-const AUTO_ON=['events','path','gear','chest'],SPEEDS=[1,2],SPD=()=>st.speed;
+const AUTO_ON=['events','path','gear','chest','tower'],SPEEDS=[1,2],SPD=()=>st.speed;
 const KEY='emberfall3d_v2',NSLOT=4,slotKey=i=>i?KEY+'_s'+i:KEY;
 let curSlot=0;try{curSlot=Math.min(NSLOT-1,Math.max(0,+(localStorage.getItem('emberfall3d_cur')||0)))}catch(e){}
 let WIPE=false;let ACCT={unl:[]};try{ACCT=Object.assign(ACCT,JSON.parse(localStorage.getItem('emberfall3d_acct'))||{})}catch(e){}
@@ -733,7 +733,7 @@ let st;
 function loadSlot(i){let st;try{st=Object.assign(fresh(),readSlot(i)||{})}catch(e){st=fresh()}
 for(const h of HEROES){st.heroes[h.k]=Object.assign({lvl:0,sh:0,eq:{},star:1},st.heroes[h.k]||{});const H=st.heroes[h.k];if(H.lvl>lvCap(H))H.star=Math.min(5,Math.ceil(H.lvl/10))}
 st.snd=Object.assign({music:true,sfx:true,mv:.5,sv:.8},st.snd||{});st.sumT=st.sumT||0;st.pity=st.pity||0;
-st.auto=Object.assign({dung:true,wb:true,pass:true,pet:true,on:false,gear:true,events:true,skill:true,chest:true,quest:true,raid:true,tower:false,upgrade:false,hero:true,retreat:true,path:true},st.auto||{});if(!st.autoV2){st.autoV2=1;st.auto.events=true;st.auto.path=true}if(!st.afkT)st.afkT=st.lastSeen||Date.now();if(!st.autoV4){st.autoV4=1;for(const k of AUTO_ON)st.auto[k]=true}
+st.auto=Object.assign({dung:true,wb:true,pass:true,pet:true,on:false,gear:true,events:true,skill:true,chest:true,quest:true,raid:true,tower:false,upgrade:false,hero:true,retreat:true,path:true},st.auto||{});if(!st.autoV5){st.autoV5=1;st.auto.tower=true}if(!st.autoV2){st.autoV2=1;st.auto.events=true;st.auto.path=true}if(!st.afkT)st.afkT=st.lastSeen||Date.now();if(!st.autoV4){st.autoV4=1;for(const k of AUTO_ON)st.auto[k]=true}
 if(!SPEEDS.includes(st.speed))st.speed=st.speed>=2?2:1;for(const k in st.auto)if(k!=='on'&&!AUTO_ON.includes(k))st.auto[k]=false;st.bag=st.bag||[];st.ess=st.ess||0;st.stat=st.stat||{};st.ach=st.ach||[];st.titles=st.titles||[];st.skins=st.skins||['none'];if(!st.skin)st.skin='none';if(st.guide===undefined)st.guide=st.kills>50?GUIDE.length:0;st.gemInv=st.gemInv||{};for(const g in GEMS)st.gemInv[g]=st.gemInv[g]||[0,0,0,0,0];if(st.main&&!st.cls)st.cls=st.main;for(const k of ACCT.unl){const H=st.heroes[k];if(H&&!H.lvl){H.lvl=1;H.star=Math.max(1,H.star||1)}}
 return st}
 st=loadSlot(curSlot);
@@ -1365,7 +1365,9 @@ function openTowerInfo(){const f=st.tower.best+1,fp=towerFoePow(f),tp=towerTeamP
  openSheet('🗼 หอคอยไร้ที่สิ้นสุด',`<div class="row"><div class="ri">🗼</div><div class="rt"><b>ชั้นถัดไป ${f}</b> ${f%10===0?'👑 ชั้นผู้คุม':''}<br><small>ศัตรู ${towerDefs(f).length} ตัว · พลังศัตรู ≈ <b>${fmt(fp)}</b> · ทีมท่าน ≈ <b>${fmt(tp)}</b> ${powTag(tp,fp)}<br>ชั้น +5: ≈ ${fmt(towerFoePow(f+5))} · ชั้น +10: ≈ ${fmt(towerFoePow(f+10))}</small></div></div>
  <div class="row"><div class="ri">⚡</div><div class="rt"><b>พลังงาน ${E.v}/${enMax()}</b><br><small>เข้า 1 ครั้งใช้ ${EN_COST} · ไต่ได้หลายชั้นจนกว่าจะแพ้ · ฟื้น 1 หน่วยทุก ${Math.round(enRate()/6e3)/10} นาที</small></div></div>
  <p class="hint">รางวัลต่อชั้น: ทอง + 💎3 · ทุก 3 ชั้นปลดเพดานตีบวก +1 · ทุก 5 ชั้นได้ชิ้นส่วนฮีโร่ · ทำลายสถิติได้แต้ม Pass</p>
- <button class="btn ${E.v>=EN_COST?'':'off'}" style="width:100%;padding:11px" id="twGo">⚔️ เข้าหอคอย (⚡${EN_COST})</button>`,b=>b.querySelector('#twGo').onclick=()=>{closeSheet();startTower()})}
+ <div style="display:flex;gap:8px"><button class="btn ${E.v>=EN_COST?'':'off'}" style="flex:1;padding:11px" id="twGo">⚔️ เข้าหอคอย<br><small>(⚡${EN_COST})</small></button><button class="btn gold ${E.v>=EN_COST?'':'off'}" style="flex:1;padding:11px" id="twAu">🤖 ไต่ออโต้<br><small>จนกว่าจะแพ้ (⚡${EN_COST})</small></button></div>`,b=>{b.querySelector('#twGo').onclick=()=>{twAuto=null;closeSheet();startTower()};b.querySelector('#twAu').onclick=()=>{if(enObj().v<EN_COST){say('⚡ พลังงานไม่พอ');return}twAuto={from:st.tower.best+1,n:0};closeSheet();startTower()}})}
+let twAuto=null;
+function twStopBtn(on){let el=$('twStop');if(!el){el=document.createElement('button');el.id='twStop';el.className='btn red';el.textContent='⏹ หยุดไต่ออโต้';el.style.cssText='position:absolute;right:8px;top:calc(150px + env(safe-area-inset-top));z-index:7;padding:6px 10px;font-size:12px';el.onclick=()=>{twAuto=null;if(raid)raid.noAuto=1;el.style.display='none';say('จะหยุดไต่หลังจบชั้นนี้')};$('view').appendChild(el)}el.style.display=on?'':'none'}
 function startTower(){
  if(!unlocked()){say(`หอคอยปลดล็อกที่ Lv ${UNLOCK_LV}`);return}if(!allLoaded){say('กำลังโหลดโมเดลอยู่ รอสักครู่นะ');return}
  {const E=enObj();if(E.v<EN_COST){say(`⚡ พลังงานไม่พอ (${E.v}/${EN_COST}) — เพิ่ม 1 หน่วยทุก ${Math.round(enRate()/60e3*10)/10} นาที · ซื้อเพิ่มได้ที่ตลาดมืด`);return}}
@@ -1376,14 +1378,16 @@ function startTower(){
 function towerResult(win){const f=raid.floor;phase='busy';
  if(win){qp('tower');if(f>st.tower.best)addPass(30);st.tower.best=Math.max(st.tower.best,f);const g=Math.round(25*P(Math.min(gIdx(),f*2)));st.gold+=g;st.gems+=3;let extra='';
   if(f%5===0){const h=addShards(null,3);extra+=`<br>🧩 ชิ้นส่วน ${h.n} +3`}if(f%3===0&&f>=st.tower.best)extra+=`<br>🔨 เพดานตีบวกเป็น +${capRef()}`;if(f%10===0&&st.chests.length<5){st.chests.push({t:1,ready:Date.now()});extra+='<br>🧰 ได้หีบเงิน!'}save();renderAll();
-  if(st.auto.on&&st.auto.tower){num(`ผ่านชั้น ${f}!`,'gold',{x:view.clientWidth/2,y:view.clientHeight*.35});raid.floor++;$('mapLbl').textContent=`🗼 หอคอยไร้ที่สิ้นสุด · ชั้น ${raid.floor}`;setTimeout(()=>startBattle(0,false),1200/SPD());return}
+  if(twAuto)twAuto.n++;
+  if((twAuto||(st.auto.on&&st.auto.tower))&&!raid.noAuto){twStopBtn(true);num(`ผ่านชั้น ${f}!`,'gold',{x:view.clientWidth/2,y:view.clientHeight*.35});raid.floor++;$('mapLbl').textContent=`🗼 หอคอยไร้ที่สิ้นสุด · ชั้น ${raid.floor}`;setTimeout(()=>startBattle(0,false),1200/SPD());return}
   openSheet(`🗼 ผ่านชั้น ${f}!`,`<div class="row"><div class="ri">🏆</div><div class="rt"><b>ชั้นสูงสุด ${st.tower.best}</b><br>+${fmt(g)} 🪙 · +3 💎${extra}<br><small>ทีมฟื้น HP บางส่วนก่อนขึ้นชั้นถัดไป</small></div></div>
    <div style="display:flex;gap:8px"><button class="btn gray" style="flex:1;padding:11px" id="tOut">ออกจากหอคอย</button><button class="btn" style="flex:1;padding:11px" id="tNext">⬆ ชั้น ${f+1}</button></div>`,b=>{
    b.querySelector('#tNext').onclick=()=>{onSheetClose=null;closeSheet();raid.floor++;$('mapLbl').textContent=`🗼 หอคอยไร้ที่สิ้นสุด · ชั้น ${raid.floor}`;setTimeout(()=>startBattle(0,false),300)};b.querySelector('#tOut').onclick=closeSheet});
   onSheetClose=exitTower;return}
+ twStopBtn(false);if(twAuto||(st.auto.on&&st.auto.tower)){const A=twAuto;twAuto=null;say(`🤖 ไต่หอคอยจบ: ${A?'ผ่าน '+A.n+' ชั้น · ':''}แพ้ที่ชั้น ${f} (สูงสุด ${st.tower.best}) — กลับไปผจญภัย`);setTimeout(()=>{if($('sheet').classList.contains('on')&&onSheetClose===exitTower)closeSheet()},3000)}
  openSheet('💀 พ่ายแพ้ในหอคอย',`<div class="row"><div class="ri">🗼</div><div class="rt"><b>ไปได้ถึงชั้น ${f}</b> (สูงสุด ${st.tower.best})<br>ลองใส่อุปกรณ์ให้ฮีโร่ อัปเลเวล หรือตีบวกช่องอุปกรณ์ แล้วกลับมาใหม่!</div></div><button class="btn" style="width:100%;padding:11px" id="tOk">กลับไปผจญภัย</button>`,b=>b.querySelector('#tOk').onclick=closeSheet);
  onSheetClose=exitTower;if(st.auto.on)setTimeout(()=>{if($('sheet').classList.contains('on')&&onSheetClose===exitTower)closeSheet()},2500)}
-function exitTower(){mode='adv';raid=null;$('raidBar').style.display='none';buildScenery();$('dots').style.display='';renderAll();startWalk()}
+function exitTower(){twStopBtn(false);mode='adv';raid=null;$('raidBar').style.display='none';buildScenery();$('dots').style.display='';renderAll();startWalk()}
 
 /* ---------- DAILY DUNGEONS ---------- */
 const DGD=[{n:'ง่าย',m:1.6,r:1,c:'',g:0},{n:'ยาก',m:3,r:2,c:'blue',g:1},{n:'นรก',m:5.5,r:3.5,c:'red',g:2},{n:'มรณะ',m:10,r:6,c:'red',g:3}];
@@ -1524,7 +1528,7 @@ function welcomeFlow(){const off=null;if(afkMs()>=600e3)setTimeout(()=>say(`🧰
 /* ---------- AUTO ---------- */
 const AUTO_OPTS=[['path','เลือกทางแยกเอง (ปลอดภัย/อันตราย)','ไปทางอันตรายเมื่อเลเวลถึง เลือดเต็ม และไม่ได้เพิ่งแพ้'],['gear','สวมใส่/ทิ้งอุปกรณ์อัตโนมัติ','ชิ้นเซ็ต: ไม่สวมให้ เก็บเข้ากระเป๋าเฉพาะชิ้นที่ดีที่สุดของแต่ละเซ็ต/ช่อง ชิ้นที่ด้อยกว่าย่อยทิ้ง (ไว้ใช้ ◆ สวมทั้งเซ็ต) · ของไม่มีเซ็ต: ตัวหลักเก่งขึ้น → ใส่ตัวหลัก (ของเก่าทิ้ง/ย่อย) · ไม่งั้นให้ฮีโร่ที่พลังเพิ่มมากสุด · ไม่มีใครดีขึ้น → ขาย'],['events','ตัดสินใจอีเวนต์ทั้งหมดเอง','ศาลแสง/เงา บ่อน้ำ พ่อค้ายา ห่าน กวี โจร หีบสมบัติ — ดูจากเลือด ทอง เพชร และว่าบอสใกล้หรือยัง'],['skill','ปล่อยสกิลตัวหลักเองตอนบุก/ดันเจี้ยน',''],
  ['chest','เปิดหีบที่พร้อมแล้ว',''],['quest','รับรางวัลภารกิจที่ทำเสร็จ',''],['hero','รับสมัคร/อัปเลเวลฮีโร่','เมื่อชิ้นส่วนและทองพอ'],['upgrade','อัปเกรดที่ช่างตีเหล็ก','ใช้ทองซื้ออัปเกรดที่ถูกที่สุด (ทองจะหมดเร็ว)'],
- ['raid','บุกปราสาทเมื่อมีตั๋ว','รวมถึงเลือกพลังทีมให้เอง'],['tower','ไต่หอคอยต่อเนื่อง','ชนะแล้วขึ้นชั้นถัดไปทันทีจนกว่าจะแพ้ (ต้องเข้าหอคอยเอง)'],['dung','ลงดันเจี้ยนรายวันให้ครบ','เลือกระดับยากที่สุดที่น่าจะชนะ'],['wb','ตีบอสโลกเมื่อมีสิทธิ์',''],['pass','รับรางวัล Season Pass',''],['pet','วิวัฒนาการสัตว์คู่ใจที่ใส่อยู่',''],['retreat','ถอยไปฟาร์มเมื่อแพ้ซ้ำ ๆ','แพ้ 3 ครั้งติด ถอยไปแมปก่อนหน้า 2 รอบ แล้วกลับมาลุยใหม่']];
+ ['raid','บุกปราสาทเมื่อมีตั๋ว','รวมถึงเลือกพลังทีมให้เอง'],['tower','🗼 ไต่หอคอยอัตโนมัติ','เมื่อพลังงาน ⚡ เต็ม จะเข้าหอคอยเอง ไต่ไปเรื่อย ๆ จนกว่าจะแพ้ แล้วกลับมาผจญภัยต่อ'],['dung','ลงดันเจี้ยนรายวันให้ครบ','เลือกระดับยากที่สุดที่น่าจะชนะ'],['wb','ตีบอสโลกเมื่อมีสิทธิ์',''],['pass','รับรางวัล Season Pass',''],['pet','วิวัฒนาการสัตว์คู่ใจที่ใส่อยู่',''],['retreat','ถอยไปฟาร์มเมื่อแพ้ซ้ำ ๆ','แพ้ 3 ครั้งติด ถอยไปแมปก่อนหน้า 2 รอบ แล้วกลับมาลุยใหม่']];
 function openAuto(){const draw=b=>{b.innerHTML=`<label class="tog" style="background:${st.auto.on?'#c8f5cc':'#f2e3c0'}"><input type="checkbox" data-o="on" ${st.auto.on?'checked':''}><div><b>🤖 เปิดโหมดออโต้</b><br>ปล่อยให้เกมเล่นเอง เหมาะกับฟาร์มยาว ๆ (ใช้คู่กับ x4 ได้)</div></label>
  <p style="font-weight:600;margin:8px 0 4px;font-size:13px">ตั้งค่าว่าจะให้ออโต้ทำอะไรบ้าง</p>`+AUTO_OPTS.filter(([k])=>AUTO_ON.includes(k)).map(([k,n,d])=>`<label class="tog"><input type="checkbox" data-o="${k}" ${st.auto[k]?'checked':''}><div><b>${n}</b>${d?'<br><small>'+d+'</small>':''}</div></label>`).join('');
  b.querySelectorAll('[data-o]').forEach(e=>e.onchange=()=>{st.auto[e.dataset.o]=e.checked;save();renderAll();draw(b);if(e.dataset.o==='on')say(e.checked?'โหมดออโต้เปิดแล้ว! ลุงเปลวจะดูแลให้เอง นั่งจิบชาได้เลย':'ปิดออโต้แล้ว กลับมาคุมเองนะ')})};openSheet('🤖 ระบบออโต้','',draw)}
@@ -1553,6 +1557,7 @@ function autoTick(){if(!st.auto.on||phase==='title')return;try{watchdog()}catch(
  if(canAct()&&!$('sheet').classList.contains('on')&&!$('mapScr').classList.contains('on')){regenTix();
   if(A0.chest){const i=st.chests.findIndex(c=>Date.now()>=c.ready);if(i>=0){openChest(i);return}}
   if(A0.raid&&unlocked()&&allLoaded&&st.tix>0){startRaid();return}
+  if(A0.tower&&unlocked()&&allLoaded&&st.lvl>=6&&enObj().v>=enMax()){say('🤖 พลังงานเต็ม — เข้าหอคอยไต่อัตโนมัติ');twAuto={from:st.tower.best+1,n:0};startTower();return}
   if(A0.wb&&unlocked()&&allLoaded){const w=wbObj();if(w.tries>0&&wbLeft(w)>0){startWB();return}}
   if(A0.dung&&unlocked()&&allLoaded){const D0=dgObj();const k=Object.keys(DUNG).find(x=>D0.u[x]<2);if(k){startDung(k,0,0);return}}}
  if(A0.pass){const P0=passObj(),tier=Math.min(PASS_TIERS,Math.floor(P0.pts/PASS_PT));for(let i=1;i<=tier;i++)if(!P0.cl.includes(i)&&i%10!==0){P0.cl.push(i);passReward(i).f();num('🎖 รับรางวัล Pass','gold',{x:view.clientWidth/2,y:view.clientHeight*.3});break}}
