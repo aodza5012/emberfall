@@ -680,7 +680,7 @@ const GEN_SETS=Object.keys(SETS);
   SETS['h_'+h.k]={n:'ชุด'+h.n,i:h.ic,c:EC[h.el]||'#8a6a3a',st:'เซ็ตประจำตัว · '+h.cls,hero:h.k,t}}}
 const setOwnerOK=(k,hk)=>!SETS[k].hero||SETS[k].hero===hk;
 const SIG_M=1.5;
-function fixSetW(it){const SH=it&&it.set&&SETS[it.set]&&SETS[it.set].hero;if(SH&&it.slot==='weapon'){const wl=WCLS[HWC[SH]||'guard'].w;if(!wl.includes(it.wt)){const w=WEAPONS.find(x=>x.k===pick(wl));it.wt=w.k;it.name=pick(w.n)+pick(SUFR[it.r]||SUFR[0])}}return it}
+function fixSetW(it){const SH=it&&it.set&&SETS[it.set]&&SETS[it.set].hero;if(SH&&it.slot==='weapon'){const wl=WCLS[HWC[SH]||'guard'].w;if(!wl.includes(it.wt)){const w=WEAPONS.find((pk=>x=>x.k===pk)(pick(wl)));it.wt=w.k;it.name=pick(w.n)+pick(SUFR[it.r]||SUFR[0])}}return it}
 function rollSet(){const tk=[...new Set([st.main,...(st.team||[])])].filter(Boolean).map(k=>'h_'+k).filter(k=>SETS[k]);return Math.random()<.5&&tk.length?pick(tk):pick(GEN_SETS)}
 const setShown=(k,n)=>!SETS[k].hero||n>0||SETS[k].hero===st.main||(st.team||[]).includes(SETS[k].hero)||(st.bag||[]).some(x=>x.set===k);
 const setTxt=o=>Object.entries(o).map(([k,v])=>`${SBN[k][0]} +${SBN[k][1]?Math.round(v*100):v}%`).join(' · ');
@@ -766,12 +766,12 @@ function rollR(minR=0,luck=0){let tot=0;const w=RW.map((x,i)=>{const v=x*(i?1+lu
 function genItem(minR=0,luck=0,slotK=null){
  const sl=slotK||pick(SLOTS).k,r=rollR(minR,luck),R=RAR[r],ilvl=Math.max(1,Math.min(curLv()+ri(-1,1),st.lvl)),p=IP(ilvl)*R.m,s={},it={id:st.nid++,slot:sl,r,ilvl,s};
  for(const[k,v]of Object.entries(PRIM[sl]))s[k]=Math.max(1,Math.round(v*p));
- if(sl==='weapon'){const tw=[...new Set(['me',...(st.team||[])].flatMap(k=>{try{return wclsOf(k).w}catch(e){return[]}}))],w=Math.random()<.6&&tw.length?WEAPONS.find(x=>x.k===pick(tw)):pick(WEAPONS);it.wt=w.k;it.name=pick(w.n)+pick(SUFR[r]);s.dmg=Math.round(s.dmg*(1/w.sp)**.6)}
+ if(sl==='weapon'){const tw=[...new Set(['me',...(st.team||[])].flatMap(k=>{try{return wclsOf(k).w}catch(e){return[]}}))],w=Math.random()<.6&&tw.length?WEAPONS.find((pk=>x=>x.k===pk)(pick(tw))):pick(WEAPONS);it.wt=w.k;it.name=pick(w.n)+pick(SUFR[r]);s.dmg=Math.round(s.dmg*(1/w.sp)**.6)}
  else if(sl==='pet'){const pt=pick(PETS);it.pt=pt.k;it.name=pt.n+(r>2?' '+pick(SUFR[r]):'')}
  else it.name=pick(BASEN[sl])+pick(SUFR[r]);
  const pool=SEC.slice().sort(()=>Math.random()-.5),n=R.x+(sl==='ring'||sl==='amulet'||sl==='pet'?1:0);
  for(let i=0;i<n;i++){const k=pool[i],v=SECV[k];s[k]=(s[k]||0)+Math.round(rnd(v[0],v[1])+r*v[2])}
- if(r>=1&&sl!=='pet'&&Math.random()<.3+r*.04){it.set=rollSet();const SH=SETS[it.set].hero;if(SH&&sl==='weapon'){const wl=WCLS[HWC[SH]||'guard'].w;if(!wl.includes(it.wt)){const w=WEAPONS.find(x=>x.k===pick(wl));it.wt=w.k;it.name=pick(w.n)+pick(SUFR[r])}}}
+ if(r>=1&&sl!=='pet'&&Math.random()<.3+r*.04){it.set=rollSet();const SH=SETS[it.set].hero;if(SH&&sl==='weapon'){const wl=WCLS[HWC[SH]||'guard'].w;if(!wl.includes(it.wt)){const w=WEAPONS.find((pk=>x=>x.k===pk)(pick(wl)));it.wt=w.k;it.name=pick(w.n)+pick(SUFR[r])}}}
  if(sl!=='pet'){const ns=r>=5?2:r>=2?1:0;if(ns)it.so=Array(ns).fill(null);if(r>=4&&Math.random()<(r>=5?1:.6))it.px=pick(Object.keys(PROCS))}
  return it}
 const BAG_MAX=60,essVal=it=>[0,1,2,4,8,15,30][it.r]||0;
