@@ -156,6 +156,7 @@ nav{display:flex;align-items:flex-end;justify-content:space-around;background:li
 .btn.off{filter:grayscale(1) brightness(.75);pointer-events:none}
 .btn.blue{border-color:#0d3a7a;background:linear-gradient(#5fb3ff,#1f6fd1);box-shadow:0 3px 0 #0d3a7a}
 .btn.red{border-color:#5a120c;background:linear-gradient(#ff6a55,#c4251a);box-shadow:0 3px 0 #5a120c}
+.btn.green{border-color:#0b4a12;background:linear-gradient(#5fe36b,#1f9a2c);box-shadow:0 3px 0 #0b4a12}
 .btn.gray{border-color:#333;background:linear-gradient(#999,#666);box-shadow:0 3px 0 #333}
 .btn.gold{border-color:#7a4a08;background:linear-gradient(#ffd86a,#e8a21a);color:#3a2210;text-shadow:none;box-shadow:0 3px 0 #7a4a08}
 .lead{display:flex;align-items:center;gap:8px;background:#f2e3c0;border:2px solid #b99b6b;border-radius:10px;padding:6px 10px;margin-bottom:5px;font-weight:600}
@@ -338,6 +339,12 @@ textarea.code{width:100%;height:56px;font-size:10px;font-family:monospace;border
 .hubPow{position:absolute;right:6px;top:4px;z-index:2;text-align:right;font-weight:800;font-size:16px;color:#ffe08a;text-shadow:0 2px 3px #000;pointer-events:none}
 .hubHint{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:10px;opacity:.75;pointer-events:none}
 .hubCls{font-size:11.5px;text-align:center;margin:4px 0 6px;opacity:.95}
+.hubAv.inT{box-shadow:0 0 0 2px #3ad14a}.hubAv em{position:absolute;bottom:-4px;right:-4px;background:#2fa83a;color:#fff;border:2px solid #fff;border-radius:50%;width:18px;height:18px;font-size:10px;line-height:14px;font-style:normal;font-weight:800}
+.hubTeam{font-size:11px;margin:-2px 0 4px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}.hubTeam span{background:#ffffff1f;border:1px solid #3ad14a88;border-radius:8px;padding:1px 6px}
+.tTag{display:inline-block;margin-top:3px;background:#2fa83a;border-radius:8px;padding:1px 7px;font-size:11px;font-weight:700}
+.hubQS{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:2px 0 6px}.hubQS div{background:#0004;border:1px solid #ffffff22;border-radius:8px;text-align:center;padding:3px 1px;line-height:1.1}.hubQS i{font-style:normal;font-size:13px}.hubQS b{display:block;font-size:12.5px;color:#ffe08a}.hubQS small{font-size:9px;opacity:.8}
+.hubSk{font-size:11px;background:#0004;border-radius:8px;padding:5px 7px;margin-bottom:6px;line-height:1.35}
+.hubTm{width:100%;padding:8px;margin-bottom:6px}
 .hubAct{display:flex;gap:6px}.hubAct .btn{flex:1;padding:9px 4px;font-size:12.5px;position:relative}.bdg{position:absolute;top:-7px;right:-4px;background:#e23;color:#fff;border-radius:9px;font-style:normal;font-size:10px;padding:1px 6px}
 .hubTabs{margin-bottom:6px}.hubSlots{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .hslot{aspect-ratio:1;border:3px solid #b9a27a;border-radius:10px;background:#e8d9b8;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;cursor:pointer;font-size:24px}
@@ -2161,12 +2168,16 @@ function autoBest(k){const eq=whoEq(k),pw=()=>k==='me'?power(S()):heroPower(k);l
 function openChar(k){const L=hubList();if(k)hubWho=k;if(!L.includes(hubWho))hubWho='me';const draw=b=>{const who=hubWho,isMe=who==='me',hk=hkOf(who),h=heroOf(hk)||heroOf('knight'),H=isMe?null:st.heroes[who],s=isMe?S():heroStats(who),eq=whoEq(who),C=wclsOf(who),R0=RT[h.r]||RT[0],L=hubList(),i=L.indexOf(who),
   pw=isMe?power(s):heroPower(who),lv=isMe?st.lvl:H.lvl,star=isMe?(st.heroes[st.main]||{star:0}).star:H.star,sig=SETS['h_'+hk],nb=st.bag.filter(x=>SLOTS.some(sl=>sl.k===x.slot)&&canUse(who,x)&&!slotLocked(who,x.slot)&&(isMe?powerWith(x)>pw+.5:heroPowerWith(who,x)>pw+.5)).length;
  b.innerHTML=`<div class="hubTop" style="--rc:${R0.c}">
-  <div class="hubStrip">${L.map(x=>{const xh=heroOf(hkOf(x));return `<button class="hubAv ${x===who?'on':''}" data-hw="${x}" style="background-image:url(${x==='me'?PORT.me:(PORT[x]||'')});border-color:${RT[xh?xh.r:0].c}">${x==='me'?'<i>👑</i>':''}</button>`}).join('')}</div>
+  <div class="hubStrip">${L.map(x=>{const xh=heroOf(hkOf(x));return `<button class="hubAv ${x===who?'on':''} ${st.team.includes(x)?'inT':''}" data-hw="${x}" style="background-image:url(${x==='me'?PORT.me:(PORT[x]||'')});border-color:${RT[xh?xh.r:0].c}">${x==='me'?'<i>👑</i>':st.team.includes(x)?`<em>${st.team.indexOf(x)+1}</em>`:''}</button>`}).join('')}</div>
+  <div class="hubTeam">🛡️ ทีม ${st.team.length}/3: ${st.team.map(t=>{const th=heroOf(t);return th?`<span>${th.ic} ${th.n}</span>`:''}).join('')||'<span>ยังไม่มี</span>'}${teamOn()?'':' <small>(ทีมร่วมสู้ในด่านปกติเมื่อผ่านแมป 2)</small>'}</div>
   <div class="hubStage"><button class="hubNav" data-hn="-1">◀</button><div class="hubCvBox"></div><button class="hubNav r" data-hn="1">▶</button>
-   <div class="hubName"><b>${isMe?pname():h.n}</b><br><small>${isMe?'👑 ตัวหลัก · '+h.cls:h.cls} · ${rTag(h.r)} ${elTag(h.el)}</small></div>
+   <div class="hubName"><b>${isMe?pname():h.n}</b><br><small>${isMe?'👑 ตัวหลัก · '+h.cls:h.cls} · ${rTag(h.r)} ${elTag(h.el)}</small>${!isMe&&st.team.includes(who)?`<br><span class="tTag">🛡️ อยู่ในทีม (ช่อง ${st.team.indexOf(who)+1})</span>`:''}</div>
    <div class="hubPow">⚔️ ${fmt(pw)}<br><small>Lv ${lv} · <span style="color:#ffd84a">${'★'.repeat(star)}</span>${'☆'.repeat(Math.max(0,5-star))}</small></div>
    <div class="hubHint">👆 ลากเพื่อหมุน 360° · แตะ 2 ครั้งดูท่า</div></div>
   <div class="hubCls">${C.i} สายอาวุธ <b>${C.n}</b>: ${C.w.map(w=>WEAPONS.find(x=>x.k===w).n[0]).join(' / ')} · <span class="tag ${h.role}">${ROLEN[h.role]}</span></div>
+  <div class="hubQS">${[['⚔️','ดาเมจ',s.dmg],['❤️','HP',s.hp],['🛡️','เกราะ',s.armor],['🎯','คริ',(s.crit||0).toFixed(0)+'%'],['💥','แรงคริ',(s.critd||0).toFixed(0)+'%'],['💨','หลบ',(s.dodge||0).toFixed(0)+'%'],['🩸','ดูดเลือด',(s.ls||0).toFixed(0)+'%'],['⏱️','ตี/วิ',s.aps.toFixed(2)]].map(([i,n,v])=>`<div><i>${i}</i><b>${typeof v==='number'?fmt(v):v}</b><small>${n}</small></div>`).join('')}</div>
+  <div class="hubSk">✨ <b>${h.sk.n}</b> <small>(${h.sk.cd} วิ)</small> — ${h.sk.d}<br>🔸 ${h.pas}</div>
+  ${isMe?'':`<button class="btn ${st.team.includes(who)?'red':'green'} hubTm" id="hbTeam">${st.team.includes(who)?'➖ นำออกจากทีม':'➕ ส่งลงทีม'} <small>(${st.team.length}/3)</small></button>`}
   <div class="hubAct"><button class="btn gold" id="hbAuto">⚡ สวมอัตโนมัติ${nb?` <i class="bdg">${nb}</i>`:''}</button><button class="btn blue" id="hbSet">◆ สวมทั้งเซ็ต</button><button class="btn" id="hbBag">🎒 กระเป๋า</button></div></div>
  <div class="tabs hubTabs">${[['eq','🛡️ อุปกรณ์'],['st','📊 สถานะ'],['sk','✨ สกิล & เซ็ต'],['up','⬆️ พัฒนา']].map(([t,n])=>`<button class="${hubTab===t?'on':''}" data-ht="${t}">${n}</button>`).join('')}</div>
  <div class="hubBody">${hubTab==='eq'?`<div class="hubSlots">${SLOTS.map(sl=>{const it=eq[sl.k],lk=slotLocked(who,sl.k);if(!it)return `<div class="hslot empty" data-hs="${sl.k}"><div class="ic">${sl.ic}</div><small>${sl.n}</small>${lk?'<s>🔒</s>':''}</div>`;const R=RAR[it.r];return `<div class="hslot" data-hs="${sl.k}" style="background:${R.bg};border-color:${R.c}">${itemIcon(it)}<small>Lv ${it.ilvl}${st.refine&&isMe&&st.refine[sl.k]?' +'+st.refine[sl.k]:''}</small>${it.set?`<u style="background:${SETS[it.set].c}">${SETS[it.set].i}</u>`:''}${lk?'<s>🔒</s>':''}</div>`}).join('')}</div><p class="hint" style="text-align:center">แตะช่องเพื่อดู/เปลี่ยน/ล็อก · ช่องว่าง = เปิดกระเป๋า</p>`
@@ -2180,6 +2191,7 @@ function openChar(k){const L=hubList();if(k)hubWho=k;if(!L.includes(hubWho))hubW
  b.querySelectorAll('[data-ht]').forEach(e=>e.onclick=()=>{hubTab=e.dataset.ht;draw(b)});
  b.querySelector('#hbAuto').onclick=()=>{const n=autoBest(who);if(n){sfx('equip');num(`⚡ สวมของที่ดีที่สุดแล้ว ${n} ชิ้น`,'gold',{x:view.clientWidth/2,y:view.clientHeight*.3});save();renderAll()}else say('ใส่ของที่ดีที่สุดที่ใช้ได้อยู่แล้ว 👍 (ชิ้นที่ล็อกไว้จะไม่ถูกเปลี่ยน)');draw(b)};
  b.querySelector('#hbSet').onclick=()=>{bagWho=who;openBag('sets');onSheetClose=()=>openChar(who)};
+ {const tb=b.querySelector('#hbTeam');if(tb)tb.onclick=()=>{if(st.team.includes(who))st.team=st.team.filter(x=>x!==who);else{if(st.team.length>=3){say('ทีมเต็มแล้ว (3/3) — นำฮีโร่คนอื่นออกก่อน (ตัวเลขบนรูป = ช่องในทีม)');return}st.team.push(who)}sfx('equip');save();renderAll();draw(b)}}
  b.querySelector('#hbBag').onclick=()=>{bagWho=who;openBag('items');onSheetClose=()=>openChar(who)};
  b.querySelectorAll('[data-hs]').forEach(e=>e.onclick=()=>{const sk=e.dataset.hs,it=eq[sk];if(it){itemPop(it,'🔍 '+(SLOTS.find(x=>x.k===sk)||{}).n+' · '+whoName(who),who,sk);onSheetClose=()=>openChar(who)}else{bagWho=who;bagF='all';openBag('items');onSheetClose=()=>openChar(who)}});
  const src=b.querySelector('#hbSrc');if(src)src.onclick=()=>{statsSheet();onSheetClose=()=>openChar('me')};
