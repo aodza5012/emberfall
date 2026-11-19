@@ -2135,7 +2135,7 @@ ${setsHTML(H.eq)}
 
 /* ================= CHARACTER HUB (หน้าต่างตัวละคร) ================= */
 let HV=null,hubWho='me',hubTab='eq';
-function hubList(){return ['me',...HEROES.filter(h=>st.heroes[h.k]&&st.heroes[h.k].lvl&&h.k!==st.main).map(h=>h.k)]}
+function hubList(){const L=HEROES.filter(h=>st.heroes[h.k]&&st.heroes[h.k].lvl&&h.k!==st.main).map(h=>({k:h.k,t:st.team.includes(h.k)?1:0,p:heroPower(h.k),r:h.r}));L.sort((a,b)=>b.t-a.t||b.p-a.p||b.r-a.r);return ['me',...L.map(x=>x.k)]}
 function hubDef(k){const hk=hkOf(k),h=heroOf(hk)||heroOf('knight'),eq=whoEq(k),w=eq.weapon&&canUse(k,eq.weapon)?eq.weapon.wt:null;return {f:h.f,keep:h.keep,w:h.w?(w||h.w):null,wl:h.wl,tint:h.tint,h:1.8}}
 function hubView(){if(HV)return HV;const cv=document.createElement('canvas');cv.className='hubCv';const r=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});r.setPixelRatio(Math.min(devicePixelRatio,2));r.outputColorSpace=THREE.SRGBColorSpace;
  const sc=new THREE.Scene();sc.add(new THREE.HemisphereLight(0xfff4e0,0x5a4a3a,1.6));const dl=new THREE.DirectionalLight(0xffffff,2.2);dl.position.set(2,4,3);sc.add(dl);const rl=new THREE.DirectionalLight(0x9ab8ff,1.2);rl.position.set(-3,2,-3);sc.add(rl);
