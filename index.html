@@ -1009,11 +1009,13 @@ function spawnEnemy(boss=false,defOverride=null){if(inCamp){campOff();buildScene
  const gap=Math.max(0,monLv(g)-st.lvl);atk*=1+.08*gap;const danger=!boss&&mode==='adv'&&st.dgUntil>=st.step;if(danger){hp*=1.45;atk*=1.3;name='💀'+name}
  let tr=boss?[...(M.boss.tr||[])]:[],elite=false;if(boss&&st.map>=1)tr.push(['block','combo','dodge','haste','thorns'][st.map%5]);if(boss&&st.map>=5)tr.push(['haste','thorns','block','combo','dodge'][st.map%5]);
  if(!boss&&mode==='adv'&&!defOverride&&st.step>2&&Math.random()<(st.map<1?.05:.09)){elite=true;hp*=2.3;atk*=1.3;const pool=['block','dodge','combo','haste','thorns','rage','regen','shield'];tr=[pick(pool)];if(st.map>=3&&Math.random()<.5){const t2=pick(pool.filter(x=>x!==tr[0]));tr.push(t2)}name='⭐'+name;ch.holder.scale.setScalar(1.22);ch.root.traverse(o=>{if(o.isMesh){o.material=o.material.clone();o.material.emissive=new THREE.Color(0x553300);o.material.emissiveIntensity=.45}})}
+ let gemmy=false;if(!boss&&!elite&&mode==='adv'&&!defOverride&&st.step>1&&Math.random()<.018){gemmy=true;hp*=1.6;atk*=.8;name='💎 '+name.replace(/^\S+ /,'')+' (มอนสเตอร์เพชร)';ch.holder.scale.setScalar(1.15);ch.root.traverse(o=>{if(o.isMesh){o.material=o.material.clone();o.material.userData.cl=1;o.material.color.lerp(new THREE.Color(0x7ad8ff),.55);o.material.emissive=new THREE.Color(0x2a9aff);o.material.emissiveIntensity=.6}})}
  if(tr.length)name+=' '+[...new Set(tr)].map(t=>BTR[t][0]).join('');
- enemy={ch,defn,name,hp,max:hp,atk,boss,elite,mk,el,gap,danger,tr,trT:0,sh:0,raged:0,state:'approach',cd:1,targetZ:boss?-5.4:-4.3,bleed:0,cmb:0};
+ enemy={ch,defn,name,hp,max:hp,atk,boss,elite,gemmy,mk,el,gap,danger,tr,trT:0,sh:0,raged:0,state:'approach',cd:1,targetZ:boss?-5.4:-4.3,bleed:0,cmb:0};
+ if(gemmy){sfx('level');banner('💎 มอนสเตอร์เพชรปรากฏตัว!');num('💎 ล้มมันเพื่อลุ้นเพชร!','gold',{x:view.clientWidth/2,y:view.clientHeight*.28})}
  if(elite){sfx('boss');num('⭐ มอนสเตอร์ชั้นยอด! '+tr.map(t=>BTR[t][0]+' '+BTR[t][1].split(':')[0]).join(' · '),'tag',{x:view.clientWidth/2,y:view.clientHeight*.28})}
  if(defn.f.startsWith('skeleton')&&!boss&&Math.random()<.5){ch.holder.position.z=enemy.targetZ;enemy.state='spawn';enemy.spawnT=1.4;play(ch,'spawn',{once:true,fade:0})}else play(ch,'walk',{speed:1.3});
- phase='fight';pcd=.5;try{addPack(enemy,boss,defOverride)}catch(e){recErr(e,'pack')}
+ phase='fight';pcd=.5;try{if(!enemy.gemmy)addPack(enemy,boss,defOverride)}catch(e){recErr(e,'pack')}
  if(boss){sfx('boss');bossWarn();setTimeout(()=>{if(enemy&&enemy.boss&&enemy.tr.length)say('ความสามารถบอส: '+enemy.tr.map(t=>BTR[t][0]+' '+BTR[t][1]).join(' · '))},2700);$('bossBar').style.display=enemy.boss?'block':'none';$('bossNm').textContent=name+' '+(M.boss.tr||[]).map(t=>BTR[t][0]).join('');say(pick(['ตัวนี้ใหญ่จริง ๆ … อย่าลืมว่าเราก็ใหญ่ … ในใจ','บอสมาแล้ว! ถ้าแพ้ เราแกล้งทำเป็นว่ายังไม่ได้เริ่มกันนะ']))}}
 /* ---------- ฝูงมอนสเตอร์ & ลูกน้องบอส ---------- */
 function packSize(boss){if(mode!=='adv'||inCamp)return 0;const m=st.map;if(boss)return m>=7?3:m>=4?2:m>=2?1:0;if(st.step<=2)return 0;if(m<3)return 0;if(m<5)return Math.random()<.35?1:0;if(m<8)return 1+(Math.random()<.3?1:0);return 2}
@@ -1063,12 +1065,13 @@ function killEnemy(){
  const dm=e.danger?1.7:1;if(myPx().includes('reaper'))heal(s.hp*.1);const gold=Math.round(6*Math.pow(1.075,g)*(e.boss?10:1)*(1+s.gold/100)*dm);if(e.boss||(e.danger&&Math.random()<.06)){const gg=addGem(e.boss?Math.min(3,1+Math.floor(st.maxMap/3)):1);setTimeout(()=>num(`+${GEMS[gg.g].i} ${GEMS[gg.g].n} ขั้น ${gg.t}`,'tag',enemyScreen(90)),700)}st.gold+=gold;sfx('coin');num('+'+fmt(gold)+' 🪙','gold',enemyScreen(40));addPass(e.boss?40:3);if(Math.random()<(e.boss?1:.08)){const fd=e.boss?5:1;st.food+=fd;setTimeout(()=>num('+'+fd+' 🍖','gold',enemyScreen(70)),400)}
  {const lo=st.lvl-3-monLv(g);addXp(Math.round(Math.max(9*Math.pow(1.06,g),xpNeed(monLv(g))*.012)*(e.boss?6:1)*dm*(lo>0?Math.max(.1,1-.15*lo):1)))}st.kills++;qp('kill');st.codex[e.mk]=(st.codex[e.mk]||0)+1;if(CODEX_T.includes(st.codex[e.mk])||(e.boss&&BOSS_T.includes(st.codex[e.mk])))setTimeout(()=>num('📖 สมุดมอนสเตอร์ +โบนัส!','tag',{x:view.clientWidth/2,y:view.clientHeight*.3}),600);if(e.boss)qp('boss');
  if(e.boss){st.troph+=10;st.gems+=5;const h=addShards(null,2);if(!e.fromBossTab)st.bossCd[st.map]=0;banner('ปราบบอส! +10 🏆');setTimeout(()=>num(`+2 ชิ้นส่วน ${h.n}`,'tag',enemyScreen(60)),300)}
+ if(e.gemmy){const base=8+Math.floor(st.maxMap*2.5),jack=Math.random()<.15,gm=Math.round(rnd(base,base*2.5)*(jack?3:1));st.gems+=gm;st.stat.gemMob=(st.stat.gemMob||0)+1;banner(jack?`💎 แจ็กพอต! +${gm} เพชร`:`💎 +${gm} เพชร`);num(`+${gm} 💎`,'gold',enemyScreen(10));if(Math.random()<.4){const gg=addGem(Math.min(4,1+Math.floor(st.maxMap/3)));setTimeout(()=>num(`+${GEMS[gg.g].i} ${GEMS[gg.g].n} ขั้น ${gg.t}`,'tag',enemyScreen(90)),600)}}
  heal(s.hp*(.15+s.heal/100),true);
  setTimeout(()=>{rmChar(e.ch.holder);if(enemy===e)enemy=null;$('bossBar').style.display='none';
   if(e.elite){st.stat.elite=(st.stat.elite||0)+1;if(Math.random()<.35){const gg=addGem(Math.min(3,1+Math.floor(st.maxMap/4)));setTimeout(()=>num(`+${GEMS[gg.g].i} ${GEMS[gg.g].n} ขั้น ${gg.t}`,'tag',enemyScreen(90)),700)}if(Math.random()<.3)addShards(null,1)}
   if(e.pack&&e.pack.length&&!e.boss){if(promotePack(e)){checkUnlock();renderAll();return}}
   if(e.boss)clearPack(e);
-  const drop=e.boss?genItem(2,1.5):e.elite?genItem(1,1.4):e.fromBossTab?genItem(2,1):e.danger?genItem(1,1.2):e.packTot>=3?genItem(1,1.15):genItem();
+  const drop=e.boss?genItem(2,1.5):e.elite?genItem(1,1.4):e.fromBossTab?genItem(2,1):e.gemmy?genItem(1,1.3):e.danger?genItem(1,1.2):e.packTot>=3?genItem(1,1.15):genItem();
   const after=e.fromBossTab?()=>{phase=inCamp?'camp':'walk'}:(e.boss?mapClear:nextStep);showGear(drop,after)},1100/SPD());
  checkUnlock();renderAll()}
 function defeat(){
