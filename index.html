@@ -1656,8 +1656,7 @@ $('prof').onclick=()=>openSheet('⚙️ ตั้งค่า',`<div class="row"
   try{Object.keys(localStorage).filter(k=>k.startsWith('emberfall3d')&&k!=='emberfall3d_uid'&&k!=='emberfall3d_eco').forEach(k=>localStorage.removeItem(k))}catch(_){}
   location.reload()};
  b.querySelector('#rsBtn').onclick=e=>{if(e.target.dataset.c){try{localStorage.removeItem(slotKey(curSlot));if(!curSlot)localStorage.removeItem('emberfall3d_v1')}catch(_){}if(enemy){rmChar(enemy.ch.holder);enemy=null}['gearOv','evOv','powOv','mapScr'].forEach(i=>$(i).classList.remove('on'));gearItem=null;gearAfter=null;queued=null;if(mode==='raid'){clearUnits();mode='adv';raid=null;camTarget=0;$('raidBar').style.display='none';$('dots').style.display=''}$('bossBar').style.display='none';st=loadSlot(-1);curWT=curPT=undefined;setHandWeapon();setHandPet();php=S().hp;closeSheet();buildScenery();renderAll();save();phase='busy';showCreate(()=>{renderAll();startWalk();say('เริ่มต้นใหม่แล้ว! ขอให้โชคดีนะ '+pname())})}else{e.target.dataset.c=1;e.target.textContent='ยืนยันลบ?'}}});
-NAV.char=()=>{hubTab='eq';openChar('me')};NAV.bag=()=>{bagWho='me';bagF='all';openBag('items')};
-document.querySelectorAll('nav .nb').forEach(b=>b.onclick=()=>{sfx&&sfx('click');NAV[b.dataset.n]()});
+document.querySelectorAll('nav .nb').forEach(b=>b.onclick=()=>{const n=b.dataset.n;if(n==='char'){hubTab='eq';openChar('me')}else if(n==='bag'){bagWho='me';bagF='all';openBag('items')}else NAV[n]()});
 const NAV={
  map:()=>openMap(),
  tavern:()=>{if(!unlocked()){openSheet('🍺 โรงเตี๊ยม',`<div class="row"><div class="ri">🔒</div><div class="rt"><b>ปลดล็อกที่ Lv ${UNLOCK_LV}</b><br>อัญเชิญฮีโร่ จัดทีม 3 คน และบุกปราสาทผู้เล่นอื่น</div></div>`);return}
